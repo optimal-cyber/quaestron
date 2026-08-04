@@ -2,6 +2,7 @@
 
 import type { VendorDossier as Dossier } from '@/lib/vendor/build-dossier'
 import WatchButton from '@/components/WatchButton'
+import CompliancePosture from '@/components/panels/CompliancePosture'
 
 function fmt(value: number | null | undefined): string {
   const v = value || 0
@@ -127,38 +128,10 @@ export default function VendorDossier({ d }: { d: Dossier }) {
         )}
       </Section>
 
-      {/* Authorizations */}
-      {(d.authorizations.fedramp.length > 0 || d.authorizations.dodPa.length > 0 || d.authorizations.emass.length > 0) && (
-        <Section title="Authorizations & Compliance" hint="FedRAMP · DoD IL · eMASS">
-          <div className="space-y-3">
-            {d.authorizations.fedramp.map((f, i) => (
-              <div key={`fr${i}`} className="flex items-center justify-between gap-3 text-xs font-mono border-b border-border/50 pb-2">
-                <span className="text-foreground truncate">{f.csoName}</span>
-                <div className="flex items-center gap-3 shrink-0">
-                  {f.impactLevel && <span className="text-muted">{f.impactLevel}</span>}
-                  <span className="text-accent-green px-2 py-0.5 rounded bg-accent-green/10">FedRAMP {f.status}</span>
-                  {f.expirationDate && <span className="text-muted">exp {f.expirationDate.slice(0, 10)}</span>}
-                </div>
-              </div>
-            ))}
-            {d.authorizations.dodPa.map((p, i) => (
-              <div key={`dod${i}`} className="flex items-center justify-between gap-3 text-xs font-mono border-b border-border/50 pb-2">
-                <span className="text-foreground truncate">{p.csoName}</span>
-                <div className="flex items-center gap-3 shrink-0">
-                  <span className="text-accent-blue px-2 py-0.5 rounded bg-accent-blue/10">DoD {p.impactLevel}</span>
-                  {p.paExpiration && <span className="text-muted">exp {p.paExpiration.slice(0, 10)}</span>}
-                </div>
-              </div>
-            ))}
-            {d.authorizations.emass.map((e, i) => (
-              <div key={`em${i}`} className="flex items-center justify-between gap-3 text-xs font-mono">
-                <span className="text-foreground truncate">{e.systemName}</span>
-                <span className="text-accent-gold px-2 py-0.5 rounded bg-accent-gold/10 shrink-0">eMASS {e.authorizationType}</span>
-              </div>
-            ))}
-          </div>
-        </Section>
-      )}
+      {/* Compliance posture — the ATO<->contract crosswalk. Replaces the flat
+          authorization list this section used to render: same source data, plus
+          the timeline, assessment countdowns, and agency leverage map. */}
+      <CompliancePosture slug={d.identity.slug} />
 
       {/* Federal past performance by agency */}
       {(d.pastPerformance.agencyBreakdown.length > 0 || d.pastPerformance.topContracts.length > 0) && (

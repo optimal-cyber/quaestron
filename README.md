@@ -44,6 +44,7 @@ app/
   vendors/         Vendor directory
   vendor/[slug]/   Per-vendor dossier
   ato/             ATO intelligence dashboard
+  compliance/      Authorized-cloud universe (ATO <-> contract crosswalk)
   intel/           RSS feed aggregator
   admin/           Operator panel (ADMIN role required)
   signin/          Auth.js sign-in
@@ -56,7 +57,8 @@ lib/
   api/response.ts  { data, error } envelope + zod parse helpers
   clients/         External API clients (SAM, USASpending, SBIR, Apollo, agencies)
   ingest/          Source-specific ingest (DISA, FedRAMP, vendor universe)
-  match/           Entity name resolution + alias table
+  match/           Entity name resolution + alias table + ATO->Entity matcher
+  compliance/      Crosswalk, universe query, derived insights
   vendor/          Dossier assembly, enrichment, relevance scoring
 prisma/
   schema.prisma    Single schema
@@ -72,7 +74,7 @@ like `businessSize`, `setAsides`, `riskFlags`, `agencyBreakdown`), `Connection`,
 `Contract` (including SBIR/STTR fields), `FundingRound`, `NewsItem`, `Country`,
 `Submission`.
 
-Compliance: `FedrampAuthorization`, `DodProvisionalAuth`, `EmassAuthorization`,
+Authorizations: `FedrampAuthorization`, `DodProvisionalAuth`, `EmassAuthorization`,
 `AtoCompany`, `AtoAlert`, `AtoSyncLog`.
 
 Supporting: `FederalContract`, `SamRegistration`, `LobbyingFiling`.
@@ -81,6 +83,9 @@ Accounts: `User`, `Account`, `Session`, `VerificationToken`, `RateLimit`.
 
 Alerting: `Watchlist`, `WatchlistItem`, `AlertRule`, `AlertEvent`,
 `AlertSnapshot`.
+
+Compliance: `entityId` on all three ATO models, plus `AtoMatchReview` for names
+the matcher wouldn't auto-link.
 
 Several columns hold JSON-encoded arrays (`riskFlags`, `setAsides`,
 `agencyBreakdown`, `naicsCodes`, `sources`) — a deliberate tradeoff for SQLite.
@@ -136,6 +141,8 @@ npx prisma db push --url="file:./dev.db"
 | `npm run admin:promote -- <email>` | Grant ADMIN (creates the user if absent); `--demote` to revoke |
 | `npm run migrate:turso:auth` | Apply the auth + rate-limit tables to production Turso |
 | `npm run migrate:turso:alerts` | Apply the watchlist + alert tables to production Turso |
+| `npm run migrate:turso:compliance` | Apply the ATO entityId columns + match-review table |
+| `npm run backfill:ato-entities` | Link ATO rows to entities; `--dry` to preview, `--all` to re-evaluate |
 
 ---
 
@@ -273,6 +280,32 @@ fills; digests skip with a logged reason.
 
 ---
 
+## Compliance intelligence
+
+The differentiating module: FedRAMP, DoD provisional, and eMASS authorizations
+joined to federal contract obligations, so you can ask who is cleared to operate,
+at what impact level, for which agency — and whether they are winning work there.
+
+`lib/match/ato-entity.ts` resolves feed vendor names to `Entity` rows and writes
+`entityId` onto each authorization. It is deliberately conservative: fuzzy
+strategies skip investor and government entities, prefix matching only accepts a
+feed name *more* specific than the entity name, and anything ambiguous goes to
+the `/admin` review queue rather than being guessed. A wrong link would attribute
+another company's contracts to a vendor.
+
+**On dates:** FedRAMP authorizations do not hard-expire. The feed publishes
+`annual_assessment` as a month/day recurrence (`"09/30"`), which is the
+anniversary the assessment is due; an authorization lapses if it isn't met. The
+UI calls this "assessment due", never "expiration".
+
+**On spend:** `Entity.totalFederalObligated` is a cache written by `syncVendor`.
+For an un-enriched vendor it is null, meaning *unknown*, not zero — so the
+"whitespace" insight (authorized but winning nothing) only counts vendors whose
+enrichment has actually run, and the crosswalk exposes `spendDataAvailable` to
+keep the distinction visible.
+
+---
+
 ## API conventions
 
 Routes added from Phase 1 onward use zod-validated input and a consistent
@@ -294,7 +327,7 @@ shipped clients and are not to be broken.
 |---|---|---|
 | 1 | Auth, users, rate limiting, hardening | shipped |
 | 2 | Watchlists + alert engine | shipped |
-| 3 | ATO ↔ contract crosswalk, `/compliance` | planned |
+| 3 | ATO ↔ contract crosswalk, `/compliance` | shipped |
 | 4 | AI analyst (Claude tool use) | planned |
 | 5 | Stripe monetization, exports, `/data`, SEO | planned |
 

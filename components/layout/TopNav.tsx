@@ -13,6 +13,7 @@ const navItems = [
   { href: '/contracts', label: 'CONTRACTS' },
   { href: '/vendors', label: 'VENDORS' },
   { href: '/ato', label: 'ATO' },
+  { href: '/compliance', label: 'COMPLIANCE' },
   { href: '/intel', label: 'INTEL' },
   { href: '/about', label: 'ABOUT' },
 ]

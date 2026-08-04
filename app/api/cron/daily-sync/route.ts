@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { fetchLatestDcasXlsx, parseDcasWorkbook, syncDisaData } from '@/lib/ingest/disa'
+import { fetchFromGitHub, syncFedrampData } from '@/lib/ingest/fedramp'
 import { requireCronRequest } from '@/lib/admin-auth'
 import { runAlertEngine } from '@/lib/alerts/engine'
 import { sendDigests } from '@/lib/alerts/digest'
-
-const FEDRAMP_DATA_URL =
-  'https://raw.githubusercontent.com/GSA/marketplace-fedramp-gov-data/main/data.json'
 
 export async function POST(request: NextRequest) {
   const cron = requireCronRequest(request)
@@ -16,131 +14,30 @@ export async function POST(request: NextRequest) {
     const summary: Record<string, unknown> = {}
 
     // ── Step 1: FedRAMP sync from GitHub ──────────────────────────────
-    let fedrampAdded = 0
-    let fedrampUpdated = 0
-    let fedrampFailed = 0
-
+    // Delegates to lib/ingest/fedramp.ts rather than mapping inline. This route
+    // used to carry its own copy of the field mapping, and the two drifted:
+    // the shared module hardcoded `expirationDate: null` while this one read
+    // `annual_assessment`, so whichever path last wrote a row decided whether
+    // expiry data existed at all. One mapping, one place.
     try {
       console.log('[ATO] Fetching FedRAMP data from GitHub...')
-      const response = await fetch(FEDRAMP_DATA_URL)
-
-      if (!response.ok) {
-        throw new Error(`FedRAMP fetch failed: ${response.status} ${response.statusText}`)
+      const { data, sourceLabel } = await fetchFromGitHub()
+      console.log(`[ATO] Processing ${data.length} FedRAMP records from ${sourceLabel}...`)
+      const result = await syncFedrampData(data)
+      summary.fedramp = {
+        added: result.added,
+        updated: result.updated,
+        failed: result.failed,
+        source: sourceLabel,
       }
-
-      const data = await response.json()
-      const products = data?.data?.Products || data?.Products || []
-
-      console.log(`[ATO] Processing ${products.length} FedRAMP records...`)
-
-      for (const product of products) {
-        try {
-          const packageId = product.id
-          if (!packageId) {
-            fedrampFailed++
-            continue
-          }
-
-          // Normalize status: "FedRAMP Authorized" → "Authorized", etc.
-          let status = product.status || 'Unknown'
-          if (status.toLowerCase().includes('authorized') && !status.toLowerCase().includes('in process') && !status.toLowerCase().includes('ready')) status = 'Authorized'
-          else if (status.toLowerCase().includes('in process')) status = 'InProcess'
-          else if (status.toLowerCase().includes('ready')) status = 'Ready'
-
-          // Leveraging agencies
-          let leveragingAgencies: string[] = []
-          if (Array.isArray(product.agency_authorizations)) {
-            leveragingAgencies = product.agency_authorizations.map((a: unknown) => {
-              if (typeof a === 'string') return a
-              if (a && typeof a === 'object' && 'agency' in (a as Record<string, unknown>)) return (a as { agency: string }).agency
-              return String(a)
-            }).filter(Boolean)
-          }
-
-          const record = {
-            packageId: String(packageId),
-            csoName: product.cso || product.name || 'Unknown',
-            cspName: product.csp || 'Unknown',
-            status,
-            impactLevel: product.impact_level || null,
-            serviceModel: JSON.stringify(
-              Array.isArray(product.service_model) ? product.service_model : []
-            ),
-            deploymentModel: product.deployment_model || null,
-            authorizationDate: product.auth_date
-              ? new Date(product.auth_date)
-              : null,
-            expirationDate: product.annual_assessment
-              ? new Date(product.annual_assessment)
-              : null,
-            sponsoringAgency: product.partnering_agency || null,
-            leveragingAgencies: JSON.stringify(leveragingAgencies),
-            assessorName: product.independent_assessor || null,
-            authType: product.auth_type || null,
-            serviceDescription: product.service_desc || null,
-            website: product.website || null,
-            logo: product.logo || null,
-            lastSynced: new Date(),
-          }
-
-          const existing = await prisma.fedrampAuthorization.findUnique({
-            where: { packageId: record.packageId },
-          })
-
-          if (existing) {
-            await prisma.fedrampAuthorization.update({
-              where: { id: existing.id },
-              data: record,
-            })
-            fedrampUpdated++
-          } else {
-            await prisma.fedrampAuthorization.create({ data: record })
-            fedrampAdded++
-          }
-        } catch (err) {
-          fedrampFailed++
-          console.error('[ATO] FedRAMP record error:', err)
-        }
-      }
-
-      // Log FedRAMP sync
-      await prisma.atoSyncLog.upsert({
-        where: { source: 'fedramp' },
-        create: {
-          source: 'fedramp',
-          lastSyncAt: new Date(),
-          recordsAdded: fedrampAdded,
-          recordsUpdated: fedrampUpdated,
-          recordsFailed: fedrampFailed,
-          status: 'success',
-        },
-        update: {
-          lastSyncAt: new Date(),
-          recordsAdded: fedrampAdded,
-          recordsUpdated: fedrampUpdated,
-          recordsFailed: fedrampFailed,
-          status: 'success',
-        },
-      })
-
-      summary.fedramp = { added: fedrampAdded, updated: fedrampUpdated, failed: fedrampFailed }
     } catch (err) {
       console.error('[ATO] FedRAMP sync failed:', err)
       summary.fedramp = { error: err instanceof Error ? err.message : String(err) }
 
       await prisma.atoSyncLog.upsert({
         where: { source: 'fedramp' },
-        create: {
-          source: 'fedramp',
-          lastSyncAt: new Date(),
-          recordsFailed: fedrampFailed,
-          status: 'failed',
-        },
-        update: {
-          lastSyncAt: new Date(),
-          recordsFailed: fedrampFailed,
-          status: 'failed',
-        },
+        create: { source: 'fedramp', lastSyncAt: new Date(), recordsFailed: 0, status: 'failed' },
+        update: { lastSyncAt: new Date(), status: 'failed' },
       })
     }
 

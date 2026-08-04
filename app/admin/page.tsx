@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react'
 import TopNav from '@/components/layout/TopNav'
 import BottomBar from '@/components/layout/BottomBar'
 import SearchCommand from '@/components/layout/SearchCommand'
+import AtoMatchReview from '@/components/panels/AtoMatchReview'
 import { useAppStore } from '@/lib/store'
 
 // --- Types ---
@@ -412,6 +413,9 @@ export default function AdminPage() {
 
         {/* Content */}
         <div className="flex-1 overflow-auto p-4 md:p-6 space-y-8">
+
+          {/* Unmatched ATO vendor names awaiting an operator decision */}
+          <AtoMatchReview />
 
           {/* Sync Status Cards */}
           <section>

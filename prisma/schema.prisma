@@ -52,6 +52,9 @@ model Entity {
   agencyContracts     Contract[]   @relation("ContractAgency")
   fundingRounds       FundingRound[]
   newsItems           NewsItemEntity[]
+  fedrampAuths        FedrampAuthorization[] @relation("FedrampEntity")
+  dodProvisionalAuths DodProvisionalAuth[]   @relation("DodPaEntity")
+  emassAuths          EmassAuthorization[]   @relation("EmassEntity")
 }
 
 model Connection {
@@ -360,15 +363,29 @@ model FedrampAuthorization {
   serviceDescription String?
   website            String?
   logo               String?
+  /// UEI as published in the FedRAMP feed — a strong key for entity resolution,
+  /// far more reliable than matching on company name.
+  uei                String?
+  /// Small-business flag as published by FedRAMP. Independent of
+  /// Entity.businessSize, which comes from SAM and requires enrichment to run.
+  smallBusiness      Boolean?
+  /// Resolved from cspName by lib/match/ato-entity.ts. Nullable because not
+  /// every CSP in the FedRAMP marketplace exists as a tracked Entity.
+  entityId           String?
   lastSynced         DateTime  @default(now())
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
+
+  entity Entity? @relation("FedrampEntity", fields: [entityId], references: [id])
 
   @@index([status])
   @@index([impactLevel])
   @@index([cspName])
   @@index([sponsoringAgency])
   @@index([expirationDate])
+  @@index([entityId])
+  @@index([uei])
+  @@index([smallBusiness])
 }
 
 model DodProvisionalAuth {
@@ -381,13 +398,18 @@ model DodProvisionalAuth {
   sponsorComponent String?
   conditions       String?
   source           String    @default("seed") // seed, manual, scraped
+  /// Resolved from cspName by lib/match/ato-entity.ts.
+  entityId         String?
   lastSynced       DateTime  @default(now())
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
+  entity Entity? @relation("DodPaEntity", fields: [entityId], references: [id])
+
   @@unique([csoName, cspName, impactLevel])
   @@index([impactLevel])
   @@index([cspName])
+  @@index([entityId])
 }
 
 model EmassAuthorization {
@@ -407,15 +429,43 @@ model EmassAuthorization {
   cloudProvider       String?
   source              String    @default("manual")
   importBatchId       String?
+  /// Resolved from cloudProvider (falling back to systemName) by
+  /// lib/match/ato-entity.ts.
+  entityId            String?
   lastSynced          DateTime  @default(now())
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
+
+  entity Entity? @relation("EmassEntity", fields: [entityId], references: [id])
 
   @@unique([systemName, component])
   @@index([component])
   @@index([impactLevel])
   @@index([expirationDate])
   @@index([authorizationType])
+  @@index([entityId])
+}
+
+/// Names from the ATO feeds that the matcher could not confidently resolve to
+/// an Entity. Surfaced in /admin so an operator can resolve them by hand;
+/// aggregated by normalized name so a CSP with 40 offerings is one review item.
+model AtoMatchReview {
+  id               String   @id @default(uuid())
+  sourceType       String // FEDRAMP | DOD_PA | EMASS
+  sourceName       String // raw cspName / cloudProvider as it appears in the feed
+  normalizedName   String
+  recordCount      Int      @default(1)
+  status           String   @default("PENDING") // PENDING | RESOLVED | IGNORED
+  resolvedEntityId String?
+  /// JSON array of near-misses: [{entityId, name, slug, score, method}]
+  suggestions      String   @default("[]")
+  lastSeenAt       DateTime @default(now())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([sourceType, normalizedName])
+  @@index([status])
+  @@index([sourceType])
 }
 
 model AtoCompany {

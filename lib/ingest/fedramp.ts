@@ -26,6 +26,63 @@ function parseDate(value: unknown): Date | null {
   return isNaN(d.getTime()) ? null : d
 }
 
+/**
+ * Parses the FedRAMP `annual_assessment` field into the next date the
+ * assessment is due.
+ *
+ * The field is almost always a bare month/day recurrence — `"09/30"`, `"12/1"` —
+ * not a full date, because the assessment falls on the same anniversary every
+ * year. A naive `new Date("09/30")` yields September 2001, which is how the
+ * column ends up full of two-decade-old "expiry" dates that look real to every
+ * downstream consumer.
+ *
+ * A minority of rows do carry a full ISO datetime, so both shapes are handled.
+ *
+ * The returned value is relative to `now` and is recomputed on every sync,
+ * which is the correct behaviour for a recurring obligation: once this year's
+ * assessment date passes, the next one is a year out.
+ *
+ * NOTE: FedRAMP authorizations do not hard-expire on a date. Continuous
+ * monitoring means an authorization lapses if the annual assessment isn't met,
+ * so this is the operative planning date — label it as an assessment due date
+ * in any user-facing copy, not as an expiration.
+ */
+export function parseAnnualAssessment(value: unknown, now = new Date()): Date | null {
+  if (value === null || value === undefined) return null
+  const s = String(value).trim()
+  if (!s || s === 'Continuous ATO') return null
+
+  // Full date form.
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+    const d = new Date(s)
+    return isNaN(d.getTime()) ? null : d
+  }
+
+  // Month/day recurrence form.
+  const match = s.match(/^(\d{1,2})\/(\d{1,2})$/)
+  if (!match) return null
+
+  const month = Number(match[1])
+  const day = Number(match[2])
+  if (month < 1 || month > 12 || day < 1 || day > 31) return null
+
+  const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+  const build = (year: number) => new Date(Date.UTC(year, month - 1, day))
+
+  let candidate = build(now.getUTCFullYear())
+  // Rejects impossible dates (02/30) that would silently roll into March.
+  if (candidate.getUTCMonth() !== month - 1) return null
+
+  if (candidate.getTime() < todayUtc) {
+    candidate = build(now.getUTCFullYear() + 1)
+    // Feb 29 in a following non-leap year rolls to Mar 1; step to the next
+    // leap year rather than reporting a date the assessment isn't due.
+    if (candidate.getUTCMonth() !== month - 1) return null
+  }
+
+  return candidate
+}
+
 // ---------------------------------------------------------------------------
 // Mapped product record (common output format)
 // ---------------------------------------------------------------------------
@@ -46,13 +103,17 @@ export interface MappedProduct {
   serviceDescription: string | null
   website: string | null
   logo: string | null
+  /** Only the GSA product feed carries these; the ATO export omits them. */
+  uei?: string | null
+  smallBusiness?: boolean | null
 }
 
 // ---------------------------------------------------------------------------
 // Format 1: GSA marketplace-fedramp-gov-data (product-level)
 // Fields: id, csp, cso, status, impact_level, service_model, deployment_model,
-//         auth_date, auth_type, independent_assessor, agency_authorizations,
-//         service_desc, website, logo, partnering_agency
+//         auth_date, annual_assessment, auth_type, independent_assessor,
+//         agency_authorizations, service_desc, website, logo,
+//         partnering_agency, uei, small_business
 // ---------------------------------------------------------------------------
 interface GsaProductRecord {
   id: string
@@ -63,6 +124,12 @@ interface GsaProductRecord {
   service_model?: string[]
   deployment_model?: string
   auth_date?: string
+  /**
+   * The annual assessment due date. FedRAMP has no explicit "expires on" field —
+   * continuous monitoring means an authorization lapses if the annual assessment
+   * isn't met, so this date is the operative expiry for planning purposes.
+   */
+  annual_assessment?: string
   auth_type?: string
   independent_assessor?: string
   agency_authorizations?: Array<{ agency: string }> | string[] | null
@@ -70,6 +137,8 @@ interface GsaProductRecord {
   website?: string
   logo?: string
   partnering_agency?: string
+  uei?: string
+  small_business?: boolean | string
 }
 
 function mapGsaProductRecord(r: GsaProductRecord): MappedProduct {
@@ -91,7 +160,12 @@ function mapGsaProductRecord(r: GsaProductRecord): MappedProduct {
     serviceModel: JSON.stringify(r.service_model || []),
     deploymentModel: r.deployment_model || null,
     authorizationDate: parseDate(r.auth_date),
-    expirationDate: null,
+    // Was hardcoded null, which silently emptied the column and disabled every
+    // expiry-driven feature (/api/ato/expiring, the ATO_EXPIRING alert rule,
+    // the compliance expiry filter and insight). The cron route's own inline
+    // mapping read the field but ran it through a plain `new Date()`, which
+    // turns the usual "09/30" recurrence into September 2001.
+    expirationDate: parseAnnualAssessment(r.annual_assessment),
     sponsoringAgency: r.partnering_agency || null,
     leveragingAgencies: JSON.stringify(leveragingAgencies),
     assessorName: r.independent_assessor || null,
@@ -99,6 +173,15 @@ function mapGsaProductRecord(r: GsaProductRecord): MappedProduct {
     serviceDescription: r.service_desc || null,
     website: r.website || null,
     logo: r.logo || null,
+    uei: r.uei?.trim() || null,
+    // The feed sends this as a boolean in some rows and a "true"/"Yes" string
+    // in others, so normalize rather than trusting the type.
+    smallBusiness:
+      typeof r.small_business === 'boolean'
+        ? r.small_business
+        : typeof r.small_business === 'string'
+          ? /^(true|yes|y|1)$/i.test(r.small_business.trim())
+          : null,
   }
 }
 

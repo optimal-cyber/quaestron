@@ -13,6 +13,8 @@
     "admin:promote": "npx tsx scripts/promote-admin.ts",
     "migrate:turso:auth": "npx tsx prisma/migrate-turso-auth.ts",
     "migrate:turso:alerts": "npx tsx prisma/migrate-turso-alerts.ts",
+    "migrate:turso:compliance": "npx tsx prisma/migrate-turso-compliance.ts",
+    "backfill:ato-entities": "npx tsx prisma/backfill-ato-entities.ts",
     "sync": "npx tsx -e \"fetch('http://localhost:3000/api/sync/surveillance-watch', {method:'POST'}).then(r=>r.json()).then(console.log)\""
   },
   "prisma": {

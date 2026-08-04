@@ -34,6 +34,7 @@ export interface FedrampChange {
   packageId: string
   csoName: string
   cspName: string
+  entityId: string | null
   previous: { status: string; impactLevel: string | null }
   current: { status: string; impactLevel: string | null }
 }
@@ -147,7 +148,11 @@ function matchesKeyword(index: TargetIndex, ...fields: (string | null | undefine
   return false
 }
 
-/** Name-based ATO↔entity matching. Phase 3 replaces this with real FKs. */
+/**
+ * Name-based ATO↔entity matching, now only a FALLBACK for authorization rows
+ * whose `entityId` the Phase 3 matcher declined to set. Linked rows match by FK
+ * above; this handles the residue the matcher refused to guess at.
+ */
 function matchesWatchedName(index: TargetIndex, ...names: (string | null | undefined)[]): boolean {
   if (index.entityNames.length === 0) return false
   for (const name of names) {
@@ -181,25 +186,37 @@ export async function detectChanges(scope: {
   cspNames: Set<string>
   packageIds: Set<string>
 }): Promise<{ fedrampChanges: FedrampChange[]; riskFlagChanges: RiskFlagChange[] }> {
-  const fedrampChanges = await detectFedrampChanges(scope.packageIds, scope.cspNames)
+  const fedrampChanges = await detectFedrampChanges(
+    scope.packageIds,
+    scope.cspNames,
+    scope.entityIds
+  )
   const riskFlagChanges = await detectRiskFlagChanges(scope.entityIds)
   return { fedrampChanges, riskFlagChanges }
 }
 
 async function detectFedrampChanges(
   packageIds: Set<string>,
-  cspNames: Set<string>
+  cspNames: Set<string>,
+  entityIds: Set<string>
 ): Promise<FedrampChange[]> {
-  if (packageIds.size === 0 && cspNames.size === 0) return []
+  if (packageIds.size === 0 && cspNames.size === 0 && entityIds.size === 0) return []
 
-  // Name matching is normalized in JS, so fetch by packageId and let the
-  // normalized-name pass filter the rest.
+  // Phase 3 backfilled entityId onto these rows, so a watched ENTITY resolves by
+  // FK. The normalized-name pass stays as a fallback for rows the matcher has
+  // not linked yet (it deliberately refuses ambiguous names rather than guess).
   const rows = await prisma.fedrampAuthorization.findMany({
-    select: { packageId: true, csoName: true, cspName: true, status: true, impactLevel: true },
+    select: {
+      packageId: true, csoName: true, cspName: true, status: true,
+      impactLevel: true, entityId: true,
+    },
   })
 
   const relevant = rows.filter(
-    (r) => packageIds.has(r.packageId) || cspNames.has(normalizeVendorName(r.cspName))
+    (r) =>
+      packageIds.has(r.packageId) ||
+      (r.entityId !== null && entityIds.has(r.entityId)) ||
+      (r.entityId === null && cspNames.has(normalizeVendorName(r.cspName)))
   )
   if (relevant.length === 0) return []
 
@@ -224,6 +241,7 @@ async function detectFedrampChanges(
         packageId: row.packageId,
         csoName: row.csoName,
         cspName: row.cspName,
+        entityId: row.entityId,
         previous: { status: prevStatus, impactLevel: prevLevel || null },
         current: { status: row.status, impactLevel: row.impactLevel },
       })
@@ -423,7 +441,9 @@ export async function evaluateFedrampStatusChange(
 
   for (const change of data.fedrampChanges) {
     const matched =
-      index.packageIds.has(change.packageId) || matchesWatchedName(index, change.cspName)
+      index.packageIds.has(change.packageId) ||
+      (change.entityId !== null && index.entityIds.has(change.entityId)) ||
+      (change.entityId === null && matchesWatchedName(index, change.cspName))
     if (!matched) continue
 
     const statusMoved = change.previous.status !== change.current.status
@@ -467,21 +487,21 @@ export async function evaluateAtoExpiring(
       where: { expirationDate: window },
       select: {
         packageId: true, csoName: true, cspName: true, impactLevel: true,
-        expirationDate: true, sponsoringAgency: true,
+        expirationDate: true, sponsoringAgency: true, entityId: true,
       },
     }),
     prisma.dodProvisionalAuth.findMany({
       where: { paExpiration: window },
       select: {
         id: true, csoName: true, cspName: true, impactLevel: true,
-        paExpiration: true, sponsorComponent: true,
+        paExpiration: true, sponsorComponent: true, entityId: true,
       },
     }),
     prisma.emassAuthorization.findMany({
       where: { expirationDate: window },
       select: {
         id: true, systemName: true, component: true, authorizationType: true,
-        impactLevel: true, expirationDate: true, cloudProvider: true,
+        impactLevel: true, expirationDate: true, cloudProvider: true, entityId: true,
       },
     }),
   ])
@@ -494,7 +514,8 @@ export async function evaluateAtoExpiring(
     if (!r.expirationDate) continue
     const matched =
       index.packageIds.has(r.packageId) ||
-      matchesWatchedName(index, r.cspName) ||
+      (r.entityId !== null && index.entityIds.has(r.entityId)) ||
+      (r.entityId === null && matchesWatchedName(index, r.cspName)) ||
       matchesAgency(index, r.sponsoringAgency)
     if (!matched) continue
 
@@ -519,7 +540,9 @@ export async function evaluateAtoExpiring(
   for (const r of dodPa) {
     if (!r.paExpiration) continue
     const matched =
-      matchesWatchedName(index, r.cspName) || matchesAgency(index, r.sponsorComponent)
+      (r.entityId !== null && index.entityIds.has(r.entityId)) ||
+      (r.entityId === null && matchesWatchedName(index, r.cspName)) ||
+      matchesAgency(index, r.sponsorComponent)
     if (!matched) continue
 
     const remaining = daysUntil(r.paExpiration)
@@ -543,7 +566,9 @@ export async function evaluateAtoExpiring(
   for (const r of emass) {
     if (!r.expirationDate) continue
     const matched =
-      matchesWatchedName(index, r.cloudProvider) || matchesAgency(index, r.component)
+      (r.entityId !== null && index.entityIds.has(r.entityId)) ||
+      (r.entityId === null && matchesWatchedName(index, r.cloudProvider)) ||
+      matchesAgency(index, r.component)
     if (!matched) continue
 
     const remaining = daysUntil(r.expirationDate)
