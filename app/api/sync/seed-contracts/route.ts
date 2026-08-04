@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { requireAdminRequest } from '@/lib/admin-auth'
 
 const SEARCH_COMPANIES = [
   'Palantir', 'Anduril', 'L3Harris', 'Raytheon', 'Northrop Grumman',
@@ -64,11 +65,8 @@ async function findOrCreateAgency(agencyName: string): Promise<string | null> {
 
 // POST to trigger manually, GET for cron
 export async function POST(request: NextRequest) {
-  // Optional auth
-  const secret = request.headers.get('x-cron-secret') || request.nextUrl.searchParams.get('secret')
-  if (process.env.CRON_SECRET && secret !== process.env.CRON_SECRET) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const admin = await requireAdminRequest(request, { allowCronSecret: true })
+  if (!admin.ok) return admin.response
 
   const start = Date.now()
   let totalContracts = 0

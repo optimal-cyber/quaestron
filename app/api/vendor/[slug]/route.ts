@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db'
 import { syncVendor } from '@/lib/vendor/sync-vendor'
 import { buildDossier } from '@/lib/vendor/build-dossier'
 import { withTimeout } from '@/lib/http/fetch-with-retry'
+import { checkRateLimit, clientId, enforceRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 
 // Allow up to 60s for an on-demand build (Pro plans); the sync is internally
 // time-boxed so we return a (possibly partial) dossier rather than hang.
@@ -18,15 +19,36 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  const limited = await enforceRateLimit(request, RATE_LIMITS.vendor)
+  if (limited.response) return limited.response
+
   const { slug } = await params
   const sp = request.nextUrl.searchParams
   const nameParam = sp.get('name') || undefined
-  const allowSync = sp.get('sync') !== '0'
+  let allowSync = sp.get('sync') !== '0'
 
   let entity = await prisma.entity.findFirst({
     where: { OR: [{ slug }, { id: slug }] },
     select: { id: true, name: true, uei: true, vendorSyncedAt: true },
   })
+
+  // A live build hits SAM/USASpending/SBIR, so it gets a second, much tighter
+  // budget. Over that budget we degrade to cached data; with nothing cached
+  // there is nothing to serve, so say so rather than 404 on a vendor we know.
+  const wouldSync = allowSync && (!entity || !entity.vendorSyncedAt)
+  if (wouldSync) {
+    const syncBudget = await checkRateLimit(RATE_LIMITS.vendorSync, clientId(request))
+    if (!syncBudget.allowed) {
+      if (!entity) {
+        const retryAfter = Math.max(1, Math.ceil((syncBudget.resetAt - Date.now()) / 1000))
+        return NextResponse.json(
+          { error: 'Enrichment rate limit exceeded — try again shortly' },
+          { status: 429, headers: { 'Retry-After': String(retryAfter) } }
+        )
+      }
+      allowSync = false
+    }
+  }
 
   try {
     // Build on-demand when the vendor is unknown or has never been enriched.
@@ -61,5 +83,5 @@ export async function GET(
     return NextResponse.json({ error: 'Vendor not found' }, { status: 404 })
   }
 
-  return NextResponse.json(dossier)
+  return NextResponse.json(dossier, { headers: limited.headers })
 }

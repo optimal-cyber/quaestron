@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { seedVendorUniverse } from '@/lib/ingest/vendor-universe'
+import { requireAdminRequest } from '@/lib/admin-auth'
 
 /**
  * Admin-triggered vendor-universe seed. Creates an Entity for every FedRAMP CSP
@@ -7,13 +8,8 @@ import { seedVendorUniverse } from '@/lib/ingest/vendor-universe'
  * Guarded by SYNC_API_KEY (skipped when unset, for local dev).
  */
 export async function POST(request: NextRequest) {
-  const apiKey = process.env.SYNC_API_KEY
-  if (apiKey) {
-    const auth = request.headers.get('Authorization')
-    if (auth !== `Bearer ${apiKey}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-  }
+  const admin = await requireAdminRequest(request)
+  if (!admin.ok) return admin.response
 
   try {
     const result = await seedVendorUniverse()

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import AuthMenu from './AuthMenu'
 
 const navItems = [
   { href: '/map', label: 'MAP' },
@@ -73,6 +74,8 @@ export default function TopNav({ onSearchOpen }: { onSearchOpen?: () => void }) 
             NEWSLETTER
           </a>
 
+          <AuthMenu />
+
           {/* Mobile hamburger */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
@@ -123,6 +126,13 @@ export default function TopNav({ onSearchOpen }: { onSearchOpen?: () => void }) 
             >
               NEWSLETTER
             </a>
+            <Link
+              href="/signin"
+              onClick={() => setMenuOpen(false)}
+              className="px-4 py-3 text-sm font-mono tracking-wider text-muted-foreground hover:bg-surface-hover hover:text-foreground rounded transition-colors"
+            >
+              ACCOUNT
+            </Link>
           </div>
         </div>
       )}

@@ -10,12 +10,15 @@
     "lint": "eslint",
     "seed": "npx tsx prisma/seed.ts",
     "seed:sbir": "npx tsx prisma/seed-sbir.ts",
+    "admin:promote": "npx tsx scripts/promote-admin.ts",
+    "migrate:turso:auth": "npx tsx prisma/migrate-turso-auth.ts",
     "sync": "npx tsx -e \"fetch('http://localhost:3000/api/sync/surveillance-watch', {method:'POST'}).then(r=>r.json()).then(console.log)\""
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.11.3",
     "@libsql/client": "^0.17.0",
     "@prisma/adapter-libsql": "^7.5.0",
     "@prisma/client": "^7.5.0",
@@ -25,11 +28,14 @@
     "d3-sankey": "^0.12.3",
     "framer-motion": "^12.35.2",
     "next": "16.1.6",
+    "next-auth": "^5.0.0-beta.32",
     "prisma": "^7.5.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "resend": "^6.18.1",
     "three": "^0.183.2",
     "xlsx": "^0.18.5",
+    "zod": "^4.4.3",
     "zustand": "^5.0.11"
   },
   "devDependencies": {

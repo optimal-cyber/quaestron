@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { syncVendor } from '@/lib/vendor/sync-vendor'
+import { requireCronRequest } from '@/lib/admin-auth'
 
 /**
  * Weekly vendor refresh — keeps SBIR/STTR, federal contracts, SAM registration
@@ -13,10 +14,8 @@ import { syncVendor } from '@/lib/vendor/sync-vendor'
 export const maxDuration = 300
 
 export async function POST(request: NextRequest) {
-  const auth = request.headers.get('Authorization')
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const cron = requireCronRequest(request)
+  if (!cron.ok) return cron.response
 
   const sp = request.nextUrl.searchParams
   const limit = Math.min(100, Math.max(1, parseInt(sp.get('limit') || '25')))

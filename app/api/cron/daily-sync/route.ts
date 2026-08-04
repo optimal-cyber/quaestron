@@ -1,17 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { fetchLatestDcasXlsx, parseDcasWorkbook, syncDisaData } from '@/lib/ingest/disa'
+import { requireCronRequest } from '@/lib/admin-auth'
 
 const FEDRAMP_DATA_URL =
   'https://raw.githubusercontent.com/GSA/marketplace-fedramp-gov-data/main/data.json'
 
 export async function POST(request: NextRequest) {
-  try {
-    const authHeader = request.headers.get('Authorization')
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+  const cron = requireCronRequest(request)
+  if (!cron.ok) return cron.response
 
+  try {
     const summary: Record<string, unknown> = {}
 
     // ── Step 1: FedRAMP sync from GitHub ──────────────────────────────

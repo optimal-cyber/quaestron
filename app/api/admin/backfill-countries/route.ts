@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { requireAdminRequest } from '@/lib/admin-auth'
 
 // Known HQ countries for companies in the system (alpha2 codes)
 // Defaults to US if not listed — most tracked entities are US defense contractors
@@ -19,14 +20,8 @@ const KNOWN_HQ: Record<string, string> = {
 }
 
 export async function POST(request: NextRequest) {
-  const syncKey = process.env.SYNC_API_KEY || process.env.CRON_SECRET
-  if (syncKey) {
-    const secret = request.headers.get('Authorization')?.replace(/^Bearer\s+/i, '')
-      || request.nextUrl.searchParams.get('secret')
-    if (secret !== syncKey) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-  }
+  const admin = await requireAdminRequest(request, { allowCronSecret: true })
+  if (!admin.ok) return admin.response
 
   // Find entities without a headquartersCountry
   const orphans = await prisma.entity.findMany({

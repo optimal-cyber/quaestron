@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { requireAdminRequest } from '@/lib/admin-auth'
 
 /**
  * Broader federal contracts sync from USAspending.gov
@@ -128,10 +129,8 @@ async function findOrCreateAgency(agencyName: string): Promise<string | null> {
 }
 
 export async function POST(request: NextRequest) {
-  const secret = request.headers.get('x-cron-secret') || request.nextUrl.searchParams.get('secret')
-  if (process.env.CRON_SECRET && secret !== process.env.CRON_SECRET) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const admin = await requireAdminRequest(request, { allowCronSecret: true })
+  if (!admin.ok) return admin.response
 
   // Optional: ?company=SpaceX to sync just one
   const singleCompany = request.nextUrl.searchParams.get('company')

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { syncVendor } from '@/lib/vendor/sync-vendor'
+import { requireAdminRequest } from '@/lib/admin-auth'
 
 export const maxDuration = 60
 
@@ -13,13 +14,8 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
-  const apiKey = process.env.SYNC_API_KEY
-  if (apiKey) {
-    const auth = request.headers.get('Authorization')
-    if (auth !== `Bearer ${apiKey}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-  }
+  const admin = await requireAdminRequest(request)
+  if (!admin.ok) return admin.response
 
   const { slug } = await params
   const sp = request.nextUrl.searchParams

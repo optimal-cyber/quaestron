@@ -1,18 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { loadFromFile, fetchFromGitHub, syncFedrampData, type MappedProduct } from '@/lib/ingest/fedramp'
+import { requireAdminRequest } from '@/lib/admin-auth'
 
 const LOG_PREFIX = '[ATO-SYNC]'
 
 export async function POST(request: NextRequest) {
-  // Auth check
-  const syncKey = process.env.SYNC_API_KEY
-  if (syncKey) {
-    const authHeader = request.headers.get('Authorization')
-    const token = authHeader?.replace(/^Bearer\s+/i, '')
-    if (token !== syncKey) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-  }
+  const admin = await requireAdminRequest(request)
+  if (!admin.ok) return admin.response
 
   try {
     let body: { filePath?: string; records?: unknown[] } = {}

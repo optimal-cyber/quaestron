@@ -6,18 +6,13 @@ import {
   parseDcasWorkbook,
   syncDisaData,
 } from '@/lib/ingest/disa'
+import { requireAdminRequest } from '@/lib/admin-auth'
 
 const LOG_PREFIX = '[DISA-SYNC]'
 
 export async function POST(request: NextRequest) {
-  const syncKey = process.env.SYNC_API_KEY
-  if (syncKey) {
-    const authHeader = request.headers.get('Authorization')
-    const token = authHeader?.replace(/^Bearer\s+/i, '')
-    if (token !== syncKey) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-  }
+  const admin = await requireAdminRequest(request)
+  if (!admin.ok) return admin.response
 
   try {
     let body: { url?: string; filePath?: string; daysBack?: number } = {}

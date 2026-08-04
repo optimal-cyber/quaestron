@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { requireAdminRequest } from '@/lib/admin-auth'
 
 /**
  * Lobbying disclosure sync from the Senate Lobbying Disclosure Act (LDA) API.
@@ -127,10 +128,8 @@ async function matchEntity(registrantName: string): Promise<string | null> {
 }
 
 export async function POST(request: NextRequest) {
-  const secret = request.headers.get('x-cron-secret') || request.nextUrl.searchParams.get('secret')
-  if (process.env.CRON_SECRET && secret !== process.env.CRON_SECRET) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const admin = await requireAdminRequest(request, { allowCronSecret: true })
+  if (!admin.ok) return admin.response
 
   // Optional: ?company=Palantir or ?year=2024
   const singleCompany = request.nextUrl.searchParams.get('company')

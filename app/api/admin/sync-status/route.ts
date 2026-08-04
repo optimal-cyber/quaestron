@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { requireAdminRequest } from '@/lib/admin-auth'
 
 // Sync endpoints surfaced in the admin panel. Each maps to a POST handler
 // at /api/admin/sync/<source>. Listed here so SYNC NOW buttons render even
@@ -7,15 +8,10 @@ import { prisma } from '@/lib/db'
 const KNOWN_SOURCES = ['fedramp', 'disa', 'disa-seed'] as const
 
 export async function GET(request: NextRequest) {
-  try {
-    const apiKey = process.env.SYNC_API_KEY
-    if (apiKey) {
-      const authHeader = request.headers.get('Authorization')
-      if (authHeader !== `Bearer ${apiKey}`) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-      }
-    }
+  const admin = await requireAdminRequest(request)
+  if (!admin.ok) return admin.response
 
+  try {
     const [logs, fedramp, dodPa, emass, contracts, companies] = await Promise.all([
       prisma.atoSyncLog.findMany({
         orderBy: { lastSyncAt: 'desc' },

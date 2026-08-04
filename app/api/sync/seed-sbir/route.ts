@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { requireAdminRequest } from '@/lib/admin-auth'
 
 // USAspending uses legal entity names, not trade names
 // Map our display names to search terms for the API
@@ -204,10 +205,8 @@ async function findOrCreateAgency(agencyName: string): Promise<string | null> {
 }
 
 export async function POST(request: NextRequest) {
-  const secret = request.headers.get('x-cron-secret') || request.nextUrl.searchParams.get('secret')
-  if (process.env.CRON_SECRET && secret !== process.env.CRON_SECRET) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const admin = await requireAdminRequest(request, { allowCronSecret: true })
+  if (!admin.ok) return admin.response
 
   // Support batching: ?batch=0 through ?batch=4, or omit for all
   const batchParam = request.nextUrl.searchParams.get('batch')

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { normalizeApolloOrg, type ApolloFunding } from '@/lib/clients/apollo'
 import { persistApolloFunding } from '@/lib/vendor/funding-apollo'
+import { requireAdminRequest } from '@/lib/admin-auth'
 
 /**
  * Ingest Apollo.io enrichment for one vendor. Because the Apollo MCP tool is
@@ -19,13 +20,8 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
-  const apiKey = process.env.SYNC_API_KEY
-  if (apiKey) {
-    const auth = request.headers.get('Authorization')
-    if (auth !== `Bearer ${apiKey}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-  }
+  const admin = await requireAdminRequest(request)
+  if (!admin.ok) return admin.response
 
   const { slug } = await params
   const entity = await prisma.entity.findFirst({

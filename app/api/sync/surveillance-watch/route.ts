@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { runFullSync } from '@/lib/sync/sync-entities'
+import { requireCronRequest } from '@/lib/admin-auth'
 
-// Allow GET for cron job triggers (e.g., Vercel Cron, external cron services)
-// Secured by an optional CRON_SECRET env var
+// Allow GET for cron job triggers (e.g., Vercel Cron, external cron services).
+// Secured by CRON_SECRET (open only in local dev, when the var is unset).
 export async function GET(request: NextRequest) {
-  // Optional: verify cron secret for external triggers
-  const authHeader = request.headers.get('authorization')
-  const cronSecret = process.env.CRON_SECRET
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const cron = requireCronRequest(request)
+  if (!cron.ok) return cron.response
 
   try {
     const result = await runFullSync()

@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { requireAdminRequest } from '@/lib/admin-auth'
 
 export async function POST(request: NextRequest) {
-  try {
-    const apiKey = process.env.SYNC_API_KEY
-    if (apiKey) {
-      const authHeader = request.headers.get('Authorization')
-      if (authHeader !== `Bearer ${apiKey}`) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-      }
-    }
+  const admin = await requireAdminRequest(request)
+  if (!admin.ok) return admin.response
 
+  try {
     const body = await request.json()
     const { records } = body
 

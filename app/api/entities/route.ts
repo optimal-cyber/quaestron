@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { enforceRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest) {
+  const limited = await enforceRateLimit(request, RATE_LIMITS.entities)
+  if (limited.response) return limited.response
+
   const searchParams = request.nextUrl.searchParams
   const search = searchParams.get('search') || ''
   const types = searchParams.get('types')?.split(',').filter(Boolean) || []
@@ -66,5 +70,5 @@ export async function GET(request: NextRequest) {
     }
   })
 
-  return NextResponse.json({ entities: result, total })
+  return NextResponse.json({ entities: result, total }, { headers: limited.headers })
 }

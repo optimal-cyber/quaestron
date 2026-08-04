@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { enforceRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 
 /**
  * Vendor directory — searchable/filterable list of vendors for acquisition
@@ -7,6 +8,9 @@ import { prisma } from '@/lib/db'
  * syncVendor); the per-vendor dossier holds the full detail.
  */
 export async function GET(request: NextRequest) {
+  const limited = await enforceRateLimit(request, RATE_LIMITS.vendor)
+  if (limited.response) return limited.response
+
   const sp = request.nextUrl.searchParams
   const search = sp.get('search') || ''
   const size = sp.get('size') || '' // SMALL
@@ -59,7 +63,7 @@ export async function GET(request: NextRequest) {
     country: r.headquartersCountry,
   }))
 
-  return NextResponse.json({ vendors, total, page, limit })
+  return NextResponse.json({ vendors, total, page, limit }, { headers: limited.headers })
 }
 
 function safeArr(v: string | null): string[] {

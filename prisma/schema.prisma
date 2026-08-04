@@ -172,6 +172,76 @@ model Submission {
   updatedAt       DateTime @updatedAt
 }
 
+// ─── Auth / Accounts (Auth.js v5 + Prisma adapter) ─────────────────
+
+model User {
+  id              String    @id @default(uuid())
+  name            String?
+  email           String?   @unique
+  emailVerified   DateTime?
+  image           String?
+  // ─── Iron Echelon fields ───
+  tier            String    @default("FREE") // FREE | PRO | TEAM
+  role            String    @default("USER") // USER | ADMIN
+  stripeCustomerId String?  @unique
+  alertEmailOptIn Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+}
+
+model Account {
+  id                       String  @id @default(uuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String?
+  access_token             String?
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String?
+  session_state            String?
+  refresh_token_expires_in Int?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── Rate limiting (LibSQL-backed fixed window) ────────────────────
+
+model RateLimit {
+  key       String   @id // "<bucket>:<identifier>:<windowIndex>"
+  count     Int      @default(0)
+  expiresAt DateTime
+
+  @@index([expiresAt])
+}
+
 // ─── ATO Intelligence Models ───────────────────────────────────────
 
 model FedrampAuthorization {

@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { enforceRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest) {
+  const limited = await enforceRateLimit(request, RATE_LIMITS.search)
+  if (limited.response) return limited.response
+
   const query = request.nextUrl.searchParams.get('q') || ''
 
   if (query.length < 2) {
-    return NextResponse.json({ results: [] })
+    return NextResponse.json({ results: [] }, { headers: limited.headers })
   }
 
   const entities = await prisma.entity.findMany({
@@ -33,5 +37,5 @@ export async function GET(request: NextRequest) {
     category: 'entity' as const,
   }))
 
-  return NextResponse.json({ results })
+  return NextResponse.json({ results }, { headers: limited.headers })
 }
