@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { syncVendor } from '@/lib/vendor/sync-vendor'
 import { requireCronRequest } from '@/lib/admin-auth'
+import { runAlertEngine } from '@/lib/alerts/engine'
+import { sendDigests } from '@/lib/alerts/digest'
 
 /**
  * Weekly vendor refresh — keeps SBIR/STTR, federal contracts, SAM registration
@@ -63,6 +65,25 @@ export async function POST(request: NextRequest) {
     },
   })
 
+  // Weekly-cadence rules evaluate after the vendor refresh above, so risk-flag
+  // and contract changes from this run are visible to them. Both steps are
+  // isolated — an alert failure must not fail a sync that already succeeded.
+  let userAlerts: unknown = null
+  try {
+    userAlerts = await runAlertEngine({ frequencies: ['WEEKLY'], lookbackDays: 8 })
+  } catch (e) {
+    console.error('[alerts] engine failed:', e)
+    userAlerts = { error: e instanceof Error ? e.message : String(e) }
+  }
+
+  let digest: unknown = null
+  try {
+    digest = await sendDigests('WEEKLY')
+  } catch (e) {
+    console.error('[alerts] weekly digest failed:', e)
+    digest = { error: e instanceof Error ? e.message : String(e) }
+  }
+
   return NextResponse.json({
     message: 'Weekly vendor sync complete',
     processed: vendors.length,
@@ -70,6 +91,8 @@ export async function POST(request: NextRequest) {
     failed,
     elapsed: `${((Date.now() - start) / 1000).toFixed(1)}s`,
     errors: errors.slice(0, 20),
+    userAlerts,
+    digest,
   })
 }
 

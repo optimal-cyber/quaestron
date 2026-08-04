@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import AuthMenu from './AuthMenu'
+import AlertsBadge from './AlertsBadge'
 
 const navItems = [
   { href: '/map', label: 'MAP' },
@@ -74,6 +75,9 @@ export default function TopNav({ onSearchOpen }: { onSearchOpen?: () => void }) 
             NEWSLETTER
           </a>
 
+          <div className="hidden sm:block">
+            <AlertsBadge />
+          </div>
           <AuthMenu />
 
           {/* Mobile hamburger */}
@@ -111,6 +115,14 @@ export default function TopNav({ onSearchOpen }: { onSearchOpen?: () => void }) 
               )
             })}
             <div className="border-t border-border my-2" />
+            <AlertsBadge mobile />
+            <Link
+              href="/watchlists"
+              onClick={() => setMenuOpen(false)}
+              className="px-4 py-3 text-sm font-mono tracking-wider text-muted-foreground hover:bg-surface-hover hover:text-foreground rounded transition-colors"
+            >
+              WATCHLISTS
+            </Link>
             <Link
               href="/submit"
               onClick={() => setMenuOpen(false)}

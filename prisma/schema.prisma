@@ -188,8 +188,11 @@ model User {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  accounts Account[]
-  sessions Session[]
+  accounts    Account[]
+  sessions    Session[]
+  watchlists  Watchlist[]
+  alertRules  AlertRule[]
+  alertEvents AlertEvent[]
 }
 
 model Account {
@@ -230,6 +233,101 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// ─── Watchlists & Alerts ───────────────────────────────────────────
+
+model Watchlist {
+  id        String   @id @default(uuid())
+  userId    String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items WatchlistItem[]
+  rules AlertRule[]
+
+  @@index([userId])
+}
+
+model WatchlistItem {
+  id          String   @id @default(uuid())
+  watchlistId String
+  targetType  String // ENTITY | FEDRAMP_CSO | AGENCY | KEYWORD | NAICS
+  targetId    String? // Entity.id when targetType = ENTITY
+  targetValue String? // packageId / agency name / keyword / NAICS code
+  /// Normalized targetId ?? targetValue. Exists solely to give the uniqueness
+  /// constraint a single non-null column to hang off.
+  targetKey   String
+  label       String? // display name captured at add time
+  createdAt   DateTime @default(now())
+
+  watchlist Watchlist @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
+
+  @@unique([watchlistId, targetType, targetKey])
+  @@index([watchlistId])
+  @@index([targetType, targetKey])
+}
+
+model AlertRule {
+  id          String    @id @default(uuid())
+  userId      String
+  watchlistId String?
+  ruleType    String // NEW_CONTRACT | FEDRAMP_STATUS_CHANGE | ATO_EXPIRING | NEW_SBIR_AWARD | RISK_FLAG_ADDED | NEWS_MENTION
+  params      String    @default("{}") // JSON: rule-specific options (minValue, days, …)
+  channel     String    @default("EMAIL") // EMAIL | IN_APP
+  frequency   String    @default("WEEKLY") // REALTIME | DAILY | WEEKLY
+  active      Boolean   @default(true)
+  lastRunAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  watchlist Watchlist?  @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
+  events    AlertEvent[]
+
+  @@index([userId])
+  @@index([active, frequency])
+  @@index([watchlistId])
+}
+
+model AlertEvent {
+  id        String    @id @default(uuid())
+  ruleId    String
+  userId    String
+  ruleType  String
+  title     String
+  body      String    @default("")
+  url       String?
+  /// Idempotency key — the unique constraint is what makes re-running an
+  /// evaluation over an overlapping lookback window a no-op.
+  dedupeKey String    @unique
+  entityId  String?
+  readAt    DateTime?
+  emailedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  rule AlertRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  user User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+  @@index([userId, createdAt])
+  @@index([ruleId])
+  @@index([emailedAt])
+}
+
+/// Last-seen values for change-detection rules. The cron overwrites source rows
+/// in place, so "what changed" can only be answered against a stored baseline.
+model AlertSnapshot {
+  id        String   @id @default(uuid())
+  kind      String // fedramp:status | entity:riskFlags
+  key       String // packageId / entityId
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@unique([kind, key])
+  @@index([kind])
 }
 
 // ─── Rate limiting (LibSQL-backed fixed window) ────────────────────

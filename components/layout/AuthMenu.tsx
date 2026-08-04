@@ -65,6 +65,20 @@ export default function AuthMenu() {
               {role === 'ADMIN' && <span className="text-accent-red ml-2">ADMIN</span>}
             </div>
           </div>
+          <Link
+            href="/watchlists"
+            onClick={() => setOpen(false)}
+            className="block px-3 py-2 font-mono text-[11px] tracking-wider text-muted-foreground hover:bg-surface-hover hover:text-foreground transition-colors"
+          >
+            WATCHLISTS
+          </Link>
+          <Link
+            href="/account"
+            onClick={() => setOpen(false)}
+            className="block px-3 py-2 font-mono text-[11px] tracking-wider text-muted-foreground hover:bg-surface-hover hover:text-foreground transition-colors"
+          >
+            ACCOUNT
+          </Link>
           {role === 'ADMIN' && (
             <Link
               href="/admin"

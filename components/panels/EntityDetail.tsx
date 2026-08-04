@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { ENTITY_TYPE_COLORS, ENTITY_TYPE_LABELS, type EntityType } from '@/lib/types'
 import { useAppStore } from '@/lib/store'
+import WatchButton from '@/components/WatchButton'
 
 interface Connection {
   id: string
@@ -221,6 +222,10 @@ export default function EntityDetail({
 
       {/* Content */}
       <div className="p-4 space-y-5">
+        <div className="flex justify-end">
+          <WatchButton targetType="ENTITY" targetId={entity.id} label={entity.name} compact />
+        </div>
+
         {/* Vendor dossier entry point (acquisition lens) */}
         <a
           href={`/vendor/${entity.slug}`}

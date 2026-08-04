@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { fetchLatestDcasXlsx, parseDcasWorkbook, syncDisaData } from '@/lib/ingest/disa'
 import { requireCronRequest } from '@/lib/admin-auth'
+import { runAlertEngine } from '@/lib/alerts/engine'
+import { sendDigests } from '@/lib/alerts/digest'
 
 const FEDRAMP_DATA_URL =
   'https://raw.githubusercontent.com/GSA/marketplace-fedramp-gov-data/main/data.json'
@@ -255,6 +257,24 @@ export async function POST(request: NextRequest) {
     } catch (err) {
       console.error('[ATO] Alert generation failed:', err)
       summary.alerts = { error: err instanceof Error ? err.message : String(err) }
+    }
+
+    // ── Step 4: User alert rules (REALTIME + DAILY) ───────────────────
+    // Runs after the refresh above so evaluators see today's data. Wrapped so a
+    // failure here never fails the sync that already succeeded.
+    try {
+      summary.userAlerts = await runAlertEngine({ frequencies: ['REALTIME', 'DAILY'] })
+    } catch (err) {
+      console.error('[alerts] engine failed:', err)
+      summary.userAlerts = { error: err instanceof Error ? err.message : String(err) }
+    }
+
+    // ── Step 5: Daily digest email ────────────────────────────────────
+    try {
+      summary.digest = await sendDigests('DAILY')
+    } catch (err) {
+      console.error('[alerts] daily digest failed:', err)
+      summary.digest = { error: err instanceof Error ? err.message : String(err) }
     }
 
     return NextResponse.json({

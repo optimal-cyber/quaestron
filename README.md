@@ -79,6 +79,9 @@ Supporting: `FederalContract`, `SamRegistration`, `LobbyingFiling`.
 
 Accounts: `User`, `Account`, `Session`, `VerificationToken`, `RateLimit`.
 
+Alerting: `Watchlist`, `WatchlistItem`, `AlertRule`, `AlertEvent`,
+`AlertSnapshot`.
+
 Several columns hold JSON-encoded arrays (`riskFlags`, `setAsides`,
 `agencyBreakdown`, `naicsCodes`, `sources`) — a deliberate tradeoff for SQLite.
 They are read-mostly and parsed in the API layer, not filtered in SQL.
@@ -132,6 +135,7 @@ npx prisma db push --url="file:./dev.db"
 | `npm run seed:sbir` | Seed SBIR/STTR awards |
 | `npm run admin:promote -- <email>` | Grant ADMIN (creates the user if absent); `--demote` to revoke |
 | `npm run migrate:turso:auth` | Apply the auth + rate-limit tables to production Turso |
+| `npm run migrate:turso:alerts` | Apply the watchlist + alert tables to production Turso |
 
 ---
 
@@ -233,8 +237,39 @@ See `.env.example` for the annotated list. The essentials:
 | Path | Schedule | Does |
 |---|---|---|
 | `/api/sync/surveillance-watch` | `0 6 * * *` | Entity/connection refresh |
-| `/api/cron/daily-sync` | `0 6 * * *` | FedRAMP + DISA ingest |
-| `/api/cron/weekly-sync` | `0 7 * * 1` | Rotating vendor re-enrichment |
+| `/api/cron/daily-sync` | `0 6 * * *` | FedRAMP + DISA ingest, then REALTIME/DAILY alert rules + daily digest |
+| `/api/cron/weekly-sync` | `0 7 * * 1` | Rotating vendor re-enrichment, then WEEKLY alert rules + weekly digest |
+
+---
+
+## Watchlists and alerts
+
+Users track targets (vendors, FedRAMP offerings, agencies, keywords, NAICS codes)
+on watchlists and attach alert rules to them. Rules are evaluated inside the
+existing cron routes after their data refresh — there is no separate alerting
+cron.
+
+| Rule type | Fires when |
+|---|---|
+| `NEW_CONTRACT` | A watched entity/agency/NAICS gets a new award or federal obligation |
+| `NEW_SBIR_AWARD` | A new SBIR/STTR award matches an entity, keyword, or agency |
+| `FEDRAMP_STATUS_CHANGE` | A watched offering's status or impact level moves |
+| `ATO_EXPIRING` | FedRAMP/DoD PA/eMASS expiry crosses 90/60/30/14/7 days |
+| `RISK_FLAG_ADDED` | A watched entity gains a risk flag |
+| `NEWS_MENTION` | A watched entity is linked to a newly ingested news item |
+
+New-row rules use a 7-day lookback with a unique `dedupeKey`, so a missed run
+self-heals without duplicating alerts. Change-detection rules diff against
+`AlertSnapshot` baselines, computed once per run before any rule evaluates —
+a first-seen key is recorded silently so a fresh deploy doesn't report the whole
+universe as changed.
+
+Tiers: Free gets 1 watchlist, 5 targets, weekly digest. Pro/Team get unlimited
+lists and targets plus daily and in-app alerts. "Realtime" means in-app on the
+next cron evaluation with no email batching — not sub-minute delivery.
+
+Email goes out through Resend. Without `RESEND_API_KEY` the in-app inbox still
+fills; digests skip with a logged reason.
 
 ---
 
@@ -258,7 +293,7 @@ shipped clients and are not to be broken.
 | Phase | Scope | Status |
 |---|---|---|
 | 1 | Auth, users, rate limiting, hardening | shipped |
-| 2 | Watchlists + alert engine | planned |
+| 2 | Watchlists + alert engine | shipped |
 | 3 | ATO ↔ contract crosswalk, `/compliance` | planned |
 | 4 | AI analyst (Claude tool use) | planned |
 | 5 | Stripe monetization, exports, `/data`, SEO | planned |

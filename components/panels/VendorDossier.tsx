@@ -1,6 +1,7 @@
 'use client'
 
 import type { VendorDossier as Dossier } from '@/lib/vendor/build-dossier'
+import WatchButton from '@/components/WatchButton'
 
 function fmt(value: number | null | undefined): string {
   const v = value || 0
@@ -72,12 +73,19 @@ export default function VendorDossier({ d }: { d: Dossier }) {
               ))}
             </div>
           </div>
-          {d.identity.website && (
-            <a href={d.identity.website} target="_blank" rel="noopener noreferrer"
-               className="text-xs font-mono text-accent-blue hover:underline shrink-0">
-              {d.identity.website.replace(/^https?:\/\//, '')} ↗
-            </a>
-          )}
+          <div className="flex items-center gap-3 shrink-0">
+            {d.identity.website && (
+              <a href={d.identity.website} target="_blank" rel="noopener noreferrer"
+                 className="text-xs font-mono text-accent-blue hover:underline">
+                {d.identity.website.replace(/^https?:\/\//, '')} ↗
+              </a>
+            )}
+            <WatchButton
+              targetType="ENTITY"
+              targetId={d.identity.id}
+              label={d.identity.name}
+            />
+          </div>
         </div>
         {d.identity.description && (
           <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">{d.identity.description}</p>
