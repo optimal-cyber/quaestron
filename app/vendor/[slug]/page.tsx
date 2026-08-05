@@ -23,13 +23,13 @@ export async function generateMetadata({
   // rather than asserting a vendor that might not exist.
   if (!seo) {
     return {
-      title: 'Vendor — Iron Echelon',
+      title: 'Vendor — Quaestron',
       description: 'Federal compliance and contract intelligence for defense technology vendors.',
       robots: { index: false, follow: true },
     }
   }
 
-  const title = `${seo.name} — Compliance & Federal Contracts | Iron Echelon`
+  const title = `${seo.name} — Compliance & Federal Contracts | Quaestron`
   const description = vendorDescription(seo)
   const url = `${SITE_URL}/vendor/${seo.slug}`
 
@@ -41,7 +41,7 @@ export async function generateMetadata({
       title,
       description,
       url,
-      siteName: 'Iron Echelon',
+      siteName: 'Quaestron',
       type: 'profile',
     },
     twitter: { card: 'summary_large_image', title, description },

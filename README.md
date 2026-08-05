@@ -1,4 +1,4 @@
-# Iron Echelon — Defense Tech Intelligence
+# Quaestron — Defense Market Intelligence
 
 Live at **[quaestron.io](https://quaestron.io)**.
 

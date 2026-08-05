@@ -221,7 +221,7 @@ async function searchEntities(input: { query: string; type?: string | null }): P
   })
 
   return {
-    dataset: 'Entity (Iron Echelon tracked organizations)',
+    dataset: 'Entity (Quaestron tracked organizations)',
     resultCount: rows.length,
     results: rows.map((r) => ({
       name: r.name,
@@ -441,7 +441,7 @@ async function getConnections(input: {
     })
 
   const result: ToolEnvelope = {
-    dataset: 'Connection (Iron Echelon relationship graph)',
+    dataset: 'Connection (Quaestron relationship graph)',
     vendor: entity.name,
     depth,
     directCount: direct.length,

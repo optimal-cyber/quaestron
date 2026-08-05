@@ -5,7 +5,7 @@ import BottomBar from '@/components/layout/BottomBar'
 import WatchlistsClient from './WatchlistsClient'
 
 export const metadata: Metadata = {
-  title: 'Watchlists — Iron Echelon',
+  title: 'Watchlists — Quaestron',
   robots: { index: false, follow: false },
 }
 

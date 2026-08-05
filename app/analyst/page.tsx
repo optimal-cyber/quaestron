@@ -6,7 +6,7 @@ import BottomBar from '@/components/layout/BottomBar'
 import AnalystClient from './AnalystClient'
 
 export const metadata: Metadata = {
-  title: 'Analyst — Iron Echelon',
+  title: 'Analyst — Quaestron',
   robots: { index: false, follow: false },
 }
 

@@ -22,9 +22,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { packageId } = await params
   const seo = await csoSeo(packageId)
-  if (!seo) return { title: 'Authorization — Iron Echelon', robots: { index: false } }
+  if (!seo) return { title: 'Authorization — Quaestron', robots: { index: false } }
 
-  const title = `${seo.csoName} — FedRAMP ${seo.status}${seo.impactLevel ? ` (${seo.impactLevel})` : ''} | Iron Echelon`
+  const title = `${seo.csoName} — FedRAMP ${seo.status}${seo.impactLevel ? ` (${seo.impactLevel})` : ''} | Quaestron`
   const description = csoDescription(seo)
   const url = `${SITE_URL}/compliance/cso/${seo.packageId}`
 
@@ -32,7 +32,7 @@ export async function generateMetadata({
     title,
     description,
     alternates: { canonical: url },
-    openGraph: { title, description, url, siteName: 'Iron Echelon', type: 'article' },
+    openGraph: { title, description, url, siteName: 'Quaestron', type: 'article' },
     twitter: { card: 'summary_large_image', title, description },
   }
 }

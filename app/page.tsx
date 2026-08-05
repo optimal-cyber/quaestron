@@ -302,7 +302,7 @@ export default function Home() {
               transition={{ duration: 0.8 }}
               className="text-slate-400 text-sm md:text-base max-w-xl mx-auto leading-relaxed mb-8 md:mb-14 px-2"
             >
-              Iron Echelon is an interactive intelligence platform mapping the defense technology,
+              Quaestron is an interactive intelligence platform mapping the defense technology,
               cybersecurity, AI, and surveillance ecosystem — companies, investors, contracts,
               and the connections between them.
             </motion.p>

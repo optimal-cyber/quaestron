@@ -5,7 +5,7 @@ import BottomBar from '@/components/layout/BottomBar'
 import AlertsClient from './AlertsClient'
 
 export const metadata: Metadata = {
-  title: 'Alerts — Iron Echelon',
+  title: 'Alerts — Quaestron',
   robots: { index: false, follow: false },
 }
 

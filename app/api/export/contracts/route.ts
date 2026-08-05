@@ -84,7 +84,7 @@ export async function GET(request: Request) {
         { header: 'Description', value: (r) => cell(r.description) },
       ],
       caveats: [
-        'Source: USASpending.gov awards and SBIR.gov SBIR/STTR awards, as ingested by Iron Echelon.',
+        'Source: USASpending.gov awards and SBIR.gov SBIR/STTR awards, as ingested by Quaestron.',
         'A blank value means the field was absent in the source record, not zero.',
         rows.length === MAX_ROWS
           ? `NOTE: capped at ${MAX_ROWS} rows. Narrow the filters for a complete set.`

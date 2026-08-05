@@ -5,11 +5,11 @@ import BottomBar from '@/components/layout/BottomBar'
 import { buildCoverageStats } from '@/lib/coverage'
 
 export const metadata: Metadata = {
-  title: 'Data Coverage — Iron Echelon',
+  title: 'Data Coverage — Quaestron',
   description:
-    'Live coverage statistics for Iron Echelon: tracked entities, federal contract awards, FedRAMP and DoD authorizations, and per-source sync timestamps. Every figure is computed from the database at request time.',
+    'Live coverage statistics for Quaestron: tracked entities, federal contract awards, FedRAMP and DoD authorizations, and per-source sync timestamps. Every figure is computed from the database at request time.',
   openGraph: {
-    title: 'Data Coverage — Iron Echelon',
+    title: 'Data Coverage — Quaestron',
     description:
       'Every number on this page is queried live. Tracked entities, contract awards, authorizations, and last-sync times per source.',
   },
