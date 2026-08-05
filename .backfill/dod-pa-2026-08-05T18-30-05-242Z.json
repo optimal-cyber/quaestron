@@ -1,0 +1,58 @@
+{
+  "takenAt": "2026-08-05T18:30:05.242Z",
+  "reconstructed": true,
+  "updated": [
+    {
+      "id": "96191b45-a94e-4f04-9bfd-cb44a216661a",
+      "cspName": "Cisco Systems Inc.",
+      "csoName": "Cisco Catalyst Software Defined Wide Area Network for Defense (SDWAN-D)",
+      "impactLevel": "IL5",
+      "source": "disa-xlsx"
+    },
+    {
+      "id": "dbd9196d-a1dc-4ae1-bde6-70bafc76ec18",
+      "cspName": "FedHIVE",
+      "csoName": "HRTEC",
+      "impactLevel": "IL4",
+      "source": "disa-xlsx"
+    },
+    {
+      "id": "edeafaef-b5d5-495c-9bfa-892f9e1ece5e",
+      "cspName": "Google",
+      "csoName": "Google Distributed Cloud Hosted (GDCH) IL6",
+      "impactLevel": "IL6",
+      "source": "disa-xlsx"
+    },
+    {
+      "id": "b493d0f2-8627-465b-8a86-848a34adabc5",
+      "cspName": "Island.IO",
+      "csoName": "Island IL5 Use Case Testing",
+      "impactLevel": "IL5",
+      "source": "disa-xlsx"
+    },
+    {
+      "id": "601c8e80-a764-4cfd-8373-c836c757eef5",
+      "cspName": "Deloitte",
+      "csoName": "Deloitte Evidence Management System",
+      "impactLevel": "IL4",
+      "source": "disa-xlsx"
+    },
+    {
+      "id": "e408ce98-b25c-4188-a764-5bd317bbf6b8",
+      "cspName": "IBM",
+      "csoName": "IBM SmartCloud for Government IL5",
+      "impactLevel": "IL5",
+      "source": "disa-xlsx"
+    }
+  ],
+  "insertedIds": [
+    "9bbbeb95-85fe-4bf4-82d6-70dedfc8df0f",
+    "2d0fe3f2-56a5-4f2a-9cc7-d475b99c21f8",
+    "6274ed3a-41a0-41da-ab47-0cafeeb93262",
+    "5c5061c2-5064-4637-81a0-5b371a14ed66",
+    "bd60cd4e-7921-4ee8-8984-d8b51161b37b",
+    "c0816a46-c8dc-4071-8006-fe88de1b196f",
+    "8e330baa-b20d-4303-aa62-85b2558463b3",
+    "abea91f3-743b-4db5-afc3-57d4cdf521c3"
+  ]
+}
