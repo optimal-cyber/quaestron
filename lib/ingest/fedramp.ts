@@ -323,21 +323,61 @@ export async function loadFromFile(filePath: string): Promise<{ data: MappedProd
   return { data, sourceLabel: `file(${format}):${filePath}` }
 }
 
+/** The fetch is ~4MB. Bounded so a stalled connection can't eat the run budget. */
+const FEDRAMP_FETCH_TIMEOUT_MS = 60_000
+
 /**
- * Fetch FedRAMP records from the GSA marketplace data repository (updated daily).
+ * How old `meta.last_change` may get before a run says so out loud. The file is
+ * documented as daily; it is not. Silence here is what let us sit on April data
+ * for four months without a single log line suggesting anything was wrong.
  */
-export async function fetchFromGitHub(): Promise<{ data: MappedProduct[]; sourceLabel: string }> {
+const UPSTREAM_STALE_AFTER_DAYS = 14
+
+/**
+ * Fetch FedRAMP records from the GSA marketplace data repository.
+ *
+ * `meta.last_change` is the upstream's own statement about when it last changed,
+ * and it is the only way to distinguish "we synced and nothing moved" from "we
+ * read a file nobody has updated in months". Both look identical in a row count.
+ */
+export async function fetchFromGitHub(): Promise<{
+  data: MappedProduct[]
+  sourceLabel: string
+  /** Upstream's `meta.last_change`, or null when absent. */
+  lastChange: Date | null
+  /** True when `lastChange` is older than UPSTREAM_STALE_AFTER_DAYS. */
+  upstreamStale: boolean
+}> {
   const url = 'https://raw.githubusercontent.com/GSA/marketplace-fedramp-gov-data/main/data.json'
   console.log(`${LOG_PREFIX} Fetching FedRAMP data from GitHub: ${url}`)
-  const res = await fetch(url)
+  const res = await fetch(url, { signal: AbortSignal.timeout(FEDRAMP_FETCH_TIMEOUT_MS) })
   if (!res.ok) throw new Error(`GitHub fetch failed: ${res.status} ${res.statusText}`)
   const json = await res.json()
   const records: GsaProductRecord[] = json?.data?.Products || json?.Products || []
   if (!Array.isArray(records)) throw new Error('Unexpected GitHub JSON structure')
+
+  const raw = json?.meta?.last_change
+  const parsed = raw ? new Date(raw) : null
+  const lastChange = parsed && !Number.isNaN(parsed.getTime()) ? parsed : null
+
+  let upstreamStale = false
+  if (lastChange) {
+    const ageDays = Math.floor((Date.now() - lastChange.getTime()) / 86_400_000)
+    upstreamStale = ageDays > UPSTREAM_STALE_AFTER_DAYS
+    console.log(
+      `${LOG_PREFIX} Upstream last_change ${lastChange.toISOString()} (${ageDays}d old)` +
+        (upstreamStale ? ' — STALE, upstream is not updating' : '')
+    )
+  } else {
+    console.warn(`${LOG_PREFIX} No meta.last_change in upstream payload`)
+  }
+
   console.log(`${LOG_PREFIX} Fetched ${records.length} records from GitHub`)
   return {
     data: records.map(mapGsaProductRecord),
     sourceLabel: 'github:GSA/marketplace-fedramp-gov-data',
+    lastChange,
+    upstreamStale,
   }
 }
 

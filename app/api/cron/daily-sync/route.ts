@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     // expiry data existed at all. One mapping, one place.
     try {
       console.log('[ATO] Fetching FedRAMP data from GitHub...')
-      const { data, sourceLabel } = await fetchFromGitHub()
+      const { data, sourceLabel, lastChange, upstreamStale } = await fetchFromGitHub()
       const cursor = await fedrampResumeCursor()
       console.log(
         `[ATO] Processing ${data.length} FedRAMP records from ${sourceLabel}` +
@@ -54,6 +54,11 @@ export async function POST(request: NextRequest) {
         // than repeating the same prefix forever.
         resumeAfter: result.cursor,
         source: sourceLabel,
+        // Upstream's own freshness claim. A clean run against a file nobody has
+        // updated in months is indistinguishable from a clean run against fresh
+        // data unless this is recorded.
+        upstreamLastChange: lastChange ? lastChange.toISOString() : null,
+        upstreamStale,
       }
     } catch (err) {
       console.error('[ATO] FedRAMP sync failed:', err)
