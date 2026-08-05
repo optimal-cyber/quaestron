@@ -23,7 +23,8 @@
     "test:watch": "vitest",
     "check:sync": "tsx scripts/check-sync.ts",
     "correct:dod-pa": "tsx scripts/correct-dod-pa.ts",
-    "pre-enrich": "tsx scripts/pre-enrich.ts"
+    "pre-enrich": "tsx scripts/pre-enrich.ts",
+    "backfill:hq": "tsx scripts/backfill-hq.ts"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
