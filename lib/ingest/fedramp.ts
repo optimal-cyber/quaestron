@@ -397,6 +397,8 @@ export interface SyncResult {
   cursor: string | null
   /** How many records this invocation actually touched. */
   processed: number
+  /** Rows newly marked WITHDRAWN_UPSTREAM. Always 0 on a partial run. */
+  withdrawn: number
 }
 
 export interface SyncOptions {
@@ -538,9 +540,12 @@ export async function syncFedrampData(
     console.error(`${LOG_PREFIX} Failed to write sync log:`, err)
   }
 
+  const withdrawn = completed ? await reconcileWithdrawn(records) : 0
+
   console.log(
     `${LOG_PREFIX} Sync ${status}: ${added} added, ${updated} updated, ${failed} failed; ` +
-      `${processed}/${pending.length} processed this run`
+      `${processed}/${pending.length} processed this run` +
+      (completed ? `; ${withdrawn} marked withdrawn` : '')
   )
 
   return {
@@ -552,6 +557,59 @@ export async function syncFedrampData(
     completed,
     cursor: completed ? null : cursor,
     processed,
+    withdrawn,
+  }
+}
+
+/**
+ * "Seen this run" reconciliation.
+ *
+ * Marks rows absent from the feed as WITHDRAWN_UPSTREAM, and clears the flag on
+ * anything that has come back. Nothing is ever deleted — a withdrawal is a fact
+ * about the offering that users may want to see, not a reason to lose the row.
+ *
+ * CALLED ONLY WHEN A RUN COMPLETED. This is the whole safety property. A run
+ * that stops on its deadline has legitimately not seen the records after its
+ * cursor, and marking that unprocessed tail as withdrawn would manufacture
+ * exactly the false "no longer authorized" claim this mechanism exists to
+ * prevent — at a scale proportional to how early the deadline hit. The caller's
+ * `completed` flag is the only thing standing between the two, so the guard
+ * lives at the call site AND the reconciliation takes the full record set
+ * rather than the processed slice.
+ */
+async function reconcileWithdrawn(records: MappedProduct[]): Promise<number> {
+  const seen = records.map((r) => r.packageId).filter(Boolean)
+  // An empty feed means the fetch degraded, not that every offering vanished.
+  if (seen.length === 0) {
+    console.warn(`${LOG_PREFIX} Reconciliation skipped: feed contained no records`)
+    return 0
+  }
+
+  const now = new Date()
+  try {
+    await prisma.fedrampAuthorization.updateMany({
+      where: { packageId: { in: seen } },
+      data: { lastSeenUpstreamAt: now },
+    })
+
+    // Anything previously withdrawn that reappeared is active again.
+    await prisma.fedrampAuthorization.updateMany({
+      where: { packageId: { in: seen }, lifecycleState: 'WITHDRAWN_UPSTREAM' },
+      data: { lifecycleState: 'ACTIVE' },
+    })
+
+    // SUPERSEDED is a human-confirmed verdict; a sweep must not overwrite it.
+    const result = await prisma.fedrampAuthorization.updateMany({
+      where: {
+        packageId: { notIn: seen },
+        lifecycleState: { notIn: ['WITHDRAWN_UPSTREAM', 'SUPERSEDED'] },
+      },
+      data: { lifecycleState: 'WITHDRAWN_UPSTREAM' },
+    })
+    return result.count
+  } catch (err) {
+    console.error(`${LOG_PREFIX} Reconciliation failed:`, err)
+    return 0
   }
 }
 
