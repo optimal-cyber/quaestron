@@ -195,8 +195,8 @@ export async function sendDigest(payload: DigestPayload): Promise<SendResult> {
   const resend = new Resend(process.env.RESEND_API_KEY)
   const subject =
     payload.events.length === 1
-      ? `[Iron Echelon] ${payload.events[0].title.slice(0, 120)}`
-      : `[Iron Echelon] ${payload.events.length} new signals`
+      ? `[Quaestron] ${payload.events[0].title.slice(0, 120)}`
+      : `[Quaestron] ${payload.events.length} new signals`
 
   try {
     const { error } = await resend.emails.send({

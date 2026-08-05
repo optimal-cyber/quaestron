@@ -320,7 +320,7 @@ export default function AnalystClient({
             <div className="max-w-2xl mx-auto pt-8 space-y-4">
               <p className="font-mono text-[11px] text-muted-foreground leading-relaxed">
                 Ask about vendor authorizations, federal contract history, funding, or
-                relationships. Every answer is built from Iron Echelon&apos;s own datasets —
+                relationships. Every answer is built from Quaestron&apos;s own datasets —
                 the analyst queries them live and cites which one it used.
               </p>
               <div className="space-y-1.5">

@@ -5,7 +5,7 @@ import BottomBar from '@/components/layout/BottomBar'
 import AccountClient from './AccountClient'
 
 export const metadata: Metadata = {
-  title: 'Account — Iron Echelon',
+  title: 'Account — Quaestron',
   robots: { index: false, follow: false },
 }
 

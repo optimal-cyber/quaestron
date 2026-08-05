@@ -3,7 +3,7 @@ import { vendorSeo } from '@/lib/seo'
 
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
-export const alt = 'Iron Echelon vendor profile'
+export const alt = 'Quaestron vendor profile'
 
 /**
  * Per-vendor OG card.
@@ -17,7 +17,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   const { slug } = await params
   const seo = await vendorSeo(slug).catch(() => null)
 
-  const name = seo?.name ?? 'Iron Echelon'
+  const name = seo?.name ?? 'Quaestron'
   const stats: { label: string; value: string }[] = seo
     ? [
         { label: 'AUTHORIZATIONS', value: String(seo.authorizationCount) },

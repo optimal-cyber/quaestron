@@ -7,7 +7,7 @@ import Providers from "./providers"
 const siteUrl = process.env.AUTH_URL?.replace(/\/$/, "") || "https://quaestron.io"
 
 export const metadata: Metadata = {
-  title: "Iron Echelon — Defense Tech Intelligence",
+  title: "Quaestron — Defense Market Intelligence",
   description:
     "Mapping the defense technology, cybersecurity, AI, and surveillance ecosystem. Track companies, investors, government contracts, and relationships.",
   keywords: [
@@ -20,23 +20,23 @@ export const metadata: Metadata = {
   ],
   metadataBase: new URL(siteUrl),
   openGraph: {
-    title: "Iron Echelon — Defense Tech Intelligence",
+    title: "Quaestron — Defense Market Intelligence",
     description: "They build the weapons. It's time to map the arsenal. Track 1,700+ defense tech, cybersecurity, AI, and surveillance companies.",
     url: siteUrl,
-    siteName: "Iron Echelon",
+    siteName: "Quaestron",
     type: "website",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Iron Echelon — Mapping the Defense Tech Arsenal",
+        alt: "Quaestron — Mapping the Defense Tech Arsenal",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Iron Echelon — Defense Tech Intelligence",
+    title: "Quaestron — Defense Market Intelligence",
     description: "They build the weapons. It's time to map the arsenal. Track 1,700+ defense tech, cybersecurity, AI, and surveillance companies.",
     images: ["/og-image.png"],
   },

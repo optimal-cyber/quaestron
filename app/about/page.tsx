@@ -16,7 +16,7 @@ export default function AboutPage() {
           <section className="mb-10">
             <h2 className="font-mono text-sm tracking-[0.15em] text-accent-red mb-4">MISSION</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Iron Echelon maps the defense technology, cybersecurity, AI, and surveillance ecosystem.
+              Quaestron maps the defense technology, cybersecurity, AI, and surveillance ecosystem.
               We track the companies, investors, government agencies, contracts, and relationships that
               define the modern national security landscape.
             </p>
@@ -85,7 +85,7 @@ export default function AboutPage() {
           <section>
             <h2 className="font-mono text-sm tracking-[0.15em] text-accent-red mb-4">CONTACT</h2>
             <p className="text-sm text-muted-foreground">
-              Iron Echelon is part of the Iron Echelon newsletter — defense tech intelligence for practitioners.
+              Quaestron is part of the Iron Echelon newsletter — defense tech intelligence for practitioners.
             </p>
           </section>
         </div>

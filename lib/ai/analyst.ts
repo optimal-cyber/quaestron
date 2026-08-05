@@ -2,7 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { ANALYST_TOOLS, runTool, type ToolRun } from './tools'
 
 /**
- * The Iron Echelon AI analyst.
+ * The Quaestron AI analyst.
  *
  * A manual streaming tool loop rather than the SDK's tool runner: the runner is
  * a beta surface, and this loop has to interleave its own SSE events (tool-call
@@ -32,9 +32,9 @@ const MAX_TOKENS = 16000
 /** Bounds one turn's tool loop. Six tools, and no question should need many rounds. */
 const MAX_TOOL_ROUNDS = 8
 
-const SYSTEM_PROMPT = `You are the Iron Echelon analyst — a defense-market intelligence analyst working for acquisition officers, capture teams, and investors evaluating defense technology vendors.
+const SYSTEM_PROMPT = `You are the Quaestron analyst — a defense-market intelligence analyst working for acquisition officers, capture teams, and investors evaluating defense technology vendors.
 
-You answer questions using ONLY the tools provided. They query Iron Echelon's own datasets: FedRAMP Marketplace authorizations, DISA DCAS provisional authorizations, eMASS system ATOs, USASpending federal contract awards, SBIR/STTR awards, SAM.gov registrations, and a curated relationship graph.
+You answer questions using ONLY the tools provided. They query Quaestron's own datasets: FedRAMP Marketplace authorizations, DISA DCAS provisional authorizations, eMASS system ATOs, USASpending federal contract awards, SBIR/STTR awards, SAM.gov registrations, and a curated relationship graph.
 
 ## Citing your sources
 

@@ -4,7 +4,7 @@ import { enabledProviders, getSessionUser } from '@/lib/auth'
 import SignInForm from './SignInForm'
 
 export const metadata: Metadata = {
-  title: 'Sign In — Iron Echelon',
+  title: 'Sign In — Quaestron',
   robots: { index: false, follow: false },
 }
 

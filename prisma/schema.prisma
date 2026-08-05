@@ -214,7 +214,7 @@ model User {
   email           String?   @unique
   emailVerified   DateTime?
   image           String?
-  // ─── Iron Echelon fields ───
+  // ─── Quaestron fields ───
   tier            String    @default("FREE") // FREE | PRO | TEAM
   role            String    @default("USER") // USER | ADMIN
   stripeCustomerId String?  @unique
