@@ -359,7 +359,7 @@ export default function MainView() {
         </div>
 
         {/* Right sidebar - Detail/Overview panel (hidden on mobile, shown via tab) */}
-        <div className={`${mobilePanel === 'detail' ? 'flex' : 'hidden'} md:flex w-full md:w-96 shrink-0 border-l border-border overflow-y-auto bg-surface/50`}>
+        <div className={`${mobilePanel === 'detail' ? 'flex' : 'hidden'} md:flex w-full md:w-96 shrink-0 min-w-0 border-l border-border overflow-y-auto overflow-x-hidden bg-surface/50`}>
           {selectedEntity ? (
             <EntityDetail
               entity={selectedEntity}

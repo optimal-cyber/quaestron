@@ -143,7 +143,7 @@ export default function EntityDetail({
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 20 }}
       transition={{ duration: 0.2 }}
-      className="h-full"
+      className="h-full w-full min-w-0"
     >
       {/* Header */}
       <div className="p-4 border-b border-border">
@@ -239,7 +239,7 @@ export default function EntityDetail({
 
         {/* Description */}
         {entity.description && (
-          <div className="text-sm text-muted-foreground leading-relaxed">
+          <div className="text-sm text-muted-foreground leading-relaxed break-words">
             {entity.description}
           </div>
         )}
@@ -521,9 +521,9 @@ export default function EntityDetail({
                   href={source.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-1 py-0.5 rounded hover:bg-surface-hover transition-colors group"
+                  className="flex items-center gap-2 px-1 py-0.5 rounded hover:bg-surface-hover transition-colors group min-w-0"
                 >
-                  <span className="text-[10px] text-muted-foreground group-hover:text-foreground flex-1 truncate">
+                  <span className="text-[10px] text-muted-foreground group-hover:text-foreground flex-1 min-w-0 truncate">
                     {source.title || source.domain}
                   </span>
                   <svg className="w-3 h-3 text-muted group-hover:text-accent-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
