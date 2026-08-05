@@ -4,11 +4,39 @@ import * as XLSX from 'xlsx'
 
 const LOG_PREFIX = '[DISA-SYNC]'
 
+/**
+ * DISA's actual filename shape, confirmed against the live server:
+ *
+ *   .../xls/DCAS-Current_Authorized_CSOs-2026-07-08.xlsx   -> 200
+ *
+ * This code previously built `DCAS+Current+Authorized+CSOs+-+<date>.xlsx`, as
+ * though the spaces in the display name were plus-encoded. That URL 404s for
+ * every date, so the probe walk could never have succeeded -- it was not a slow
+ * or fragile path, it was a dead one, and the per-probe timeouts and stage
+ * budget added earlier were making a doomed loop fail faster.
+ */
 const DCAS_URL_PREFIX =
-  'https://dl.dod.cyber.mil/wp-content/uploads/cloud/xls/DCAS+Current+Authorized+CSOs+-+'
+  'https://dl.dod.cyber.mil/wp-content/uploads/cloud/xls/DCAS-Current_Authorized_CSOs-'
 const DCAS_URL_SUFFIX = '.xlsx'
-const PROBE_DAYS = 35
-/** Per-probe ceiling. 36 probes x 8s worst case stays well inside the budget. */
+/**
+ * DISA keeps only the CURRENT file and replaces it; older dates are removed. A
+ * 150-day sweep of the live server returned exactly one hit (2026-07-08), and
+ * publication looks roughly monthly rather than weekly.
+ *
+ * So the window has to span more than one publication cycle: if a file lands on
+ * the 8th and the next is late, the newest existing file can be 60+ days old. A
+ * 35-day window would have found today's file with a week to spare and then
+ * silently failed the first time a cycle slipped.
+ */
+const PROBE_DAYS = 120
+/**
+ * Probes run in parallel batches. Serially, a 45s stage budget at 5s per probe
+ * buys ~9 attempts -- fewer than the 28 days back today's file already sits, so
+ * a serial walk over a 120-day window cannot finish. 404s come back in a few
+ * hundred milliseconds, so batching turns 120 probes into ~15 rounds.
+ */
+const PROBE_CONCURRENCY = 8
+/** Per-probe ceiling. */
 const PROBE_TIMEOUT_MS = 5_000
 /** Overall ceiling for the probe walk, independent of how many URLs remain. */
 const PROBE_TOTAL_MS = 45_000
@@ -46,7 +74,7 @@ function ymd(date: Date): string {
   return `${y}-${m}-${d}`
 }
 
-function dcasUrlForDate(date: Date): string {
+export function dcasUrlForDate(date: Date): string {
   return `${DCAS_URL_PREFIX}${ymd(date)}${DCAS_URL_SUFFIX}`
 }
 
@@ -107,11 +135,6 @@ export function parseDcasWorkbook(buffer: ArrayBuffer | Buffer): MappedDcasRecor
 // ---------------------------------------------------------------------------
 
 /**
- * Fetch the latest DCAS xlsx by probing recent dates. DISA reposts the file
- * weekly with the publish date in the filename and offers no stable alias,
- * so we walk back from today until we find a 200.
- */
-/**
  * Publish date of the last xlsx we successfully found, cached in the sync log.
  *
  * Without it every run re-probes from scratch: if the newest file is 30 days
@@ -165,8 +188,9 @@ export async function fetchLatestDcasXlsx(
 ): Promise<{ buffer: Buffer; url: string; publishDate: string }> {
   const start = options.startDate ?? new Date()
 
-  // Never probe further back than a date already known to exist. A cached hit
-  // three days old means at most three probes, not thirty-six.
+  // Never probe further back than a date already known to exist. Once a file
+  // has been found, later runs probe only the days since it, so the steady
+  // state is a handful of requests rather than the full window.
   const cached = await lastKnownDcasDate()
   let daysBack = options.daysBack ?? PROBE_DAYS
   if (cached) {
@@ -177,47 +201,55 @@ export async function fetchLatestDcasXlsx(
     }
   }
 
-  const tried: string[] = []
   const probeDeadline = Date.now() + PROBE_TOTAL_MS
-  let headSupported = true
+  let probed = 0
 
-  // Newest first, so a newer publication still wins over the cached one.
-  for (let i = 0; i <= daysBack; i++) {
+  // Newest first, in batches, so a newer publication still wins over the cached
+  // one. Within a batch the earliest index that exists wins, which keeps the
+  // result identical to a serial newest-first walk.
+  for (let base = 0; base <= daysBack; base += PROBE_CONCURRENCY) {
     if (Date.now() >= probeDeadline) {
       console.warn(
-        `${LOG_PREFIX} Probe budget spent after ${tried.length} URLs; falling back to the cached file`
+        `${LOG_PREFIX} Probe budget spent after ${probed} URLs; falling back to the cached file`
       )
       break
     }
-    const probe = new Date(start)
-    probe.setUTCDate(probe.getUTCDate() - i)
-    const url = dcasUrlForDate(probe)
-    tried.push(url)
 
-    try {
-      let found: boolean
-      if (headSupported) {
-        const head = await probeExists(url)
-        if (head === 'unsupported') {
-          headSupported = false
-          found = (await fetch(url, { redirect: 'follow', signal: AbortSignal.timeout(PROBE_TIMEOUT_MS) })).ok
-        } else {
-          found = head
+    const batch: Array<{ index: number; date: Date; url: string }> = []
+    for (let i = base; i < Math.min(base + PROBE_CONCURRENCY, daysBack + 1); i++) {
+      const date = new Date(start)
+      date.setUTCDate(date.getUTCDate() - i)
+      batch.push({ index: i, date, url: dcasUrlForDate(date) })
+    }
+
+    const settled = await Promise.all(
+      batch.map(async (candidate) => {
+        try {
+          const head = await probeExists(candidate.url)
+          if (head === 'unsupported') {
+            const res = await fetch(candidate.url, {
+              redirect: 'follow',
+              signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+            })
+            return { ...candidate, found: res.ok }
+          }
+          return { ...candidate, found: head }
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err)
+          console.warn(`${LOG_PREFIX} Probe error for ${candidate.url}: ${msg}`)
+          return { ...candidate, found: false }
         }
-      } else {
-        found = (await fetch(url, { redirect: 'follow', signal: AbortSignal.timeout(PROBE_TIMEOUT_MS) })).ok
-      }
+      })
+    )
+    probed += settled.length
 
-      if (found) {
-        const buffer = await download(url)
-        const publishDate = ymd(probe)
-        console.log(`${LOG_PREFIX} Found DCAS xlsx: ${url} (${buffer.length} bytes)`)
-        await rememberDcasDate(publishDate)
-        return { buffer, url, publishDate }
-      }
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err)
-      console.warn(`${LOG_PREFIX} Probe error for ${url}: ${msg}`)
+    const hit = settled.filter((s) => s.found).sort((a, b) => a.index - b.index)[0]
+    if (hit) {
+      const buffer = await download(hit.url)
+      const publishDate = ymd(hit.date)
+      console.log(`${LOG_PREFIX} Found DCAS xlsx: ${hit.url} (${buffer.length} bytes)`)
+      await rememberDcasDate(publishDate)
+      return { buffer, url: hit.url, publishDate }
     }
   }
 
@@ -231,7 +263,7 @@ export async function fetchLatestDcasXlsx(
   }
 
   throw new Error(
-    `No DCAS xlsx found in the last ${daysBack} days (probed ${tried.length} URLs back from ${ymd(start)})`
+    `No DCAS xlsx found in the last ${daysBack} days (probed ${probed} URLs back from ${ymd(start)})`
   )
 }
 
