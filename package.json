@@ -21,9 +21,7 @@
     "sync": "npx tsx -e \"fetch('http://localhost:3000/api/sync/surveillance-watch', {method:'POST'}).then(r=>r.json()).then(console.log)\"",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check:sync": "tsx scripts/check-sync.ts",
-    "migrate:turso:lifecycle": "tsx prisma/migrate-turso-lifecycle.ts",
-    "backfill:lifecycle": "tsx scripts/backfill-lifecycle.ts"
+    "check:sync": "tsx scripts/check-sync.ts"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"

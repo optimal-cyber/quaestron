@@ -439,32 +439,6 @@ model FedrampAuthorization {
   /// Resolved from cspName by lib/match/ato-entity.ts. Nullable because not
   /// every CSP in the FedRAMP marketplace exists as a tracked Entity.
   entityId           String?
-  /// Lifecycle, tracked separately from `status`.
-  ///
-  /// `status` is what the FedRAMP feed says about a package that EXISTS in the
-  /// feed. This says whether the package still exists at all, which the feed
-  /// cannot express — a withdrawn offering simply stops appearing. Conflating
-  /// the two is how a row keeps asserting "Authorized" months after its
-  /// offering left the marketplace.
-  ///
-  ///   ACTIVE             present in the last completed sync
-  ///   WITHDRAWN_UPSTREAM gone from the feed; cause unknown
-  ///   LAPSED             still in the feed, but the annual assessment passed
-  ///   SUPERSEDED         re-keyed; see supersededByPackageId
-  ///
-  /// WITHDRAWN_UPSTREAM and LAPSED mean different things to a user and must not
-  /// be merged in any view: the first is "we can no longer see this offering",
-  /// the second is "this offering is visibly out of compliance".
-  lifecycleState     String    @default("ACTIVE")
-  /// Set only for SUPERSEDED. Points at the packageId that replaced this one,
-  /// so a re-key reads as continuous history rather than a gap. Populated only
-  /// after human confirmation via AtoMatchReview — name similarity alone
-  /// produced both a correct match (Palantir) and a nonsense one (FormAssembly
-  /// -> 18F Cloud.gov) at the same threshold.
-  supersededByPackageId String?
-  /// Last completed sync in which the feed still contained this packageId.
-  /// Never written by a partial run.
-  lastSeenUpstreamAt DateTime?
   lastSynced         DateTime  @default(now())
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
