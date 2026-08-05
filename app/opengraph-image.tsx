@@ -160,7 +160,7 @@ export default function OGImage() {
             display: 'flex',
           }}
         >
-          intel.ironechelon.com
+          quaestron.io
         </div>
       </div>
     ),

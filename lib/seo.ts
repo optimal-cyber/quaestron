@@ -13,7 +13,7 @@ import { safeJsonArray } from '@/lib/compliance/shared'
  * yields default metadata instead of a 500 on a public URL.
  */
 
-export const SITE_URL = process.env.AUTH_URL?.replace(/\/$/, '') || 'https://intel.ironechelon.com'
+export const SITE_URL = process.env.AUTH_URL?.replace(/\/$/, '') || 'https://quaestron.io'
 
 export interface VendorSeo {
   name: string

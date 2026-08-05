@@ -36,7 +36,7 @@ export async function sendDigests(cadence: 'DAILY' | 'WEEKLY'): Promise<DigestRe
     return result
   }
 
-  const siteUrl = (process.env.AUTH_URL || 'https://intel.ironechelon.com').replace(/\/$/, '')
+  const siteUrl = (process.env.AUTH_URL || 'https://quaestron.io').replace(/\/$/, '')
 
   // Un-emailed events from EMAIL-channel rules at this cadence. IN_APP rules
   // deliberately produce inbox entries only.

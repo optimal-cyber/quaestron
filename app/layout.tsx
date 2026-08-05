@@ -2,7 +2,9 @@ import type { Metadata } from "next"
 import "./globals.css"
 import Providers from "./providers"
 
-const siteUrl = "https://intel.ironechelon.com"
+// Env-driven so the origin moves with AUTH_URL rather than a code change.
+// Mirrors lib/seo.ts so metadataBase and per-page canonicals cannot disagree.
+const siteUrl = process.env.AUTH_URL?.replace(/\/$/, "") || "https://quaestron.io"
 
 export const metadata: Metadata = {
   title: "Iron Echelon — Defense Tech Intelligence",

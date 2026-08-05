@@ -1,4 +1,5 @@
 import * as XLSX from 'xlsx'
+import { SITE_URL } from '@/lib/seo'
 
 /**
  * CSV / XLSX export builder.
@@ -28,7 +29,10 @@ export interface ExportSpec<T> {
   caveats?: string[]
 }
 
-const SITE = 'intel.ironechelon.com'
+// Derived from SITE_URL rather than duplicated: an exported spreadsheet outlives
+// the page it came from, so a second source of truth here would misattribute
+// files indefinitely after a domain change.
+const SITE = SITE_URL.replace(/^https?:\/\//, '')
 
 function footerLines(spec: ExportSpec<unknown>, generatedAt: Date): string[] {
   return [
@@ -64,7 +68,7 @@ export function buildExport<T>(
 ): BuiltExport {
   const matrix = toMatrix(spec, generatedAt)
   const stamp = generatedAt.toISOString().slice(0, 10)
-  const stem = `ironechelon-${spec.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${stamp}`
+  const stem = `quaestron-${spec.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${stamp}`
 
   if (format === 'csv') {
     const sheet = XLSX.utils.aoa_to_sheet(matrix)

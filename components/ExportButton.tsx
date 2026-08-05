@@ -46,7 +46,7 @@ export default function ExportButton({
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = match?.[1] || `ironechelon-export.${format}`
+      a.download = match?.[1] || `quaestron-export.${format}`
       document.body.appendChild(a)
       a.click()
       a.remove()
