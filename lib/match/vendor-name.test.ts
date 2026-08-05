@@ -90,17 +90,26 @@ describe('vendorNamesMatch', () => {
     expect(vendorNamesMatch('Palantir Technologies Inc.', 'Palantir')).toBe(true)
   })
 
-  it('MATCHES a parent to its subsidiary — asserted as-is, and it is wrong', () => {
-    // The prefix test runs in both directions, so "Salesforce" resolves to
-    // "Salesforce Ventures" and "Google" to "Google Cloud". This is the exact
-    // false-positive shape the ATO matcher was hardened against, where the
-    // prefix check was made one-directional.
-    //
-    // Reachable from resolveEntity in aliases.ts only when the exact name is
-    // absent and a longer one exists, so it mis-attributes rather than
-    // duplicating. Pinned here as current behaviour, not endorsed — see the
-    // tracking issue. Flip these to false when the direction is fixed.
-    expect(vendorNamesMatch('Salesforce', 'Salesforce Ventures')).toBe(true)
-    expect(vendorNamesMatch('Google', 'Google Cloud')).toBe(true)
+  it('does not match a parent to its subsidiary or venture arm', () => {
+    // Previously true in both directions. Conflating an operating company with
+    // its venture arm is the specific error to avoid in front of investors,
+    // who distinguish those for a living.
+    expect(vendorNamesMatch('Salesforce', 'Salesforce Ventures')).toBe(false)
+    expect(vendorNamesMatch('Google', 'Google Cloud')).toBe(false)
+    expect(vendorNamesMatch('Amazon', 'Amazon Web Services')).toBe(false)
+  })
+
+  it('still matches when the CANDIDATE extends the query', () => {
+    // The surviving direction. resolveEntity passes (candidate, query), so a
+    // stored "Palantir Technologies Inc." must still answer a "Palantir" query.
+    expect(vendorNamesMatch('Palantir Technologies Inc.', 'Palantir')).toBe(true)
+    expect(vendorNamesMatch('Datadog, Inc.', 'Datadog')).toBe(true)
+  })
+
+  it('is deliberately asymmetric', () => {
+    // Direction carries the meaning; a symmetric test cannot express
+    // "specific may answer general, general may not answer specific".
+    expect(vendorNamesMatch('Salesforce Ventures', 'Salesforce')).toBe(true)
+    expect(vendorNamesMatch('Salesforce', 'Salesforce Ventures')).toBe(false)
   })
 })

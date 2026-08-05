@@ -57,5 +57,16 @@ export function vendorNamesMatch(a: string, b: string): boolean {
   const nb = normalizeVendorName(b)
   if (!na || !nb) return false
   if (na === nb) return true
-  return na.startsWith(nb + ' ') || nb.startsWith(na + ' ')
+  // One direction only: the CANDIDATE may extend the query, never the reverse.
+  //
+  // The bidirectional form matched "Salesforce" to "Salesforce Ventures" and
+  // "Google" to "Google Cloud" -- an operating company to its venture arm or a
+  // subsidiary. The ATO matcher was hardened the same way in Phase 3 for the
+  // same reason; this copy was missed because nothing tested it directly.
+  //
+  // The asymmetry is the point. Querying "Palantir" should still find
+  // "Palantir Technologies Inc." (suffix noise, stripped by normalization to
+  // the same token), but must not find a differently-named entity that merely
+  // begins with it.
+  return na.startsWith(nb + ' ')
 }
