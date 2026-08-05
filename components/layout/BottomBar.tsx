@@ -12,7 +12,7 @@ export default function BottomBar({ lastUpdated }: { lastUpdated?: string }) {
       </span>
       <div className="flex-1" />
       {lastUpdated && <span className="hidden sm:inline">DATA UPDATED: {lastUpdated}</span>}
-      <span className="border-l border-border pl-2 md:pl-6">IRON ECHELON v1.0</span>
+      <span className="border-l border-border pl-2 md:pl-6">QUAESTRON v1.0</span>
     </div>
   )
 }

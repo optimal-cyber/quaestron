@@ -352,7 +352,7 @@ export default function MainView() {
             <div className="w-full h-full flex items-center justify-center bg-[#0B0F1A]">
               <div className="text-center">
                 <div className="font-mono text-xs text-muted tracking-[0.3em] mb-3">INITIALIZING</div>
-                <div className="font-mono text-accent-red text-sm tracking-[0.2em]">IRON ECHELON</div>
+                <div className="font-mono text-accent-red text-sm tracking-[0.2em]">QUAESTRON</div>
               </div>
             </div>
           )}

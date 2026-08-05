@@ -42,7 +42,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
       >
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <div style={{ color: '#C8102E', fontSize: 26, letterSpacing: 6 }}>
-            &#x276E; IRON ECHELON
+            &#x276E; QUAESTRON
           </div>
           <div
             style={{

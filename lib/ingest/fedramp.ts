@@ -462,7 +462,16 @@ export async function syncFedrampData(
 
   for (const record of pending) {
     // Checked before the work, not after, so the deadline is a real ceiling.
-    if (options.deadline && Date.now() >= options.deadline) {
+    //
+    // `processed > 0` guarantees forward progress. A run that arrives with its
+    // budget already spent -- a slow fetch, a long DISA stage, a cold start --
+    // would otherwise commit nothing, report the cursor it was handed, and do
+    // the same thing tomorrow. Zero-progress runs never converge no matter how
+    // many of them there are, which is precisely the failure the cursor exists
+    // to prevent. One record costs ~77ms measured against production Turso;
+    // overshooting the ceiling by that much is strictly better than never
+    // finishing the set.
+    if (processed > 0 && options.deadline && Date.now() >= options.deadline) {
       completed = false
       console.warn(
         `${LOG_PREFIX} Deadline reached after ${processed}/${pending.length}; resuming next run after ${cursor}`

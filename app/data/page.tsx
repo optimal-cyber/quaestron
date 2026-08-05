@@ -182,8 +182,8 @@ export default async function DataPage() {
 
           <p className="font-mono text-[10px] text-muted leading-relaxed">
             Methodology: counts are row counts; dollar totals sum the award records above
-            and are not deduplicated against modifications. Figures reflect what Iron
-            Echelon has ingested, which is a subset of the federal record.{' '}
+            and are not deduplicated against modifications. Figures reflect what
+            Quaestron has ingested, which is a subset of the federal record.{' '}
             <Link href="/compliance" className="text-accent-blue hover:underline">
               Browse the compliance data
             </Link>{' '}

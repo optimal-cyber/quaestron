@@ -29,7 +29,7 @@ export default function TopNav({ onSearchOpen }: { onSearchOpen?: () => void }) 
       <nav className="fixed top-0 left-0 right-0 z-50 h-12 bg-surface/90 backdrop-blur-md border-b border-border flex items-center px-3 md:px-4 gap-2 md:gap-6">
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <span className="text-accent-red font-mono font-bold text-xs md:text-sm tracking-[0.2em]">
-            &#x276E; IRON ECHELON
+            &#x276E; QUAESTRON
           </span>
         </Link>
 

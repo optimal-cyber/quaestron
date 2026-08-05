@@ -183,7 +183,7 @@ export default function Home() {
                 <div className="font-mono text-[10px] tracking-[0.5em] text-muted mb-4">INITIALIZING SECURE CONNECTION</div>
                 <div className="flex items-center justify-center gap-3 mb-2">
                   <span className="text-accent-red text-xl">&lt;</span>
-                  <span className="font-mono text-2xl tracking-[0.3em] text-foreground font-bold">IRON ECHELON</span>
+                  <span className="font-mono text-2xl tracking-[0.3em] text-foreground font-bold">QUAESTRON</span>
                   <span className="text-accent-red text-xl">&gt;</span>
                 </div>
                 <div className="font-mono text-xs tracking-[0.2em] text-muted">DEFENSE TECH INTELLIGENCE</div>
@@ -222,7 +222,7 @@ export default function Home() {
         >
           <div className="flex items-center gap-2">
             <span className="text-accent-red">&lt;</span>
-            <span className="font-mono text-sm tracking-[0.2em] text-foreground font-bold">IRON ECHELON</span>
+            <span className="font-mono text-sm tracking-[0.2em] text-foreground font-bold">QUAESTRON</span>
             <span className="text-accent-red">&gt;</span>
           </div>
           <div className="hidden md:flex items-center gap-6">
@@ -390,7 +390,7 @@ export default function Home() {
             SYSTEMS ACTIVE
           </div>
           <div className="font-mono text-[9px] tracking-[0.2em] text-muted">
-            IRON ECHELON v1.0 — DATA SYNCED DAILY
+            QUAESTRON v1.0 — DATA SYNCED DAILY
           </div>
         </motion.div>
       </div>

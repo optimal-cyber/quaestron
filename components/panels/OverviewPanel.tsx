@@ -42,7 +42,7 @@ export default function OverviewPanel({ stats }: { stats: Stats | null }) {
       {/* Header */}
       <div className="mb-6">
         <div className="font-mono text-accent-red text-sm tracking-[0.2em] mb-1">
-          &#x276E; IRON ECHELON
+          &#x276E; QUAESTRON
         </div>
         <h1 className="font-mono text-lg tracking-[0.1em] text-foreground mb-1">
           DEFENSE TECH INTELLIGENCE

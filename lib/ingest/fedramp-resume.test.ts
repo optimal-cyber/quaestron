@@ -70,12 +70,17 @@ describe('syncFedrampData — completion', () => {
 })
 
 describe('syncFedrampData — deadline and resumption', () => {
-  it('stops at the deadline and reports a partial run', async () => {
-    // Already expired: stops before doing any work.
-    const r = await syncFedrampData(RECORDS, { deadline: Date.now() - 1 })
+  it('reports a partial run but still commits one record when the deadline has already passed', async () => {
+    // This asserted `processed === 0` until the convergence test caught what
+    // that implies: a run arriving with its budget already spent -- slow fetch,
+    // long DISA stage, cold start -- commits nothing, reports back the cursor
+    // it was handed, and repeats forever. Zero-progress runs never converge no
+    // matter how many of them there are.
+    const r = await syncFedrampData(RECORDS, { deadline: Date.now() - 60_000 })
     expect(r.completed).toBe(false)
-    expect(r.processed).toBe(0)
-    expect(await prisma.fedrampAuthorization.count()).toBe(0)
+    expect(r.processed).toBe(1)
+    expect(r.cursor).toBe('FR-01')
+    expect(await prisma.fedrampAuthorization.count()).toBe(1)
   })
 
   it('persists status=partial with the resume point', async () => {
@@ -97,12 +102,18 @@ describe('syncFedrampData — deadline and resumption', () => {
   it('converges: repeated one-record slices finish the whole set', async () => {
     // The property that matters. A run that always restarts from zero would
     // loop forever here; this must terminate having covered every record.
+    //
+    // The deadline is in the PAST, not `Date.now() + 1`. With a 1ms budget the
+    // test raced the clock: whether any record was processed before the check
+    // tripped depended on scheduling, so it passed in a warm full-suite run and
+    // failed in isolation. An already-expired deadline is deterministic --
+    // exactly one record per call, five calls, every time.
     let cursor: string | null = null
     let guard = 0
     do {
       const r: Awaited<ReturnType<typeof syncFedrampData>> = await syncFedrampData(
         RECORDS,
-        { cursor, deadline: Date.now() + 1 }
+        { cursor, deadline: Date.now() - 60_000 }
       )
       cursor = r.cursor
       if (++guard > 20) throw new Error('did not converge — sync is replaying its prefix')
