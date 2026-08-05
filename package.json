@@ -15,12 +15,14 @@
     "migrate:turso:alerts": "npx tsx prisma/migrate-turso-alerts.ts",
     "migrate:turso:compliance": "npx tsx prisma/migrate-turso-compliance.ts",
     "backfill:ato-entities": "npx tsx prisma/backfill-ato-entities.ts",
+    "migrate:turso:analyst": "npx tsx prisma/migrate-turso-analyst.ts",
     "sync": "npx tsx -e \"fetch('http://localhost:3000/api/sync/surveillance-watch', {method:'POST'}).then(r=>r.json()).then(console.log)\""
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.115.0",
     "@auth/prisma-adapter": "^2.11.3",
     "@libsql/client": "^0.17.0",
     "@prisma/adapter-libsql": "^7.5.0",

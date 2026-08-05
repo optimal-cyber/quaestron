@@ -84,6 +84,37 @@ export async function checkRateLimit(
   }
 }
 
+/**
+ * Reads the current window's standing WITHOUT consuming an allowance.
+ *
+ * Needed wherever a limit is user-visible — rendering "3 of 5 left" must not
+ * itself cost one of the 5. Fails open like `checkRateLimit`.
+ */
+export async function peekRateLimit(
+  rule: RateLimitRule,
+  identifier: string
+): Promise<RateLimitResult> {
+  const windowMs = rule.windowSeconds * 1000
+  const now = Date.now()
+  const windowIndex = Math.floor(now / windowMs)
+  const resetAt = (windowIndex + 1) * windowMs
+  const key = `${rule.bucket}:${identifier}:${windowIndex}`
+
+  try {
+    const row = await prisma.rateLimit.findUnique({ where: { key }, select: { count: true } })
+    const count = row?.count ?? 0
+    return {
+      allowed: count < rule.limit,
+      limit: rule.limit,
+      remaining: Math.max(0, rule.limit - count),
+      resetAt,
+    }
+  } catch (err) {
+    console.error('[rate-limit] peek failed, failing open:', err)
+    return { allowed: true, limit: rule.limit, remaining: rule.limit, resetAt }
+  }
+}
+
 export function rateLimitHeaders(result: RateLimitResult): Record<string, string> {
   return {
     'X-RateLimit-Limit': String(result.limit),

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { RISK_FLAG_LABELS, SET_ASIDE_LABELS } from '@/lib/compliance/shared'
 import type { ComplianceRow } from '@/lib/compliance/universe'
 import type { ComplianceInsights } from '@/lib/compliance/insights'
+import AskAnalystButton from '@/components/AskAnalystButton'
 
 interface Facets {
   impactLevels: string[]
@@ -285,6 +286,11 @@ export default function ComplianceClient() {
                   )}
                   {row.smallBusiness && (
                     <span className="ml-2 font-mono text-[9px] text-accent-green">SB</span>
+                  )}
+                  {row.entity && (
+                    <span className="ml-2 inline-block align-middle">
+                      <AskAnalystButton slug={row.entity.slug} name={row.entity.name} compact />
+                    </span>
                   )}
                 </td>
                 <td className="px-3 py-2 font-mono text-[11px] text-foreground max-w-[280px] truncate" title={row.offering}>

@@ -191,11 +191,12 @@ model User {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  accounts    Account[]
-  sessions    Session[]
-  watchlists  Watchlist[]
-  alertRules  AlertRule[]
-  alertEvents AlertEvent[]
+  accounts       Account[]
+  sessions       Session[]
+  watchlists     Watchlist[]
+  alertRules     AlertRule[]
+  alertEvents    AlertEvent[]
+  analystThreads AnalystThread[]
 }
 
 model Account {
@@ -331,6 +332,41 @@ model AlertSnapshot {
 
   @@unique([kind, key])
   @@index([kind])
+}
+
+// ─── AI Analyst ────────────────────────────────────────────────────
+
+model AnalystThread {
+  id     String @id @default(uuid())
+  userId String
+  title  String @default("New thread")
+  /// Set when the thread was opened from a vendor page, so the UI can show
+  /// what it was seeded with and the model gets the context up front.
+  entitySlug String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages AnalystMessage[]
+
+  @@index([userId, updatedAt])
+}
+
+model AnalystMessage {
+  id       String @id @default(uuid())
+  threadId String
+  role     String // USER | ASSISTANT
+  content  String @default("")
+  /// JSON array of {name, input, resultSummary} — replayed into the transcript
+  /// so a reloaded thread shows which datasets an answer came from.
+  toolCalls String   @default("[]")
+  /// Null on user turns and on assistant turns that completed normally.
+  stopReason String?
+  createdAt  DateTime @default(now())
+
+  thread AnalystThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([threadId, createdAt])
 }
 
 // ─── Rate limiting (LibSQL-backed fixed window) ────────────────────

@@ -45,6 +45,7 @@ app/
   vendor/[slug]/   Per-vendor dossier
   ato/             ATO intelligence dashboard
   compliance/      Authorized-cloud universe (ATO <-> contract crosswalk)
+  analyst/         Claude-powered defense-market analyst (streaming chat)
   intel/           RSS feed aggregator
   admin/           Operator panel (ADMIN role required)
   signin/          Auth.js sign-in
@@ -59,6 +60,7 @@ lib/
   ingest/          Source-specific ingest (DISA, FedRAMP, vendor universe)
   match/           Entity name resolution + alias table + ATO->Entity matcher
   compliance/      Crosswalk, universe query, derived insights
+  ai/              Analyst engine, tool surface, quota
   vendor/          Dossier assembly, enrichment, relevance scoring
 prisma/
   schema.prisma    Single schema
@@ -86,6 +88,8 @@ Alerting: `Watchlist`, `WatchlistItem`, `AlertRule`, `AlertEvent`,
 
 Compliance: `entityId` on all three ATO models, plus `AtoMatchReview` for names
 the matcher wouldn't auto-link.
+
+Analyst: `AnalystThread`, `AnalystMessage`.
 
 Several columns hold JSON-encoded arrays (`riskFlags`, `setAsides`,
 `agencyBreakdown`, `naicsCodes`, `sources`) — a deliberate tradeoff for SQLite.
@@ -142,6 +146,7 @@ npx prisma db push --url="file:./dev.db"
 | `npm run migrate:turso:auth` | Apply the auth + rate-limit tables to production Turso |
 | `npm run migrate:turso:alerts` | Apply the watchlist + alert tables to production Turso |
 | `npm run migrate:turso:compliance` | Apply the ATO entityId columns + match-review table |
+| `npm run migrate:turso:analyst` | Apply the analyst thread tables to production Turso |
 | `npm run backfill:ato-entities` | Link ATO rows to entities; `--dry` to preview, `--all` to re-evaluate |
 
 ---
@@ -298,6 +303,27 @@ another company's contracts to a vendor.
 anniversary the assessment is due; an authorization lapses if it isn't met. The
 UI calls this "assessment due", never "expiration".
 
+---
+
+## AI analyst
+
+`/analyst` is a Claude-powered defense-market analyst. It answers only from Iron
+Echelon's own data through six tools that wrap existing internal query functions
+(`lib/ai/tools.ts`) — **the model never writes SQL and has no free-text query
+path into the database**; every tool takes typed parameters mapping onto a fixed
+Prisma query.
+
+Two conventions make the answers trustworthy. Every tool result names its
+`dataset` so the model can cite provenance. And absent data comes back as an
+explicit null plus an availability flag, never a zero — `totalFederalObligated`
+is null until enrichment runs, and a model reading that as "$0" would state that
+a major prime has never won federal work.
+
+Model defaults to `claude-sonnet-5`; override with `ANTHROPIC_MODEL`. Without
+`ANTHROPIC_API_KEY` the page renders and says the analyst is unconfigured.
+Pro/Team are unlimited; Free gets 5 messages/day, metered through the same
+LibSQL fixed-window limiter as the public API.
+
 **On spend:** `Entity.totalFederalObligated` is a cache written by `syncVendor`.
 For an un-enriched vendor it is null, meaning *unknown*, not zero — so the
 "whitespace" insight (authorized but winning nothing) only counts vendors whose
@@ -328,7 +354,7 @@ shipped clients and are not to be broken.
 | 1 | Auth, users, rate limiting, hardening | shipped |
 | 2 | Watchlists + alert engine | shipped |
 | 3 | ATO ↔ contract crosswalk, `/compliance` | shipped |
-| 4 | AI analyst (Claude tool use) | planned |
+| 4 | AI analyst (Claude tool use) | shipped |
 | 5 | Stripe monetization, exports, `/data`, SEO | planned |
 
 Per-phase notes live in `docs/`.

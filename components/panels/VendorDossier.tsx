@@ -3,6 +3,7 @@
 import type { VendorDossier as Dossier } from '@/lib/vendor/build-dossier'
 import WatchButton from '@/components/WatchButton'
 import CompliancePosture from '@/components/panels/CompliancePosture'
+import AskAnalystButton from '@/components/AskAnalystButton'
 
 function fmt(value: number | null | undefined): string {
   const v = value || 0
@@ -81,6 +82,7 @@ export default function VendorDossier({ d }: { d: Dossier }) {
                 {d.identity.website.replace(/^https?:\/\//, '')} ↗
               </a>
             )}
+            <AskAnalystButton slug={d.identity.slug} name={d.identity.name} />
             <WatchButton
               targetType="ENTITY"
               targetId={d.identity.id}
