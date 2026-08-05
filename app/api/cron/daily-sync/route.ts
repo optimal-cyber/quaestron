@@ -1,17 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { fetchLatestDcasXlsx, parseDcasWorkbook, syncDisaData } from '@/lib/ingest/disa'
-import { fetchFromGitHub, syncFedrampData } from '@/lib/ingest/fedramp'
+import { fetchFromGitHub, syncFedrampData, fedrampResumeCursor } from '@/lib/ingest/fedramp'
 import { requireCronRequest } from '@/lib/admin-auth'
 import { runAlertEngine } from '@/lib/alerts/engine'
 import { sendDigests } from '@/lib/alerts/digest'
+
+// Explicit for intent. 300s is both the default and the maximum on Hobby with
+// fluid compute, so this documents the ceiling rather than raising it.
+export const maxDuration = 300
 
 export async function POST(request: NextRequest) {
   const cron = requireCronRequest(request)
   if (!cron.ok) return cron.response
 
+  // The function ceiling is 300s (Hobby + fluid compute; also the maximum).
+  // Each step gets an explicit slice so no single one can starve the rest, and
+  // the FedRAMP loop stops on its slice rather than being killed mid-write.
+  const RUN_STARTED = Date.now()
+  const TOTAL_BUDGET_MS = 300_000
+  const SAFETY_MARGIN_MS = 45_000
+  const FEDRAMP_SLICE_MS = 150_000
+
   try {
     const summary: Record<string, unknown> = {}
+    summary.budget = { totalMs: TOTAL_BUDGET_MS, fedrampSliceMs: FEDRAMP_SLICE_MS }
 
     // ── Step 1: FedRAMP sync from GitHub ──────────────────────────────
     // Delegates to lib/ingest/fedramp.ts rather than mapping inline. This route
@@ -22,12 +35,24 @@ export async function POST(request: NextRequest) {
     try {
       console.log('[ATO] Fetching FedRAMP data from GitHub...')
       const { data, sourceLabel } = await fetchFromGitHub()
-      console.log(`[ATO] Processing ${data.length} FedRAMP records from ${sourceLabel}...`)
-      const result = await syncFedrampData(data)
+      const cursor = await fedrampResumeCursor()
+      console.log(
+        `[ATO] Processing ${data.length} FedRAMP records from ${sourceLabel}` +
+          (cursor ? ` (resuming after ${cursor})` : '')
+      )
+      const result = await syncFedrampData(data, {
+        deadline: RUN_STARTED + FEDRAMP_SLICE_MS,
+        cursor,
+      })
       summary.fedramp = {
         added: result.added,
         updated: result.updated,
         failed: result.failed,
+        processed: result.processed,
+        completed: result.completed,
+        // Present only on a partial run; the next invocation starts here rather
+        // than repeating the same prefix forever.
+        resumeAfter: result.cursor,
         source: sourceLabel,
       }
     } catch (err) {
@@ -42,7 +67,14 @@ export async function POST(request: NextRequest) {
     }
 
     // ── Step 2: DISA DCAS sync (probe dl.dod.cyber.mil) ───────────────
-    try {
+    // Skipped when FedRAMP used the budget. DISA is once-every-few-months data;
+    // losing a day of it costs far less than being killed mid-run and leaving
+    // the alert steps below unexecuted.
+    const budgetLeft = () => TOTAL_BUDGET_MS - (Date.now() - RUN_STARTED)
+    if (budgetLeft() < SAFETY_MARGIN_MS) {
+      console.warn('[ATO] Skipping DISA sync — insufficient budget remaining')
+      summary.disa = { skipped: 'insufficient budget remaining' }
+    } else try {
       console.log('[ATO] Probing dl.dod.cyber.mil for latest DCAS xlsx...')
       const { buffer, url } = await fetchLatestDcasXlsx()
       const records = parseDcasWorkbook(buffer)
@@ -173,6 +205,8 @@ export async function POST(request: NextRequest) {
       console.error('[alerts] daily digest failed:', err)
       summary.digest = { error: err instanceof Error ? err.message : String(err) }
     }
+
+    summary.elapsedMs = Date.now() - RUN_STARTED
 
     return NextResponse.json({
       message: 'Daily sync complete',

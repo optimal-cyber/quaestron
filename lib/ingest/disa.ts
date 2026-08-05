@@ -8,6 +8,10 @@ const DCAS_URL_PREFIX =
   'https://dl.dod.cyber.mil/wp-content/uploads/cloud/xls/DCAS+Current+Authorized+CSOs+-+'
 const DCAS_URL_SUFFIX = '.xlsx'
 const PROBE_DAYS = 35
+/** Per-probe ceiling. 36 probes x 8s worst case stays well inside the budget. */
+const PROBE_TIMEOUT_MS = 8_000
+/** Overall ceiling for the probe walk, independent of how many URLs remain. */
+const PROBE_TOTAL_MS = 60_000
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -108,13 +112,25 @@ export async function fetchLatestDcasXlsx(
   const start = options.startDate ?? new Date()
 
   const tried: string[] = []
+  const probeDeadline = Date.now() + PROBE_TOTAL_MS
   for (let i = 0; i <= daysBack; i++) {
+    if (Date.now() >= probeDeadline) {
+      throw new Error(
+        `DCAS probe exceeded ${PROBE_TOTAL_MS / 1000}s after ${tried.length} URLs; giving up so the rest of the sync can run`
+      )
+    }
     const probe = new Date(start)
     probe.setUTCDate(probe.getUTCDate() - i)
     const url = dcasUrlForDate(probe)
     tried.push(url)
     try {
-      const res = await fetch(url, { redirect: 'follow' })
+      // Bounded explicitly: this is a bare fetch to a .mil host, not the
+      // retrying client, and 36 unbounded probes can consume the entire
+      // function budget on their own if the host stalls.
+      const res = await fetch(url, {
+        redirect: 'follow',
+        signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+      })
       if (res.ok) {
         const buffer = Buffer.from(await res.arrayBuffer())
         console.log(`${LOG_PREFIX} Found DCAS xlsx: ${url} (${buffer.length} bytes)`)
