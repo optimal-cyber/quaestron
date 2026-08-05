@@ -1,5 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { prisma } from '@/lib/db'
+import { requireAdminRequest } from '@/lib/admin-auth'
+
+/**
+ * ATO alert feed.
+ *
+ * The PUT was unauthenticated: it took an `id` from the body and set
+ * `acknowledged: true` on any AtoAlert. Anyone could walk the GET feed, PUT
+ * every id back, and empty the alert list. That is worse than a destructive
+ * write, because nothing looks broken afterwards — an operator sees a clean
+ * board and concludes there is nothing expiring.
+ *
+ * AtoAlert carries no userId; these are system-wide alerts, not per-user rows,
+ * so there is no owner to check against. The correct guard is therefore admin,
+ * not ownership. Nothing in the app calls this PUT today — the acknowledge flow
+ * lives in /admin — so restricting it breaks no caller.
+ */
+
+const AcknowledgeSchema = z.object({
+  id: z.string().uuid(),
+})
 
 export async function GET(request: NextRequest) {
   try {
@@ -30,19 +51,24 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  try {
-    const body = await request.json()
-    const { id } = body
+  const auth = await requireAdminRequest(request)
+  if (!auth.ok) return auth.response
 
-    if (!id) {
-      return NextResponse.json(
-        { error: 'Alert id is required' },
-        { status: 400 }
-      )
+  try {
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+    }
+
+    const parsed = AcknowledgeSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Alert id is required' }, { status: 400 })
     }
 
     const alert = await prisma.atoAlert.update({
-      where: { id },
+      where: { id: parsed.data.id },
       data: { acknowledged: true },
     })
 

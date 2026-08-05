@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { enforceRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 
 interface FeedSource {
   name: string
@@ -181,7 +182,25 @@ function cleanHtml(text: string): string {
     .trim()
 }
 
-export async function GET() {
+/**
+ * Aggregated RSS/Atom intel feed.
+ *
+ * A cache miss fans out to ~62 third-party hosts. The Next.js Data Cache
+ * (`next.revalidate: 900` on each fetch) absorbs the common case — repeats
+ * inside a 15-minute window are served without touching upstream, shared across
+ * instances — so this is not one fan-out per pageview. The rate limit bounds
+ * what a caller can do when the cache is cold, which is the only window in
+ * which this endpoint can act as an amplifier.
+ *
+ * Serving from a table populated on a schedule would remove the fan-out from
+ * the request path entirely, and would also make /intel resilient to an
+ * upstream host being down rather than silently dropping that source. Tracked
+ * separately; the limit is the security-relevant part.
+ */
+export async function GET(request: NextRequest) {
+  const limited = await enforceRateLimit(request, RATE_LIMITS.intelFeeds)
+  if (limited.response) return limited.response
+
   const results: FeedItem[] = []
 
   const feedPromises = FEEDS.map(async (feed) => {
@@ -191,7 +210,7 @@ export async function GET() {
 
       const res = await fetch(feed.url, {
         signal: controller.signal,
-        headers: { 'User-Agent': 'IronEchelon/1.0 RSS Reader' },
+        headers: { 'User-Agent': 'Quaestron/1.0 RSS Reader' },
         next: { revalidate: 900 }, // Cache 15 min
       })
       clearTimeout(timeout)
@@ -212,7 +231,7 @@ export async function GET() {
       const timeout = setTimeout(() => controller.abort(), 8000)
       const res = await fetch('https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json', {
         signal: controller.signal,
-        headers: { 'User-Agent': 'IronEchelon/1.0 RSS Reader' },
+        headers: { 'User-Agent': 'Quaestron/1.0 RSS Reader' },
         next: { revalidate: 900 },
       })
       clearTimeout(timeout)
@@ -246,9 +265,12 @@ export async function GET() {
     return dateB - dateA
   })
 
-  return NextResponse.json({
-    items: results,
-    sources: FEEDS.map((f) => ({ name: f.name, category: f.category })),
-    fetchedAt: new Date().toISOString(),
-  })
+  return NextResponse.json(
+    {
+      items: results,
+      sources: FEEDS.map((f) => ({ name: f.name, category: f.category })),
+      fetchedAt: new Date().toISOString(),
+    },
+    { headers: limited.headers }
+  )
 }

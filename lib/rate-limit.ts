@@ -35,6 +35,19 @@ export const RATE_LIMITS = {
   vendor: { bucket: 'vendor', limit: 60, windowSeconds: 60 },
   /** On-demand enrichment is expensive (external APIs) — keep it tight. */
   vendorSync: { bucket: 'vendor-sync', limit: 5, windowSeconds: 300 },
+  /**
+   * A cache miss fans out to ~62 third-party RSS hosts. The Next.js Data Cache
+   * absorbs the common case, but the limit bounds what a miss storm can cost
+   * those hosts — and us — when the cache is cold.
+   */
+  intelFeeds: { bucket: 'intel-feeds', limit: 30, windowSeconds: 60 },
+  /**
+   * Nominatim's usage policy is enforced by IP ban, and the ban lands on us,
+   * not the caller. Deliberately tighter than the read endpoints.
+   */
+  geocode: { bucket: 'geocode', limit: 20, windowSeconds: 60 },
+  /** Unauthenticated write. Generous for a human, useless for a script. */
+  submissions: { bucket: 'submissions', limit: 5, windowSeconds: 3600 },
 } as const satisfies Record<string, RateLimitRule>
 
 /** Best-effort client identity: first hop of x-forwarded-for, else a shared bucket. */

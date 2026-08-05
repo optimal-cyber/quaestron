@@ -37,6 +37,9 @@ export default function SubmitPage() {
     sourceUrl1: '',
     sourceUrl2: '',
     sourceUrl3: '',
+    // Honeypot: rendered off-screen and hidden from assistive tech, never
+    // filled by a human. Any value means a bot walked the DOM.
+    company_website: '',
   })
 
   const update = (field: string, value: string) => {
@@ -68,6 +71,8 @@ export default function SubmitPage() {
           description: form.description,
           connectionInfo: form.connectionInfo,
           sourceUrls,
+          // Honeypot — always empty for a real user. See app/api/submissions.
+          company_website: form.company_website,
         }),
       })
 
@@ -111,7 +116,7 @@ export default function SubmitPage() {
               </p>
               <div className="flex gap-3 justify-center">
                 <button
-                  onClick={() => { setSubmitted(false); setForm({ submitterEmail: '', entityName: '', entityType: '', website: '', headquartersCountry: '', description: '', connectionInfo: '', sourceUrl1: '', sourceUrl2: '', sourceUrl3: '' }) }}
+                  onClick={() => { setSubmitted(false); setForm({ submitterEmail: '', entityName: '', entityType: '', website: '', headquartersCountry: '', description: '', connectionInfo: '', sourceUrl1: '', sourceUrl2: '', sourceUrl3: '', company_website: '' }) }}
                   className="px-4 py-2 bg-surface border border-border rounded font-mono text-xs tracking-wider text-foreground hover:bg-surface-hover transition-colors"
                 >
                   SUBMIT ANOTHER
@@ -126,6 +131,21 @@ export default function SubmitPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/*
+                Honeypot. Positioned off-screen rather than `display: none`,
+                which some bots check for; aria-hidden and tabIndex -1 keep it
+                out of the path of anyone using a screen reader or keyboard.
+              */}
+              <input
+                type="text"
+                name="company_website"
+                value={form.company_website}
+                onChange={(e) => update('company_website', e.target.value)}
+                className="absolute left-[-9999px] w-px h-px"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+              />
               {/* Entity Name */}
               <div>
                 <label className="block font-mono text-[10px] tracking-[0.2em] text-muted mb-2">
