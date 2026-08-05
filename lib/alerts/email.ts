@@ -122,7 +122,7 @@ export function renderDigestHtml(payload: DigestPayload): string {
         <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:620px;">
           <tr>
             <td style="padding-bottom:20px;border-bottom:1px solid ${PALETTE.border};">
-              <div style="font-family:${MONO};font-size:13px;letter-spacing:.2em;color:${PALETTE.red};font-weight:bold;">&#x276E; IRON ECHELON</div>
+              <div style="font-family:${MONO};font-size:13px;letter-spacing:.2em;color:${PALETTE.red};font-weight:bold;">&#x276E; QUAESTRON</div>
               <div style="font-family:${MONO};font-size:10px;letter-spacing:.28em;color:${PALETTE.muted};margin-top:6px;">${heading}</div>
               <div style="font-family:${MONO};font-size:11px;color:${PALETTE.mutedForeground};margin-top:10px;">
                 ${events.length} ${events.length === 1 ? 'signal' : 'signals'} since your last digest.
@@ -159,7 +159,7 @@ export function renderDigestHtml(payload: DigestPayload): string {
 
 export function renderDigestText(payload: DigestPayload): string {
   const lines = [
-    `IRON ECHELON — ${payload.cadence === 'DAILY' ? 'DAILY' : 'WEEKLY'} INTELLIGENCE DIGEST`,
+    `QUAESTRON — ${payload.cadence === 'DAILY' ? 'DAILY' : 'WEEKLY'} INTELLIGENCE DIGEST`,
     `${payload.events.length} signal(s) since your last digest.`,
     '',
   ]

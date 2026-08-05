@@ -64,7 +64,7 @@ export default function OGImage() {
               textTransform: 'uppercase' as const,
             }}
           >
-            IRON ECHELON
+            QUAESTRON
           </span>
         </div>
 

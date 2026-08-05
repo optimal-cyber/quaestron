@@ -590,7 +590,7 @@ export default function AdminPage() {
 
           {/* Data Source footer */}
           <div className="text-[9px] font-mono text-muted tracking-wider pb-4">
-            ADMIN PANEL — <span className="text-accent-red">IRON ECHELON</span> — AUTHORIZED PERSONNEL ONLY
+            ADMIN PANEL — <span className="text-accent-red">QUAESTRON</span> — AUTHORIZED PERSONNEL ONLY
           </div>
         </div>
       </div>
