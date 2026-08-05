@@ -194,57 +194,97 @@ const GlobeOverlays = memo(function GlobeOverlays({
   )
 })
 
-// Pulsing target marker for selected entity HQ
+/**
+ * Selected-entity marker.
+ *
+ * Was three concentric rings pulsing at different rates — a radar ping, which
+ * on a static screenshot reads as a sound wave rather than a selection. It also
+ * competed with the connection arcs for attention in the same colour.
+ *
+ * Now a targeting reticle: a fixed crosshair with corner brackets and a single
+ * slow expanding pulse. Brackets are geometry rather than animation, so the
+ * selection stays legible when the frame is paused, which is how it will be
+ * seen in a screenshot or a deck.
+ */
 function HQMarker({ lat, lon }: { lat: number; lon: number }) {
-  const ringRef = useRef<THREE.Mesh>(null)
-  const ring2Ref = useRef<THREE.Mesh>(null)
-  const ring3Ref = useRef<THREE.Mesh>(null)
-  const position = latLonToVector3(lat, lon, 1.215)
+  const pulseRef = useRef<THREE.Mesh>(null)
+  const groupRef = useRef<THREE.Group>(null)
+  const position = useMemo(() => latLonToVector3(lat, lon, 1.212), [lat, lon])
 
-  // Make marker face outward from globe surface
-  const normal = new THREE.Vector3(...position).normalize()
+  /** Four L-shaped corner brackets, drawn as line segments. */
+  const brackets = useMemo(() => {
+    const r = 0.055      // bracket distance from centre
+    const arm = 0.022    // arm length
+    const pts: number[] = []
+    for (const [sx, sy] of [[1, 1], [-1, 1], [-1, -1], [1, -1]] as const) {
+      const x = r * sx
+      const y = r * sy
+      // Horizontal arm, then vertical arm, forming the corner.
+      pts.push(x, y, 0, x - arm * sx, y, 0)
+      pts.push(x, y, 0, x, y - arm * sy, 0)
+    }
+    const g = new THREE.BufferGeometry()
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3))
+    return g
+  }, [])
 
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime()
-    if (ringRef.current) {
-      const scale = 1 + Math.sin(t * 3) * 0.3
-      ringRef.current.scale.set(scale, scale, scale)
-      ;(ringRef.current.material as THREE.MeshBasicMaterial).opacity = 0.9 - Math.sin(t * 3) * 0.3
-    }
-    if (ring2Ref.current) {
-      const scale = 1.5 + Math.sin(t * 2) * 0.5
-      ring2Ref.current.scale.set(scale, scale, scale)
-      ;(ring2Ref.current.material as THREE.MeshBasicMaterial).opacity = 0.5 - Math.sin(t * 2) * 0.2
-    }
-    if (ring3Ref.current) {
-      const scale = 2.2 + Math.sin(t * 1.5) * 0.8
-      ring3Ref.current.scale.set(scale, scale, scale)
-      ;(ring3Ref.current.material as THREE.MeshBasicMaterial).opacity = 0.2 - Math.sin(t * 1.5) * 0.1
+  /** Crosshair ticks, leaving the centre clear so the core dot stays readable. */
+  const crosshair = useMemo(() => {
+    const inner = 0.026
+    const outer = 0.04
+    const pts = [
+      inner, 0, 0, outer, 0, 0,
+      -inner, 0, 0, -outer, 0, 0,
+      0, inner, 0, 0, outer, 0,
+      0, -inner, 0, 0, -outer, 0,
+    ]
+    const g = new THREE.BufferGeometry()
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3))
+    return g
+  }, [])
+
+  useFrame(({ camera, clock }) => {
+    // Billboard, so the reticle reads as an overlay rather than something
+    // painted onto the terrain at an angle.
+    groupRef.current?.lookAt(camera.position)
+
+    if (pulseRef.current) {
+      // One slow pulse, not three competing ones. Fades as it expands so it
+      // reads as a ping outward rather than a throb.
+      const t = (clock.getElapsedTime() % 2.6) / 2.6
+      const scale = 1 + t * 2.4
+      pulseRef.current.scale.set(scale, scale, scale)
+      ;(pulseRef.current.material as THREE.MeshBasicMaterial).opacity = 0.5 * (1 - t) ** 2
     }
   })
 
   return (
-    <group position={position} onUpdate={(self) => self.lookAt(normal.clone().multiplyScalar(2))}>
-      {/* Center dot */}
+    <group ref={groupRef} position={position} renderOrder={11}>
+      {/* Expanding ping */}
+      <mesh ref={pulseRef}>
+        <ringGeometry args={[0.03, 0.034, 48]} />
+        <meshBasicMaterial color="#C8102E" transparent opacity={0.5} side={THREE.DoubleSide} depthWrite={false} depthTest={false} />
+      </mesh>
+
+      {/* Fixed inner ring */}
       <mesh>
-        <sphereGeometry args={[0.018, 16, 16]} />
-        <meshBasicMaterial color="#C8102E" />
+        <ringGeometry args={[0.024, 0.028, 48]} />
+        <meshBasicMaterial color="#C8102E" transparent opacity={0.85} side={THREE.DoubleSide} depthWrite={false} depthTest={false} />
       </mesh>
-      {/* Inner pulsing ring */}
-      <mesh ref={ringRef}>
-        <ringGeometry args={[0.03, 0.042, 32]} />
-        <meshBasicMaterial color="#C8102E" transparent opacity={0.9} side={THREE.DoubleSide} />
+
+      {/* Core */}
+      <mesh>
+        <circleGeometry args={[0.009, 20]} />
+        <meshBasicMaterial color="#FF3B52" depthWrite={false} depthTest={false} />
       </mesh>
-      {/* Mid pulsing ring */}
-      <mesh ref={ring2Ref}>
-        <ringGeometry args={[0.055, 0.065, 32]} />
-        <meshBasicMaterial color="#C8102E" transparent opacity={0.5} side={THREE.DoubleSide} />
-      </mesh>
-      {/* Outer pulsing ring */}
-      <mesh ref={ring3Ref}>
-        <ringGeometry args={[0.08, 0.09, 32]} />
-        <meshBasicMaterial color="#C8102E" transparent opacity={0.2} side={THREE.DoubleSide} />
-      </mesh>
+
+      <lineSegments geometry={crosshair}>
+        <lineBasicMaterial color="#C8102E" transparent opacity={0.75} depthWrite={false} depthTest={false} />
+      </lineSegments>
+
+      <lineSegments geometry={brackets}>
+        <lineBasicMaterial color="#C8102E" transparent opacity={0.9} depthWrite={false} depthTest={false} />
+      </lineSegments>
     </group>
   )
 }
