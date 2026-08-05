@@ -20,7 +20,8 @@
     "migrate:turso:sync-cursor": "npx tsx prisma/migrate-turso-sync-cursor.ts",
     "sync": "npx tsx -e \"fetch('http://localhost:3000/api/sync/surveillance-watch', {method:'POST'}).then(r=>r.json()).then(console.log)\"",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "check:sync": "tsx scripts/check-sync.ts"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
