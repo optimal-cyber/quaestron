@@ -4,6 +4,7 @@ import React, { useEffect, useState, useMemo } from 'react'
 import TopNav from '@/components/layout/TopNav'
 import BottomBar from '@/components/layout/BottomBar'
 import SearchCommand from '@/components/layout/SearchCommand'
+import ExportButton from '@/components/ExportButton'
 import { useAppStore } from '@/lib/store'
 
 interface ContractRow {
@@ -166,9 +167,12 @@ export default function ContractsPage() {
           <h1 className="font-mono text-lg md:text-2xl tracking-[0.15em] text-foreground mb-2">
             GOVERNMENT CONTRACTS & INVESTMENTS
           </h1>
-          <p className="text-sm text-slate-400 mb-4">
-            Federal contract awards, SBIR/STTR research grants, and investment relationships.
-          </p>
+          <div className="flex items-baseline justify-between gap-4 flex-wrap mb-4">
+            <p className="text-sm text-slate-400">
+              Federal contract awards, SBIR/STTR research grants, and investment relationships.
+            </p>
+            <ExportButton endpoint="/api/export/contracts" />
+          </div>
 
           {/* Tabs */}
           <div className="flex items-center gap-2 md:gap-4 mb-4 overflow-x-auto">

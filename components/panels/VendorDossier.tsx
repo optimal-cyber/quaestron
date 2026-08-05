@@ -4,6 +4,7 @@ import type { VendorDossier as Dossier } from '@/lib/vendor/build-dossier'
 import WatchButton from '@/components/WatchButton'
 import CompliancePosture from '@/components/panels/CompliancePosture'
 import AskAnalystButton from '@/components/AskAnalystButton'
+import ExportButton from '@/components/ExportButton'
 
 function fmt(value: number | null | undefined): string {
   const v = value || 0
@@ -82,6 +83,11 @@ export default function VendorDossier({ d }: { d: Dossier }) {
                 {d.identity.website.replace(/^https?:\/\//, '')} ↗
               </a>
             )}
+            <ExportButton
+              endpoint="/api/export/crosswalk"
+              params={{ entity: d.identity.slug }}
+              label="EXPORT DOSSIER"
+            />
             <AskAnalystButton slug={d.identity.slug} name={d.identity.name} />
             <WatchButton
               targetType="ENTITY"

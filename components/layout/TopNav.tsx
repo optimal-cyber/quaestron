@@ -16,6 +16,7 @@ const navItems = [
   { href: '/compliance', label: 'COMPLIANCE' },
   { href: '/analyst', label: 'ANALYST' },
   { href: '/intel', label: 'INTEL' },
+  { href: '/data', label: 'DATA' },
   { href: '/about', label: 'ABOUT' },
 ]
 

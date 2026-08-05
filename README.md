@@ -46,6 +46,8 @@ app/
   ato/             ATO intelligence dashboard
   compliance/      Authorized-cloud universe (ATO <-> contract crosswalk)
   analyst/         Claude-powered defense-market analyst (streaming chat)
+  data/            Public live coverage statistics
+  compliance/cso/[packageId]/  Per-offering SEO landing page
   intel/           RSS feed aggregator
   admin/           Operator panel (ADMIN role required)
   signin/          Auth.js sign-in
@@ -61,6 +63,9 @@ lib/
   match/           Entity name resolution + alias table + ATO->Entity matcher
   compliance/      Crosswalk, universe query, derived insights
   ai/              Analyst engine, tool surface, quota
+  export/          CSV/XLSX builder with provenance footer
+  coverage.ts      Live /data statistics
+  seo.ts           Metadata builders for programmatic pages
   vendor/          Dossier assembly, enrichment, relevance scoring
 prisma/
   schema.prisma    Single schema
@@ -140,6 +145,8 @@ npx prisma db push --url="file:./dev.db"
 | `npm run dev` | Dev server (Turbopack) |
 | `npm run build` | `prisma generate` + `next build` |
 | `npm run lint` | ESLint |
+| `npm test` | Vitest suite (disposable DB, never touches dev.db) |
+| `npm run test:watch` | Vitest in watch mode |
 | `npm run seed` | Seed base entities |
 | `npm run seed:sbir` | Seed SBIR/STTR awards |
 | `npm run admin:promote -- <email>` | Grant ADMIN (creates the user if absent); `--demote` to revoke |
@@ -147,6 +154,7 @@ npx prisma db push --url="file:./dev.db"
 | `npm run migrate:turso:alerts` | Apply the watchlist + alert tables to production Turso |
 | `npm run migrate:turso:compliance` | Apply the ATO entityId columns + match-review table |
 | `npm run migrate:turso:analyst` | Apply the analyst thread tables to production Turso |
+| `npm run migrate:turso:indexes` | Apply the Phase 5 query indexes to production Turso |
 | `npm run backfill:ato-entities` | Link ATO rows to entities; `--dry` to preview, `--all` to re-evaluate |
 
 ---
@@ -355,6 +363,41 @@ shipped clients and are not to be broken.
 | 2 | Watchlists + alert engine | shipped |
 | 3 | ATO ↔ contract crosswalk, `/compliance` | shipped |
 | 4 | AI analyst (Claude tool use) | shipped |
-| 5 | Stripe monetization, exports, `/data`, SEO | planned |
+| 5 | Exports, `/data`, SEO/ISR, test suite | shipped |
+| 5b | Stripe billing | deferred — needs Vercel Marketplace provisioning |
 
-Per-phase notes live in `docs/`.
+Per-phase notes live in `docs/`; a condensed history is in `CHANGELOG.md`.
+
+---
+
+## Testing
+
+```bash
+npm test
+```
+
+Vitest, covering the two subsystems with the highest regression risk: the
+ATO↔entity matcher and the alert-rule evaluators.
+
+`tests/global-setup.ts` provisions a **disposable** SQLite database and points
+`TURSO_DATABASE_URL` at it before any test imports the Prisma client. That
+matters: `lib/db.ts` falls back to `file:dev.db`, so without it a test run would
+mutate the development database — and with a populated `.env`, production.
+
+The matcher tests build their fixture by hand rather than reading the database,
+so they pin behaviour rather than tracking whatever data happens to be present.
+Every "must not match" case is a false positive an earlier implementation
+actually produced.
+
+---
+
+## Exports
+
+CSV and XLSX exports on `/compliance`, `/contracts`, and per-vendor crosswalks,
+gated to Pro at the route. Both formats are driven from one sheet model so they
+cannot drift.
+
+Every file carries a provenance footer — generation timestamp, row count,
+attribution, and the dataset's own caveats. A spreadsheet outlives the page it
+came from and gets forwarded without context, so a blank obligation figure says
+in the file that it means *unknown*, not zero.

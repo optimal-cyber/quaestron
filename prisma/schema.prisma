@@ -7,6 +7,22 @@ datasource db {
   provider = "sqlite"
 }
 
+/// JSON-column tradeoff (Phase 5 review, deliberately retained):
+///
+/// `setAsides`, `riskFlags`, `naicsCodes`, `agencyBreakdown`, and `sources` hold
+/// JSON-encoded arrays in TEXT columns. Filtering them means a substring match
+/// on the serialized form (`setAsides contains '"SDVOSB"'`), which is exact in
+/// practice only because the values are quoted enum-like tokens with no
+/// substring collisions among them.
+///
+/// The correct fix is a join table (EntitySetAside), and it is NOT done here.
+/// The reason is honest rather than principled: the set-aside filter runs over
+/// ~2k entities against an already-narrowed authorization set, so it is not a
+/// measured bottleneck, and a join-table migration touches syncVendor, the
+/// dossier, the crosswalk, the universe query, the analyst tools, and the
+/// exports. Revisit when either the entity count passes ~50k or a filter shows
+/// up in slow queries — the substring match is a correctness hazard only if a
+/// new token is ever added that is a substring of another.
 model Entity {
   id                    String   @id @default(uuid())
   name                  String
@@ -115,6 +131,17 @@ model Contract {
 
   entity Entity  @relation("ContractEntity", fields: [entityId], references: [id])
   agency Entity? @relation("ContractAgency", fields: [agencyId], references: [id])
+
+  // This table had no indexes at all despite being filtered by entityId on the
+  // vendor dossier, the crosswalk, the analyst tools, and the exports.
+  @@index([entityId])
+  @@index([agencyId])
+  // The alert engine's new-row lookback scans by createdAt every cron run.
+  @@index([createdAt])
+  // Contract lists and exports sort by value descending.
+  @@index([value])
+  // Partial-ish: NEW_CONTRACT excludes SBIR rows, NEW_SBIR_AWARD requires them.
+  @@index([sbirProgram])
 }
 
 model FundingRound {
@@ -146,6 +173,10 @@ model NewsItem {
   createdAt   DateTime @default(now())
 
   relatedEntities NewsItemEntity[]
+
+  // NEWS_MENTION filters on the parent item's createdAt each cron run.
+  @@index([createdAt])
+  @@index([publishedAt])
 }
 
 model NewsItemEntity {

@@ -6,6 +6,7 @@ import { RISK_FLAG_LABELS, SET_ASIDE_LABELS } from '@/lib/compliance/shared'
 import type { ComplianceRow } from '@/lib/compliance/universe'
 import type { ComplianceInsights } from '@/lib/compliance/insights'
 import AskAnalystButton from '@/components/AskAnalystButton'
+import ExportButton from '@/components/ExportButton'
 
 interface Facets {
   impactLevels: string[]
@@ -239,8 +240,23 @@ export default function ComplianceClient() {
       </section>
 
       <div className="flex items-baseline justify-between gap-3 flex-wrap">
-        <div className="font-mono text-[10px] text-muted">
-          {loading ? 'QUERYING…' : `${total} AUTHORIZATION${total === 1 ? '' : 'S'}`}
+        <div className="flex items-center gap-3 flex-wrap">
+          <span className="font-mono text-[10px] text-muted">
+            {loading ? 'QUERYING…' : `${total} AUTHORIZATION${total === 1 ? '' : 'S'}`}
+          </span>
+          <ExportButton
+            endpoint="/api/export/compliance"
+            params={{
+              ...(search ? { search } : {}),
+              ...(impactLevel ? { impactLevel } : {}),
+              ...(status ? { status } : {}),
+              ...(agency ? { agency } : {}),
+              ...(businessSize ? { businessSize } : {}),
+              ...(setAside ? { setAside } : {}),
+              ...(expiring ? { expiringWithinDays: expiring } : {}),
+              ...(source ? { source } : {}),
+            }}
+          />
         </div>
         <div className="font-mono text-[9px] text-muted max-w-xl text-right leading-relaxed">
           FedRAMP has no hard expiry — the date shown is the next annual assessment due
@@ -293,8 +309,17 @@ export default function ComplianceClient() {
                     </span>
                   )}
                 </td>
-                <td className="px-3 py-2 font-mono text-[11px] text-foreground max-w-[280px] truncate" title={row.offering}>
-                  {row.offering}
+                <td className="px-3 py-2 font-mono text-[11px] max-w-[280px] truncate" title={row.offering}>
+                  {row.packageId ? (
+                    <Link
+                      href={`/compliance/cso/${row.packageId}`}
+                      className="text-foreground hover:text-accent-blue hover:underline"
+                    >
+                      {row.offering}
+                    </Link>
+                  ) : (
+                    <span className="text-foreground">{row.offering}</span>
+                  )}
                 </td>
                 <td className="px-3 py-2">
                   <span

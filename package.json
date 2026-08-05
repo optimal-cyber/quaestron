@@ -16,7 +16,10 @@
     "migrate:turso:compliance": "npx tsx prisma/migrate-turso-compliance.ts",
     "backfill:ato-entities": "npx tsx prisma/backfill-ato-entities.ts",
     "migrate:turso:analyst": "npx tsx prisma/migrate-turso-analyst.ts",
-    "sync": "npx tsx -e \"fetch('http://localhost:3000/api/sync/surveillance-watch', {method:'POST'}).then(r=>r.json()).then(console.log)\""
+    "migrate:turso:indexes": "npx tsx prisma/migrate-turso-indexes.ts",
+    "sync": "npx tsx -e \"fetch('http://localhost:3000/api/sync/surveillance-watch', {method:'POST'}).then(r=>r.json()).then(console.log)\"",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
@@ -56,6 +59,7 @@
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }

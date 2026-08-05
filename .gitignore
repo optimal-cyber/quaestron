@@ -49,3 +49,6 @@ next-env.d.ts
 *.db
 *.db-journal
 dev-db-dump.sql
+
+# Vitest disposable database
+.test-db/

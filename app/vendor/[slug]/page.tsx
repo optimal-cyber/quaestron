@@ -1,61 +1,54 @@
-'use client'
+import type { Metadata } from 'next'
+import { SITE_URL, vendorDescription, vendorSeo } from '@/lib/seo'
+import VendorPageClient from './VendorPageClient'
 
-import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
-import TopNav from '@/components/layout/TopNav'
-import BottomBar from '@/components/layout/BottomBar'
-import SearchCommand from '@/components/layout/SearchCommand'
-import VendorDossier from '@/components/panels/VendorDossier'
-import type { VendorDossier as Dossier } from '@/lib/vendor/build-dossier'
+/**
+ * Server half of the vendor page: metadata, canonical URL, and revalidation.
+ *
+ * Revalidated daily. The page shell is what gets cached — the dossier itself is
+ * fetched client-side, so an on-demand vendor build is unaffected by the cache
+ * and a stale shell never serves stale compliance data.
+ */
+export const revalidate = 86400
 
-export default function VendorPage() {
-  const params = useParams<{ slug: string }>()
-  const slug = params?.slug
-  const [dossier, setDossier] = useState<Dossier | null>(null)
-  const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading')
-  const [searchOpen, setSearchOpen] = useState(false)
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const seo = await vendorSeo(slug)
 
-  useEffect(() => {
-    if (!slug) return
-    let cancelled = false
-    setState('loading')
-    // On-demand build of a brand-new vendor passes ?name= from the directory.
-    const name = new URLSearchParams(window.location.search).get('name')
-    const url = `/api/vendor/${slug}${name ? `?name=${encodeURIComponent(name)}` : ''}`
-    fetch(url)
-      .then((r) => (r.ok ? r.json() : Promise.reject(r)))
-      .then((d: Dossier) => { if (!cancelled) { setDossier(d); setState('ready') } })
-      .catch(() => { if (!cancelled) setState('error') })
-    return () => { cancelled = true }
-  }, [slug])
+  // An unknown slug may still be built on demand, so this stays indexable-neutral
+  // rather than asserting a vendor that might not exist.
+  if (!seo) {
+    return {
+      title: 'Vendor — Iron Echelon',
+      description: 'Federal compliance and contract intelligence for defense technology vendors.',
+      robots: { index: false, follow: true },
+    }
+  }
 
-  return (
-    <div className="h-screen w-screen overflow-hidden flex flex-col">
-      <TopNav onSearchOpen={() => setSearchOpen(true)} />
-      <SearchCommand />
+  const title = `${seo.name} — Compliance & Federal Contracts | Iron Echelon`
+  const description = vendorDescription(seo)
+  const url = `${SITE_URL}/vendor/${seo.slug}`
 
-      <div className="flex-1 pt-12 pb-7 bg-background overflow-y-auto">
-        {state === 'loading' && (
-          <div className="max-w-5xl mx-auto p-8 space-y-4">
-            <div className="h-9 w-72 bg-surface rounded animate-pulse" />
-            <div className="text-xs font-mono text-muted">Compiling vendor dossier — pulling SAM, USAspending, FedRAMP, SBIR…</div>
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-32 bg-surface/50 border border-border rounded-lg animate-pulse" />
-            ))}
-          </div>
-        )}
-        {state === 'error' && (
-          <div className="max-w-5xl mx-auto p-8 text-center">
-            <div className="font-mono text-sm text-accent-red mb-2">VENDOR NOT FOUND</div>
-            <p className="text-xs text-muted font-mono">
-              No dossier could be built for “{slug}”. Try searching by the vendor’s legal name.
-            </p>
-          </div>
-        )}
-        {state === 'ready' && dossier && <VendorDossier d={dossier} />}
-      </div>
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: 'Iron Echelon',
+      type: 'profile',
+    },
+    twitter: { card: 'summary_large_image', title, description },
+  }
+}
 
-      <BottomBar />
-    </div>
-  )
+export default async function VendorPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  return <VendorPageClient slug={slug} />
 }
