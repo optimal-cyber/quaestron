@@ -165,7 +165,11 @@ export async function buildCrosswalk(slugOrId: string): Promise<Crosswalk | null
       take: 100,
     }),
     prisma.dodProvisionalAuth.findMany({
-      where: { OR: [{ entityId: entity.id }, { entityId: null, cspName: { contains: fallback } }] },
+      where: {
+        OR: [{ entityId: entity.id }, { entityId: null, cspName: { contains: fallback } }],
+        // A withdrawn offering must not count toward a vendor's compliance posture.
+        source: { not: 'withdrawn-pending-review' },
+      },
       orderBy: [{ paExpiration: 'asc' }],
       take: 100,
     }),
