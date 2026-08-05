@@ -31,6 +31,13 @@ const columns: Array<{ table: string; column: string; definition: string }> = [
   { table: 'FedrampAuthorization', column: 'entityId', definition: 'TEXT' },
   { table: 'DodProvisionalAuth', column: 'entityId', definition: 'TEXT' },
   { table: 'EmassAuthorization', column: 'entityId', definition: 'TEXT' },
+  // Captured from the FedRAMP feed in the same phase as entityId, but originally
+  // omitted here — the schema declared them while this script did not, so every
+  // Prisma query returning a full FedrampAuthorization row failed against a
+  // migrated database ("no such column: uei"). Selects with an explicit column
+  // list still worked, which is why it stayed hidden until the first write.
+  { table: 'FedrampAuthorization', column: 'uei', definition: 'TEXT' },
+  { table: 'FedrampAuthorization', column: 'smallBusiness', definition: 'BOOLEAN' },
 ]
 
 const tables = [
@@ -56,6 +63,8 @@ const indexes = [
   'CREATE UNIQUE INDEX IF NOT EXISTS AtoMatchReview_sourceType_normalizedName_key ON AtoMatchReview(sourceType, normalizedName)',
   'CREATE INDEX IF NOT EXISTS AtoMatchReview_status_idx ON AtoMatchReview(status)',
   'CREATE INDEX IF NOT EXISTS AtoMatchReview_sourceType_idx ON AtoMatchReview(sourceType)',
+  'CREATE INDEX IF NOT EXISTS FedrampAuthorization_uei_idx ON FedrampAuthorization(uei)',
+  'CREATE INDEX IF NOT EXISTS FedrampAuthorization_smallBusiness_idx ON FedrampAuthorization(smallBusiness)',
 ]
 
 async function columnExists(table: string, column: string): Promise<boolean> {
