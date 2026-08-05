@@ -5,6 +5,8 @@ import { useFrame, useThree } from '@react-three/fiber'
 import { Stars, useTexture } from '@react-three/drei'
 import * as THREE from 'three'
 import Atmosphere from './Atmosphere'
+import CountryBorders from './CountryBorders'
+import Graticule from './Graticule'
 import ConnectionArc from './ConnectionArc'
 import CountryMarker from './CountryMarker'
 
@@ -39,6 +41,20 @@ const EarthSphere = memo(function EarthSphere() {
     '/textures/earth-blue-marble.jpg',
     '/textures/earth-night-2k.jpg',
   ])
+  const { gl } = useThree()
+
+  // Anisotropic filtering. Zoomed out the globe is small and mipmaps suffice,
+  // but at minDistance 1.8 the surface is viewed at a grazing angle where
+  // trilinear filtering smears texels into mush. Cheapest visible quality win
+  // available on the textures we already ship — no new assets.
+  useEffect(() => {
+    const max = gl.capabilities.getMaxAnisotropy()
+    for (const t of [dayMap, nightMap]) {
+      t.anisotropy = max
+      t.colorSpace = THREE.SRGBColorSpace
+      t.needsUpdate = true
+    }
+  }, [dayMap, nightMap, gl])
 
   const material = useMemo(() => {
     return new THREE.ShaderMaterial({
@@ -88,8 +104,26 @@ const EarthSphere = memo(function EarthSphere() {
           // Specular sun-glint on water (Blinn-Phong) — a moving highlight that
           // makes the oceans feel alive as the globe turns.
           vec3 halfDir = normalize(sunDirection + viewDir);
-          float spec = pow(max(dot(worldNormal, halfDir), 0.0), 55.0);
-          vec3 glint = vec3(1.0, 0.96, 0.86) * spec * water * dayFactor * 1.3;
+          float spec = pow(max(dot(worldNormal, halfDir), 0.0), 190.0);
+          vec3 glint = vec3(1.0, 0.96, 0.86) * spec * water * dayFactor * 0.55;
+
+          // Terrain relief, derived rather than downloaded.
+          //
+          // Sampling luminance either side of the fragment approximates a height
+          // gradient, which perturbs the normal enough to catch light on ridges
+          // and shade valleys. A real normal map would be better, but it is
+          // another multi-megabyte asset on a page already shipping 2MB of
+          // imagery. Land only — the ocean is flat, and perturbing it would
+          // fight the specular glint computed above.
+          float texel = 1.0 / 2048.0;
+          float hL = dot(texture2D(dayTexture, vUv - vec2(texel, 0.0)).rgb, vec3(0.299, 0.587, 0.114));
+          float hR = dot(texture2D(dayTexture, vUv + vec2(texel, 0.0)).rgb, vec3(0.299, 0.587, 0.114));
+          float hD = dot(texture2D(dayTexture, vUv - vec2(0.0, texel)).rgb, vec3(0.299, 0.587, 0.114));
+          float hU = dot(texture2D(dayTexture, vUv + vec2(0.0, texel)).rgb, vec3(0.299, 0.587, 0.114));
+          vec3 relief = normalize(vec3((hL - hR) * 2.2, (hD - hU) * 2.2, 1.0));
+          float land = 1.0 - water;
+          float terrain = mix(1.0, 0.72 + 0.55 * max(dot(relief, normalize(vec3(sunDirection.xy, 1.0))), 0.0), land * dayFactor);
+          dayColor *= terrain;
 
           // Day shading (slightly darkened for the surveillance look)
           dayColor *= 0.72 + 0.28 * dayFactor;
@@ -105,7 +139,7 @@ const EarthSphere = memo(function EarthSphere() {
 
           // Atmospheric rim on the earth's limb — cool scatter brightening
           float rim = 1.0 - max(dot(viewDir, worldNormal), 0.0);
-          color += vec3(0.30, 0.48, 0.90) * pow(rim, 3.0) * (0.35 + 0.65 * dayFactor) * 0.65;
+          color += vec3(0.30, 0.48, 0.90) * pow(rim, 3.8) * (0.35 + 0.65 * dayFactor) * 0.42;
 
           // Subtle blue tint in dark areas (surveillance aesthetic)
           vec3 blueTint = vec3(0.04, 0.07, 0.14);
@@ -119,7 +153,7 @@ const EarthSphere = memo(function EarthSphere() {
 
   return (
     <mesh material={material}>
-      <sphereGeometry args={[1.2, 64, 64]} />
+      <sphereGeometry args={[1.2, 128, 128]} />
     </mesh>
   )
 })
@@ -342,6 +376,10 @@ export default function Globe({
 
       <group ref={groupRef}>
         <EarthSphere />
+        {/* Vector cartography over the imagery — the part that stays crisp at
+            any zoom, unlike coastlines baked into the texture. */}
+        <Graticule />
+        <CountryBorders />
         <Atmosphere />
         <GlobeOverlays
           connections={connections}
