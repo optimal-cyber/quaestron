@@ -558,7 +558,12 @@ model AtoSyncLog {
   recordsAdded   Int      @default(0)
   recordsUpdated Int      @default(0)
   recordsFailed  Int      @default(0)
-  status         String   @default("success") // success, failed, running
+  status         String   @default("success") // success, failed, running, partial
+  /// Resume point for a time-boxed sync. Holds the last key committed before the
+  /// run hit its deadline; null when the last run completed the whole set.
+  /// Without this, a sync that cannot finish inside the function's 300s ceiling
+  /// restarts from the same place every night and never converges.
+  cursor         String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }

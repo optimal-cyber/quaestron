@@ -8,6 +8,16 @@ const DCAS_URL_PREFIX =
   'https://dl.dod.cyber.mil/wp-content/uploads/cloud/xls/DCAS+Current+Authorized+CSOs+-+'
 const DCAS_URL_SUFFIX = '.xlsx'
 const PROBE_DAYS = 35
+/** Per-probe ceiling. 36 probes x 8s worst case stays well inside the budget. */
+const PROBE_TIMEOUT_MS = 5_000
+/** Overall ceiling for the probe walk, independent of how many URLs remain. */
+const PROBE_TOTAL_MS = 45_000
+/**
+ * Body download gets its own, larger budget. Probing and downloading were one
+ * timeout, which meant a multi-megabyte xlsx arriving at 7.9s of an 8s budget
+ * was aborted -- the timeout could kill a SUCCESS, not just a hang.
+ */
+const DOWNLOAD_TIMEOUT_MS = 60_000
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -101,33 +111,125 @@ export function parseDcasWorkbook(buffer: ArrayBuffer | Buffer): MappedDcasRecor
  * weekly with the publish date in the filename and offers no stable alias,
  * so we walk back from today until we find a 200.
  */
+/**
+ * Publish date of the last xlsx we successfully found, cached in the sync log.
+ *
+ * Without it every run re-probes from scratch: if the newest file is 30 days
+ * old, that is 30 requests to a .mil host every night, forever, to rediscover
+ * something already known.
+ */
+export async function lastKnownDcasDate(): Promise<string | null> {
+  try {
+    const log = await prisma.atoSyncLog.findUnique({ where: { source: 'disa-xlsx' } })
+    return log?.cursor ?? null
+  } catch {
+    return null
+  }
+}
+
+async function rememberDcasDate(publishDate: string): Promise<void> {
+  try {
+    await prisma.atoSyncLog.upsert({
+      where: { source: 'disa-xlsx' },
+      create: { source: 'disa-xlsx', cursor: publishDate, status: 'success' },
+      update: { cursor: publishDate },
+    })
+  } catch (err) {
+    console.warn(`${LOG_PREFIX} Could not cache DCAS publish date:`, err)
+  }
+}
+
+/** HEAD probe. Cheap existence check that never pulls a body. */
+async function probeExists(url: string): Promise<boolean | 'unsupported'> {
+  const res = await fetch(url, {
+    method: 'HEAD',
+    redirect: 'follow',
+    signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+  })
+  // Some static hosts reject HEAD; fall back to GET probing for this run.
+  if (res.status === 405 || res.status === 501) return 'unsupported'
+  return res.ok
+}
+
+async function download(url: string): Promise<Buffer> {
+  const res = await fetch(url, {
+    redirect: 'follow',
+    signal: AbortSignal.timeout(DOWNLOAD_TIMEOUT_MS),
+  })
+  if (!res.ok) throw new Error(`Download failed: ${res.status} for ${url}`)
+  return Buffer.from(await res.arrayBuffer())
+}
+
 export async function fetchLatestDcasXlsx(
   options: { daysBack?: number; startDate?: Date } = {}
 ): Promise<{ buffer: Buffer; url: string; publishDate: string }> {
-  const daysBack = options.daysBack ?? PROBE_DAYS
   const start = options.startDate ?? new Date()
 
+  // Never probe further back than a date already known to exist. A cached hit
+  // three days old means at most three probes, not thirty-six.
+  const cached = await lastKnownDcasDate()
+  let daysBack = options.daysBack ?? PROBE_DAYS
+  if (cached) {
+    const cachedMs = Date.parse(`${cached}T00:00:00Z`)
+    if (!Number.isNaN(cachedMs)) {
+      const daysSince = Math.floor((start.getTime() - cachedMs) / 86_400_000)
+      daysBack = Math.max(0, Math.min(daysBack, daysSince))
+    }
+  }
+
   const tried: string[] = []
+  const probeDeadline = Date.now() + PROBE_TOTAL_MS
+  let headSupported = true
+
+  // Newest first, so a newer publication still wins over the cached one.
   for (let i = 0; i <= daysBack; i++) {
+    if (Date.now() >= probeDeadline) {
+      console.warn(
+        `${LOG_PREFIX} Probe budget spent after ${tried.length} URLs; falling back to the cached file`
+      )
+      break
+    }
     const probe = new Date(start)
     probe.setUTCDate(probe.getUTCDate() - i)
     const url = dcasUrlForDate(probe)
     tried.push(url)
+
     try {
-      const res = await fetch(url, { redirect: 'follow' })
-      if (res.ok) {
-        const buffer = Buffer.from(await res.arrayBuffer())
-        console.log(`${LOG_PREFIX} Found DCAS xlsx: ${url} (${buffer.length} bytes)`)
-        return { buffer, url, publishDate: ymd(probe) }
+      let found: boolean
+      if (headSupported) {
+        const head = await probeExists(url)
+        if (head === 'unsupported') {
+          headSupported = false
+          found = (await fetch(url, { redirect: 'follow', signal: AbortSignal.timeout(PROBE_TIMEOUT_MS) })).ok
+        } else {
+          found = head
+        }
+      } else {
+        found = (await fetch(url, { redirect: 'follow', signal: AbortSignal.timeout(PROBE_TIMEOUT_MS) })).ok
       }
-      if (res.status !== 404) {
-        console.warn(`${LOG_PREFIX} Unexpected status ${res.status} for ${url}`)
+
+      if (found) {
+        const buffer = await download(url)
+        const publishDate = ymd(probe)
+        console.log(`${LOG_PREFIX} Found DCAS xlsx: ${url} (${buffer.length} bytes)`)
+        await rememberDcasDate(publishDate)
+        return { buffer, url, publishDate }
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
       console.warn(`${LOG_PREFIX} Probe error for ${url}: ${msg}`)
     }
   }
+
+  // Nothing newer. If a previously-found file is known, use it rather than
+  // failing the stage -- it is the same data the last successful run ingested.
+  if (cached) {
+    const cachedDate = new Date(`${cached}T00:00:00Z`)
+    const url = dcasUrlForDate(cachedDate)
+    console.log(`${LOG_PREFIX} No newer DCAS xlsx; using cached ${cached}`)
+    return { buffer: await download(url), url, publishDate: cached }
+  }
+
   throw new Error(
     `No DCAS xlsx found in the last ${daysBack} days (probed ${tried.length} URLs back from ${ymd(start)})`
   )
