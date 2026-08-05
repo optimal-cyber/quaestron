@@ -36,6 +36,19 @@ const PROBE_DAYS = 120
  * hundred milliseconds, so batching turns 120 probes into ~15 rounds.
  */
 const PROBE_CONCURRENCY = 8
+/**
+ * Roughly how often DISA publishes. While the cached file is younger than this,
+ * probing is skipped entirely — a monthly file does not need a daily search,
+ * and this run has no budget to spare for one.
+ */
+const EXPECTED_CADENCE_DAYS = 30
+/**
+ * Past this, DISA has missed more than a full cycle and something has probably
+ * changed. Worth saying out loud precisely because nothing else can tell: a
+ * stale file downloads and parses exactly like a fresh one, which is how a dead
+ * probe went unnoticed for months in the first place.
+ */
+const STALE_AFTER_DAYS = 45
 /** Per-probe ceiling. */
 const PROBE_TIMEOUT_MS = 5_000
 /** Overall ceiling for the probe walk, independent of how many URLs remain. */
@@ -197,6 +210,30 @@ export async function fetchLatestDcasXlsx(
     const cachedMs = Date.parse(`${cached}T00:00:00Z`)
     if (!Number.isNaN(cachedMs)) {
       const daysSince = Math.floor((start.getTime() - cachedMs) / 86_400_000)
+
+      // DISA publishes roughly monthly. Probing daily for a monthly file spends
+      // budget in a run that has none to spare, so until the next edition is
+      // plausibly out we skip the walk entirely and reuse what we have.
+      if (daysSince < EXPECTED_CADENCE_DAYS) {
+        console.log(
+          `${LOG_PREFIX} Cached ${cached} is ${daysSince}d old; next edition not due for ` +
+            `${EXPECTED_CADENCE_DAYS - daysSince}d — skipping probe`
+        )
+        const url = dcasUrlForDate(new Date(cachedMs))
+        return { buffer: await download(url), url, publishDate: cached }
+      }
+
+      // Past this point DISA has missed more than a full cycle. The file still
+      // downloads and still parses, so nothing else in the pipeline can tell
+      // the difference — this log line is the only thing that will.
+      if (daysSince > STALE_AFTER_DAYS) {
+        console.warn(
+          `${LOG_PREFIX} STALE: no new DCAS file in ${daysSince} days (cached ${cached}, ` +
+            `expected roughly every ${EXPECTED_CADENCE_DAYS}). DISA may have changed its ` +
+            `publication pattern or filename format again.`
+        )
+      }
+
       daysBack = Math.max(0, Math.min(daysBack, daysSince))
     }
   }
