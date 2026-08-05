@@ -22,7 +22,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "check:sync": "tsx scripts/check-sync.ts",
-    "correct:dod-pa": "tsx scripts/correct-dod-pa.ts"
+    "correct:dod-pa": "tsx scripts/correct-dod-pa.ts",
+    "pre-enrich": "tsx scripts/pre-enrich.ts"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
