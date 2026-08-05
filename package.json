@@ -21,7 +21,8 @@
     "sync": "npx tsx -e \"fetch('http://localhost:3000/api/sync/surveillance-watch', {method:'POST'}).then(r=>r.json()).then(console.log)\"",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check:sync": "tsx scripts/check-sync.ts"
+    "check:sync": "tsx scripts/check-sync.ts",
+    "correct:dod-pa": "tsx scripts/correct-dod-pa.ts"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
