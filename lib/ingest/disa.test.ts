@@ -1,6 +1,18 @@
 import { describe, it, expect } from 'vitest'
 import * as XLSX from 'xlsx'
-import { dcasUrlForDate, parseDcasWorkbook } from './disa'
+import { prisma } from '@/lib/db'
+import {
+  dcasUrlForDate,
+  parseDcasWorkbook,
+  syncDisaData,
+  lastKnownDcasDate,
+  rememberDcasDate,
+  DISA_SYNC_SOURCE,
+} from './disa'
+
+// rememberDcasDate is called directly rather than re-implemented here. A helper
+// that repeats the upsert would pass even if production wrote the wrong key,
+// which is the same empty-assertion shape that let a 404ing DCAS URL ship.
 
 /**
  * DCAS ingest.
@@ -110,5 +122,48 @@ describe('parseDcasWorkbook', () => {
 
   it('throws rather than returning nothing when handed a non-workbook', () => {
     expect(() => parseDcasWorkbook(Buffer.from('<html>404 Not Found</html>'))).toThrow()
+  })
+})
+
+describe('DISA sync-log key', () => {
+  it('writes the publish-date cache and the sync result to ONE row', async () => {
+    await prisma.atoSyncLog.deleteMany({})
+    await prisma.dodProvisionalAuth.deleteMany({})
+
+    // The publish-date cache used to write source 'disa-xlsx' while the sync
+    // wrote 'disa', so one pipeline produced two rows. The stale one kept its
+    // original timestamp forever and check:sync graded it as months overdue,
+    // reporting FAIL on a night the sync had actually succeeded.
+    await rememberDcasDate('2026-07-08')
+    await syncDisaData([
+      {
+        cspName: 'Amazon',
+        csoName: 'AWS Test',
+        impactLevel: 'IL5',
+        paDate: null,
+        paExpiration: null,
+        sponsorComponent: 'DISA',
+        conditions: null,
+      },
+    ])
+
+    const rows = await prisma.atoSyncLog.findMany({
+      where: { source: { in: ['disa', 'disa-xlsx'] } },
+    })
+    expect(rows).toHaveLength(1)
+    expect(rows[0].source).toBe(DISA_SYNC_SOURCE)
+
+    // Both facts survive on the single row: the sync stamped it, and the
+    // cursor still holds the discovered publish date.
+    expect(rows[0].cursor).toBe('2026-07-08')
+    expect(rows[0].status).toBe('success')
+  })
+
+  it('reads back the publish date it cached', async () => {
+    await prisma.atoSyncLog.deleteMany({})
+    await rememberDcasDate('2026-06-03')
+    // Reader and writer must agree on the key, or every run re-probes the
+    // full 120-day window instead of stopping at the known-good date.
+    expect(await lastKnownDcasDate()).toBe('2026-06-03')
   })
 })

@@ -40,7 +40,7 @@ const RESET = '\x1b[0m'
  */
 const STALE_AFTER_HOURS: Record<string, number> = {
   fedramp: 36,
-  'disa-xlsx': 36,
+  disa: 36,
   // Not a cron -- triggered manually. Reported, never graded.
   'vendor-universe': Infinity,
 }

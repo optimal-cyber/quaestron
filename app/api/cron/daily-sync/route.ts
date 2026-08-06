@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { fetchLatestDcasXlsx, parseDcasWorkbook, syncDisaData } from '@/lib/ingest/disa'
+import { fetchLatestDcasXlsx, parseDcasWorkbook, syncDisaData, DISA_SYNC_SOURCE } from '@/lib/ingest/disa'
 import { fetchFromGitHub, syncFedrampData, fedrampResumeCursor } from '@/lib/ingest/fedramp'
 import { requireCronRequest } from '@/lib/admin-auth'
 import { runAlertEngine } from '@/lib/alerts/engine'
@@ -90,9 +90,9 @@ export async function POST(request: NextRequest) {
       summary.disa = { error: err instanceof Error ? err.message : String(err) }
 
       await prisma.atoSyncLog.upsert({
-        where: { source: 'disa' },
+        where: { source: DISA_SYNC_SOURCE },
         create: {
-          source: 'disa',
+          source: DISA_SYNC_SOURCE,
           lastSyncAt: new Date(),
           status: 'failed',
         },
