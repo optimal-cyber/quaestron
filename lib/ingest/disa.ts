@@ -5,6 +5,18 @@ import * as XLSX from 'xlsx'
 const LOG_PREFIX = '[DISA-SYNC]'
 
 /**
+ * The AtoSyncLog key for this pipeline. Single constant because it was two
+ * literals: the sync wrote its result under 'disa' while the publish-date cache
+ * wrote under 'disa-xlsx', so one pipeline produced two rows. The stale one kept
+ * its 2026-03-14 timestamp forever and `npm run check:sync` graded it as 144
+ * days overdue, reporting FAIL on a night DISA had actually succeeded.
+ *
+ * Not to be confused with DodProvisionalAuth.source, which stays 'disa-xlsx' —
+ * that records where a ROW came from, not which pipeline last ran.
+ */
+export const DISA_SYNC_SOURCE = 'disa'
+
+/**
  * DISA's actual filename shape, confirmed against the live server:
  *
  *   .../xls/DCAS-Current_Authorized_CSOs-2026-07-08.xlsx   -> 200
@@ -156,18 +168,18 @@ export function parseDcasWorkbook(buffer: ArrayBuffer | Buffer): MappedDcasRecor
  */
 export async function lastKnownDcasDate(): Promise<string | null> {
   try {
-    const log = await prisma.atoSyncLog.findUnique({ where: { source: 'disa-xlsx' } })
+    const log = await prisma.atoSyncLog.findUnique({ where: { source: DISA_SYNC_SOURCE } })
     return log?.cursor ?? null
   } catch {
     return null
   }
 }
 
-async function rememberDcasDate(publishDate: string): Promise<void> {
+export async function rememberDcasDate(publishDate: string): Promise<void> {
   try {
     await prisma.atoSyncLog.upsert({
-      where: { source: 'disa-xlsx' },
-      create: { source: 'disa-xlsx', cursor: publishDate, status: 'success' },
+      where: { source: DISA_SYNC_SOURCE },
+      create: { source: DISA_SYNC_SOURCE, cursor: publishDate, status: 'success' },
       update: { cursor: publishDate },
     })
   } catch (err) {
@@ -384,9 +396,9 @@ export async function syncDisaData(records: MappedDcasRecord[]): Promise<DisaSyn
 
   try {
     await prisma.atoSyncLog.upsert({
-      where: { source: 'disa' },
+      where: { source: DISA_SYNC_SOURCE },
       create: {
-        source: 'disa',
+        source: DISA_SYNC_SOURCE,
         lastSyncAt: new Date(),
         recordsAdded: added,
         recordsUpdated: updated,
