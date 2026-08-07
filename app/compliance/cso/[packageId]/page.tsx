@@ -56,7 +56,7 @@ export default async function CsoPage({ params }: { params: Promise<{ packageId:
       <TopNav />
       <div className="flex-1 pt-12 pb-7 bg-background overflow-y-auto">
         <div className="max-w-4xl mx-auto p-4 md:p-8 space-y-6">
-          <nav className="font-mono text-[10px] text-muted">
+          <nav className="font-mono text-[12px] text-muted">
             <Link href="/compliance" className="hover:text-foreground">
               COMPLIANCE
             </Link>
@@ -68,7 +68,7 @@ export default async function CsoPage({ params }: { params: Promise<{ packageId:
             <h1 className="font-mono text-2xl md:text-3xl tracking-[0.06em] text-foreground">
               {seo.csoName}
             </h1>
-            <div className="flex flex-wrap items-center gap-2 font-mono text-[11px]">
+            <div className="flex flex-wrap items-center gap-2 font-mono text-[13px]">
               <span className={`px-2 py-0.5 rounded border ${levelClass(seo.impactLevel)}`}>
                 {seo.impactLevel || 'level unknown'}
               </span>
@@ -81,7 +81,7 @@ export default async function CsoPage({ params }: { params: Promise<{ packageId:
                 </span>
               ))}
             </div>
-            <p className="font-mono text-[11px] text-muted-foreground">
+            <p className="font-mono text-[13px] text-muted-foreground">
               Offered by{' '}
               {seo.entity ? (
                 <Link href={`/vendor/${seo.entity.slug}`} className="text-accent-blue hover:underline">
@@ -121,12 +121,12 @@ export default async function CsoPage({ params }: { params: Promise<{ packageId:
             </div>
             <div className="p-4">
               {seo.sponsoringAgency && (
-                <p className="font-mono text-[11px] text-muted-foreground mb-3">
+                <p className="font-mono text-[13px] text-muted-foreground mb-3">
                   <span className="text-accent-red">SPONSOR</span> {seo.sponsoringAgency}
                 </p>
               )}
               {seo.leveragingAgencies.length === 0 ? (
-                <p className="font-mono text-[11px] text-muted">
+                <p className="font-mono text-[13px] text-muted">
                   No agencies recorded as leveraging this authorization.
                 </p>
               ) : (
@@ -134,7 +134,7 @@ export default async function CsoPage({ params }: { params: Promise<{ packageId:
                   {seo.leveragingAgencies.map((a) => (
                     <span
                       key={a}
-                      className="px-2 py-0.5 rounded border border-border font-mono text-[10px] text-muted-foreground"
+                      className="px-2 py-0.5 rounded border border-border font-mono text-[12px] text-muted-foreground"
                     >
                       {a}
                     </span>
@@ -144,7 +144,7 @@ export default async function CsoPage({ params }: { params: Promise<{ packageId:
             </div>
           </section>
 
-          <p className="font-mono text-[10px] text-muted leading-relaxed">
+          <p className="font-mono text-[12px] text-muted leading-relaxed">
             Source: FedRAMP Marketplace. The assessment date is the next annual assessment
             due date — FedRAMP authorizations do not hard-expire; they lapse if the
             assessment is unmet.{' '}
@@ -169,8 +169,8 @@ function Fact({ label, value, note }: { label: string; value: string; note?: str
   return (
     <div className="border border-border rounded-lg bg-surface/40 p-3">
       <div className="font-mono text-sm text-foreground break-all">{value}</div>
-      <div className="font-mono text-[9px] uppercase tracking-wider text-muted mt-1">{label}</div>
-      {note && <div className="font-mono text-[9px] text-accent-gold mt-0.5">{note}</div>}
+      <div className="font-mono text-[11px] uppercase tracking-wider text-muted mt-1">{label}</div>
+      {note && <div className="font-mono text-[11px] text-accent-gold mt-0.5">{note}</div>}
     </div>
   )
 }

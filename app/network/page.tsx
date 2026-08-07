@@ -445,12 +445,12 @@ export default function NetworkPage() {
                     />
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-mono text-white truncate">{r.name}</div>
-                      <div className="text-[10px] text-slate-500">
+                      <div className="text-[12px] text-slate-500">
                         {ENTITY_TYPE_LABELS[r.type as EntityType] || r.type}
                         {r.headquartersCountry && ` · ${r.headquartersCountry.name}`}
                       </div>
                     </div>
-                    <span className="text-[10px] font-mono text-slate-500">{r.connectionCount}</span>
+                    <span className="text-[12px] font-mono text-slate-500">{r.connectionCount}</span>
                   </button>
                 ))}
               </div>
@@ -459,7 +459,7 @@ export default function NetworkPage() {
 
           {selectedName && (
             <div className="hidden sm:flex items-center gap-2">
-              <span className="text-[10px] font-mono text-slate-500 tracking-wider">VIEWING:</span>
+              <span className="text-[12px] font-mono text-slate-500 tracking-wider">VIEWING:</span>
               <span className="text-sm font-mono text-white font-bold truncate max-w-[200px]">{selectedName}</span>
             </div>
           )}
@@ -481,7 +481,7 @@ export default function NetworkPage() {
                 <div className="font-mono text-slate-400 text-xs max-w-[300px]">{error}</div>
                 <button
                   onClick={() => { setError(null); if (selectedId) { setLoading(true); fetch(`/api/entities/${selectedId}`).then(r => r.json()).then(d => { setEntityData(d); setLoading(false); }).catch(() => { setError('Retry failed'); setLoading(false); }); } }}
-                  className="mt-3 font-mono text-[10px] text-slate-500 border border-slate-700 px-3 py-1 hover:text-white hover:border-slate-500 transition-colors tracking-wider"
+                  className="mt-3 font-mono text-[12px] text-slate-500 border border-slate-700 px-3 py-1 hover:text-white hover:border-slate-500 transition-colors tracking-wider"
                 >
                   RETRY
                 </button>
@@ -502,13 +502,13 @@ export default function NetworkPage() {
                   }}
                 >
                   <div className="text-xs text-white font-bold">{tooltip.name}</div>
-                  <div className="text-[10px] text-slate-400">{tooltip.type}</div>
-                  {tooltip.detail && <div className="text-[9px] text-slate-500">{tooltip.detail}</div>}
+                  <div className="text-[12px] text-slate-400">{tooltip.type}</div>
+                  {tooltip.detail && <div className="text-[11px] text-slate-500">{tooltip.detail}</div>}
                 </div>
               )}
 
               {/* Hint */}
-              <div className="absolute bottom-2 right-4 z-10 font-mono text-[9px] text-slate-600 tracking-wider">
+              <div className="absolute bottom-2 right-4 z-10 font-mono text-[11px] text-slate-600 tracking-wider">
                 CLICK A NODE TO EXPLORE ITS CONNECTIONS
               </div>
             </>

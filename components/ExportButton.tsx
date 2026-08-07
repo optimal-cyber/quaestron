@@ -64,7 +64,7 @@ export default function ExportButton({
     return (
       <Link
         href="/signin"
-        className="px-2 py-1 font-mono text-[10px] tracking-wider rounded border border-border text-muted hover:border-border-bright hover:text-muted-foreground transition-colors"
+        className="px-2 py-1 font-mono text-[12px] tracking-wider rounded border border-border text-muted hover:border-border-bright hover:text-muted-foreground transition-colors"
       >
         {label} (SIGN IN)
       </Link>
@@ -75,7 +75,7 @@ export default function ExportButton({
     return (
       <Link
         href="/pricing"
-        className="px-2 py-1 font-mono text-[10px] tracking-wider rounded border border-border text-muted hover:border-accent-gold/50 hover:text-accent-gold transition-colors"
+        className="px-2 py-1 font-mono text-[12px] tracking-wider rounded border border-border text-muted hover:border-accent-gold/50 hover:text-accent-gold transition-colors"
         title="Exports are a Pro feature"
       >
         {label} (PRO)
@@ -85,18 +85,18 @@ export default function ExportButton({
 
   return (
     <span className="inline-flex items-center gap-1">
-      <span className="font-mono text-[10px] text-muted">{label}</span>
+      <span className="font-mono text-[12px] text-muted">{label}</span>
       {(['csv', 'xlsx'] as const).map((format) => (
         <button
           key={format}
           onClick={() => download(format)}
           disabled={busy !== null}
-          className="px-2 py-1 font-mono text-[10px] tracking-wider rounded border border-accent-green/40 text-accent-green hover:bg-accent-green/10 disabled:opacity-40 transition-colors"
+          className="px-2 py-1 font-mono text-[12px] tracking-wider rounded border border-accent-green/40 text-accent-green hover:bg-accent-green/10 disabled:opacity-40 transition-colors"
         >
           {busy === format ? '…' : format.toUpperCase()}
         </button>
       ))}
-      {error && <span className="font-mono text-[10px] text-accent-red ml-1">{error}</span>}
+      {error && <span className="font-mono text-[12px] text-accent-red ml-1">{error}</span>}
     </span>
   )
 }

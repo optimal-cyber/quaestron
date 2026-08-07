@@ -62,7 +62,7 @@ export default function AlertsBadge({ mobile = false }: { mobile?: boolean }) {
     >
       ALERTS
       {unread > 0 && (
-        <span className="ml-1.5 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-accent-red text-white text-[9px] font-bold">
+        <span className="ml-1.5 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-accent-red text-white text-[11px] font-bold">
           {unread > 99 ? '99+' : unread}
         </span>
       )}

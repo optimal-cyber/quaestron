@@ -95,7 +95,7 @@ export default function AtoMatchReview() {
             <button
               key={s}
               onClick={() => setStatus(s)}
-              className={`px-2 py-1 font-mono text-[10px] tracking-wider rounded border transition-colors ${
+              className={`px-2 py-1 font-mono text-[12px] tracking-wider rounded border transition-colors ${
                 status === s
                   ? 'text-accent-red border-accent-red/50 bg-accent-red/10'
                   : 'text-muted border-border hover:border-border-bright'
@@ -108,7 +108,7 @@ export default function AtoMatchReview() {
       </div>
 
       <div className="p-4 space-y-2">
-        <p className="font-mono text-[10px] text-muted leading-relaxed">
+        <p className="font-mono text-[12px] text-muted leading-relaxed">
           Vendor names from the authorization feeds that couldn&apos;t be resolved to a
           tracked entity with confidence. Resolving one name links every authorization row
           carrying it. Suggestions below the auto-match threshold are shown for context —
@@ -116,15 +116,15 @@ export default function AtoMatchReview() {
         </p>
 
         {message && (
-          <div className="border border-accent-green/40 bg-accent-green/10 px-3 py-2 font-mono text-[10px] text-accent-green">
+          <div className="border border-accent-green/40 bg-accent-green/10 px-3 py-2 font-mono text-[12px] text-accent-green">
             {message}
           </div>
         )}
 
-        {loading && <div className="font-mono text-[11px] text-muted">LOADING…</div>}
+        {loading && <div className="font-mono text-[13px] text-muted">LOADING…</div>}
 
         {!loading && items.length === 0 && (
-          <div className="font-mono text-[11px] text-muted py-4">
+          <div className="font-mono text-[13px] text-muted py-4">
             Nothing in {status.toLowerCase()}.
           </div>
         )}
@@ -136,11 +136,11 @@ export default function AtoMatchReview() {
           >
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <div className="flex items-baseline gap-2">
-                <span className="font-mono text-[9px] tracking-wider text-muted px-1.5 py-0.5 rounded border border-border">
+                <span className="font-mono text-[11px] tracking-wider text-muted px-1.5 py-0.5 rounded border border-border">
                   {SOURCE_LABELS[item.sourceType] || item.sourceType}
                 </span>
                 <span className="font-mono text-xs text-foreground">{item.sourceName}</span>
-                <span className="font-mono text-[10px] text-muted">
+                <span className="font-mono text-[12px] text-muted">
                   {item.recordCount} row{item.recordCount === 1 ? '' : 's'}
                 </span>
               </div>
@@ -149,7 +149,7 @@ export default function AtoMatchReview() {
                   <button
                     disabled={busy === item.id}
                     onClick={() => act(item.id, 'CREATE_ENTITY')}
-                    className="px-2 py-1 font-mono text-[10px] tracking-wider text-accent-green border border-accent-green/40 hover:bg-accent-green/10 disabled:opacity-40 transition-colors"
+                    className="px-2 py-1 font-mono text-[12px] tracking-wider text-accent-green border border-accent-green/40 hover:bg-accent-green/10 disabled:opacity-40 transition-colors"
                     title="Create a new tracked vendor from this name and link its rows"
                   >
                     + CREATE VENDOR
@@ -157,7 +157,7 @@ export default function AtoMatchReview() {
                   <button
                     disabled={busy === item.id}
                     onClick={() => act(item.id, 'IGNORE')}
-                    className="px-2 py-1 font-mono text-[10px] tracking-wider text-muted border border-border hover:text-foreground disabled:opacity-40 transition-colors"
+                    className="px-2 py-1 font-mono text-[12px] tracking-wider text-muted border border-border hover:text-foreground disabled:opacity-40 transition-colors"
                   >
                     IGNORE
                   </button>
@@ -166,7 +166,7 @@ export default function AtoMatchReview() {
                 <button
                   disabled={busy === item.id}
                   onClick={() => act(item.id, 'REOPEN')}
-                  className="px-2 py-1 font-mono text-[10px] tracking-wider text-muted border border-border hover:text-foreground disabled:opacity-40 transition-colors"
+                  className="px-2 py-1 font-mono text-[12px] tracking-wider text-muted border border-border hover:text-foreground disabled:opacity-40 transition-colors"
                 >
                   REOPEN
                 </button>
@@ -175,13 +175,13 @@ export default function AtoMatchReview() {
 
             {item.status === 'PENDING' && item.suggestions.length > 0 && (
               <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-border/50">
-                <span className="font-mono text-[9px] text-muted">NEAR MATCHES:</span>
+                <span className="font-mono text-[11px] text-muted">NEAR MATCHES:</span>
                 {item.suggestions.map((s) => (
                   <button
                     key={s.entityId}
                     disabled={busy === item.id}
                     onClick={() => act(item.id, 'LINK', s.entityId)}
-                    className="px-2 py-0.5 font-mono text-[10px] rounded border border-accent-blue/40 text-accent-blue hover:bg-accent-blue/10 disabled:opacity-40 transition-colors"
+                    className="px-2 py-0.5 font-mono text-[12px] rounded border border-accent-blue/40 text-accent-blue hover:bg-accent-blue/10 disabled:opacity-40 transition-colors"
                     title={`${s.method} · score ${s.score.toFixed(2)} — click to link`}
                   >
                     {s.name}

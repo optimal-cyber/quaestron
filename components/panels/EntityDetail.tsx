@@ -180,20 +180,20 @@ export default function EntityDetail({
             </div>
           </div>
         )}
-        <div className="text-[10px] text-muted font-mono">
+        <div className="text-[12px] text-muted font-mono">
           Updated {new Date(entity.updatedAt).toUTCString().replace(' GMT', ' UTC')}
         </div>
 
         {/* Tags row */}
         <div className="flex items-center gap-2 mt-3 flex-wrap">
           <span
-            className="px-2 py-0.5 text-[10px] font-mono rounded border"
+            className="px-2 py-0.5 text-[12px] font-mono rounded border"
             style={{ color: typeColor, borderColor: typeColor }}
           >
             {typeLabel}
           </span>
           {entity.fundingType && (
-            <span className="px-2 py-0.5 text-[10px] font-mono text-muted-foreground bg-surface rounded uppercase">
+            <span className="px-2 py-0.5 text-[12px] font-mono text-muted-foreground bg-surface rounded uppercase">
               {entity.fundingType}
             </span>
           )}
@@ -203,7 +203,7 @@ export default function EntityDetail({
         {entity.ticker && (
           <div className="mt-3 flex items-center gap-3">
             {entity.fundingType === 'public' && (
-              <span className="text-[10px] font-mono text-accent-green flex items-center gap-1">
+              <span className="text-[12px] font-mono text-accent-green flex items-center gap-1">
                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" />
                 </svg>
@@ -214,7 +214,7 @@ export default function EntityDetail({
               {entity.stockExchange}:{entity.ticker}
             </span>
             {entity.isin && (
-              <span className="text-[10px] font-mono text-muted">{entity.isin}</span>
+              <span className="text-[12px] font-mono text-muted">{entity.isin}</span>
             )}
           </div>
         )}
@@ -231,7 +231,7 @@ export default function EntityDetail({
           href={`/vendor/${entity.slug}`}
           className="flex items-center justify-between px-3 py-2 rounded border border-accent-blue/30 bg-accent-blue/5 hover:bg-accent-blue/10 transition-colors group"
         >
-          <span className="text-[11px] font-mono tracking-wider text-accent-blue uppercase">
+          <span className="text-[13px] font-mono tracking-wider text-accent-blue uppercase">
             View Full Vendor Dossier
           </span>
           <span className="text-accent-blue text-xs group-hover:translate-x-0.5 transition-transform">→</span>
@@ -248,7 +248,7 @@ export default function EntityDetail({
         {entity.providingTo && entity.providingTo.length > 0 && (
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-mono tracking-[0.15em] text-accent-green uppercase">
+              <span className="text-[12px] font-mono tracking-[0.15em] text-accent-green uppercase">
                 Technology Used In
               </span>
               <span className="w-8 h-0.5 bg-accent-green rounded" />
@@ -270,7 +270,7 @@ export default function EntityDetail({
         {entity.surveilling && entity.surveilling.length > 0 && (
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-mono tracking-[0.15em] text-accent-gold uppercase">
+              <span className="text-[12px] font-mono tracking-[0.15em] text-accent-gold uppercase">
                 Surveilling / Targeting
               </span>
               <span className="w-8 h-0.5 bg-accent-gold rounded" />
@@ -292,7 +292,7 @@ export default function EntityDetail({
         {entity.subTypes.length > 0 && (
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-mono tracking-[0.15em] text-muted uppercase">
+              <span className="text-[12px] font-mono tracking-[0.15em] text-muted uppercase">
                 Type
               </span>
             </div>
@@ -313,7 +313,7 @@ export default function EntityDetail({
         {fundedBy.length > 0 && (
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-mono tracking-[0.15em] text-accent-blue uppercase">
+              <span className="text-[12px] font-mono tracking-[0.15em] text-accent-blue uppercase">
                 Funded By
               </span>
               <span className="w-8 h-0.5 bg-accent-blue rounded" />
@@ -329,7 +329,7 @@ export default function EntityDetail({
                     {f.name}
                   </span>
                   {f.country && (
-                    <span className="text-[10px] text-muted ml-2 shrink-0">{f.country}</span>
+                    <span className="text-[12px] text-muted ml-2 shrink-0">{f.country}</span>
                   )}
                 </button>
               ))}
@@ -341,7 +341,7 @@ export default function EntityDetail({
         {investedIn.length > 0 && (
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-mono tracking-[0.15em] text-accent-green uppercase">
+              <span className="text-[12px] font-mono tracking-[0.15em] text-accent-green uppercase">
                 Invested In ({investedIn.length})
               </span>
               <span className="w-8 h-0.5 bg-accent-green rounded" />
@@ -357,7 +357,7 @@ export default function EntityDetail({
                     {inv.name}
                   </span>
                   {inv.country && (
-                    <span className="text-[10px] text-muted ml-2 shrink-0">{inv.country}</span>
+                    <span className="text-[12px] text-muted ml-2 shrink-0">{inv.country}</span>
                   )}
                 </button>
               ))}
@@ -369,7 +369,7 @@ export default function EntityDetail({
         {otherConnections.length > 0 && (
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-mono tracking-[0.15em] text-muted uppercase">
+              <span className="text-[12px] font-mono tracking-[0.15em] text-muted uppercase">
                 Connections ({otherConnections.length})
               </span>
             </div>
@@ -383,7 +383,7 @@ export default function EntityDetail({
                   <span className="text-xs text-muted-foreground hover:text-foreground underline decoration-border hover:decoration-muted-foreground transition-colors">
                     {conn.name}
                   </span>
-                  <span className="text-[10px] text-muted ml-2 shrink-0">
+                  <span className="text-[12px] text-muted ml-2 shrink-0">
                     {conn.type.replace(/_/g, ' ')}
                   </span>
                 </button>
@@ -394,7 +394,7 @@ export default function EntityDetail({
 
         {/* Connections summary */}
         {totalConnections > 0 && (
-          <div className="text-[10px] font-mono text-muted border-t border-border pt-3">
+          <div className="text-[12px] font-mono text-muted border-t border-border pt-3">
             CONNECTIONS ({totalConnections})
             {entity.providingTo?.length > 0 && (
               <span className="ml-2">
@@ -422,7 +422,7 @@ export default function EntityDetail({
         {/* Also Known As */}
         {entity.alsoKnownAs.length > 0 && entity.alsoKnownAs.some(Boolean) && (
           <div>
-            <div className="text-[10px] font-mono tracking-wider text-muted mb-1 uppercase">Also Known As</div>
+            <div className="text-[12px] font-mono tracking-wider text-muted mb-1 uppercase">Also Known As</div>
             <div className="text-xs text-muted-foreground">
               {entity.alsoKnownAs.filter(Boolean).join(', ')}
             </div>
@@ -432,7 +432,7 @@ export default function EntityDetail({
         {/* Government Contracts */}
         {entity.contracts.length > 0 && (
           <div className="border-t border-border pt-4">
-            <div className="text-[10px] font-mono tracking-wider text-muted mb-3 uppercase">
+            <div className="text-[12px] font-mono tracking-wider text-muted mb-3 uppercase">
               Government Contracts ({entity.contracts.length})
             </div>
             <div className="space-y-2">
@@ -440,14 +440,14 @@ export default function EntityDetail({
                 <div key={contract.id} className="px-2 py-1.5 rounded bg-surface border border-border">
                   <div className="flex items-center justify-between mb-1">
                     {contract.agency && (
-                      <span className="text-[10px] font-mono text-accent-blue">{contract.agency.name}</span>
+                      <span className="text-[12px] font-mono text-accent-blue">{contract.agency.name}</span>
                     )}
                     {contract.value && (
-                      <span className="text-[10px] font-mono text-accent-green">{formatCurrency(contract.value)}</span>
+                      <span className="text-[12px] font-mono text-accent-green">{formatCurrency(contract.value)}</span>
                     )}
                   </div>
                   {contract.description && (
-                    <p className="text-[10px] text-muted-foreground line-clamp-2">{contract.description}</p>
+                    <p className="text-[12px] text-muted-foreground line-clamp-2">{contract.description}</p>
                   )}
                 </div>
               ))}
@@ -459,11 +459,11 @@ export default function EntityDetail({
         {entity.lobbying && entity.lobbying.filings.length > 0 && (
           <div className="border-t border-border pt-4">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-[10px] font-mono tracking-wider text-accent-gold uppercase">
+              <span className="text-[12px] font-mono tracking-wider text-accent-gold uppercase">
                 Lobbying Disclosures ({entity.lobbying.filings.length})
               </span>
               {entity.lobbying.totalAmount > 0 && (
-                <span className="text-[10px] font-mono text-accent-gold">
+                <span className="text-[12px] font-mono text-accent-gold">
                   {formatCurrency(entity.lobbying.totalAmount)} total
                 </span>
               )}
@@ -475,8 +475,8 @@ export default function EntityDetail({
                   .sort(([a], [b]) => Number(b) - Number(a))
                   .map(([year, amount]) => (
                     <div key={year} className="px-2 py-1 rounded bg-surface border border-border">
-                      <span className="text-[10px] font-mono text-muted">{year}</span>
-                      <span className="text-[10px] font-mono text-accent-gold ml-1.5">{formatCurrency(amount)}</span>
+                      <span className="text-[12px] font-mono text-muted">{year}</span>
+                      <span className="text-[12px] font-mono text-accent-gold ml-1.5">{formatCurrency(amount)}</span>
                     </div>
                   ))}
               </div>
@@ -485,20 +485,20 @@ export default function EntityDetail({
               {entity.lobbying.filings.slice(0, 5).map((filing) => (
                 <div key={filing.id} className="px-2 py-1.5 rounded bg-surface border border-border">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] font-mono text-muted">
+                    <span className="text-[12px] font-mono text-muted">
                       {filing.year} {filing.period}
                     </span>
                     {filing.amount && (
-                      <span className="text-[10px] font-mono text-accent-gold">{formatCurrency(filing.amount)}</span>
+                      <span className="text-[12px] font-mono text-accent-gold">{formatCurrency(filing.amount)}</span>
                     )}
                   </div>
                   {filing.issues.length > 0 && (
-                    <p className="text-[10px] text-muted-foreground">
+                    <p className="text-[12px] text-muted-foreground">
                       Issues: {filing.issues.slice(0, 3).join(', ')}
                     </p>
                   )}
                   {filing.governmentEntities.length > 0 && (
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                    <p className="text-[12px] text-muted-foreground mt-0.5">
                       Lobbied: {filing.governmentEntities.slice(0, 3).join(', ')}
                     </p>
                   )}
@@ -511,7 +511,7 @@ export default function EntityDetail({
         {/* Sources */}
         {entity.sources.length > 0 && (
           <div className="border-t border-border pt-4">
-            <div className="text-[10px] font-mono tracking-wider text-muted mb-3 uppercase">
+            <div className="text-[12px] font-mono tracking-wider text-muted mb-3 uppercase">
               Sources ({entity.sources.length})
             </div>
             <div className="space-y-1">
@@ -523,7 +523,7 @@ export default function EntityDetail({
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 px-1 py-0.5 rounded hover:bg-surface-hover transition-colors group min-w-0"
                 >
-                  <span className="text-[10px] text-muted-foreground group-hover:text-foreground flex-1 min-w-0 truncate">
+                  <span className="text-[12px] text-muted-foreground group-hover:text-foreground flex-1 min-w-0 truncate">
                     {source.title || source.domain}
                   </span>
                   <svg className="w-3 h-3 text-muted group-hover:text-accent-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

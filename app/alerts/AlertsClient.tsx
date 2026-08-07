@@ -82,14 +82,14 @@ export default function AlertsClient() {
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-8 space-y-5">
       <header className="space-y-2">
-        <div className="font-mono text-[10px] tracking-[0.3em] text-muted">SIGNAL FEED</div>
+        <div className="font-mono text-[12px] tracking-[0.3em] text-muted">SIGNAL FEED</div>
         <h1 className="font-mono text-2xl md:text-3xl tracking-[0.08em] text-foreground uppercase">
           <span className="text-accent-red">&#x276E;</span> ALERTS
           {unreadCount > 0 && (
             <span className="ml-3 text-sm text-accent-red">{unreadCount} UNREAD</span>
           )}
         </h1>
-        <p className="font-mono text-[11px] text-muted-foreground">
+        <p className="font-mono text-[13px] text-muted-foreground">
           Generated when the sync crons run.{' '}
           <Link href="/watchlists" className="text-accent-blue hover:underline">
             Manage watchlists and rules
@@ -101,7 +101,7 @@ export default function AlertsClient() {
       <div className="flex items-center gap-3 flex-wrap">
         <button
           onClick={() => setOnlyUnread((v) => !v)}
-          className={`px-3 py-1.5 font-mono text-[10px] tracking-wider rounded border transition-colors ${
+          className={`px-3 py-1.5 font-mono text-[12px] tracking-wider rounded border transition-colors ${
             onlyUnread
               ? 'text-accent-red border-accent-red/50 bg-accent-red/10'
               : 'text-muted-foreground border-border hover:border-border-bright'
@@ -112,7 +112,7 @@ export default function AlertsClient() {
         {unreadCount > 0 && (
           <button
             onClick={() => markRead('all')}
-            className="px-3 py-1.5 font-mono text-[10px] tracking-wider rounded border border-border text-muted-foreground hover:border-border-bright hover:text-foreground transition-colors"
+            className="px-3 py-1.5 font-mono text-[12px] tracking-wider rounded border border-border text-muted-foreground hover:border-border-bright hover:text-foreground transition-colors"
           >
             MARK ALL READ
           </button>
@@ -124,7 +124,7 @@ export default function AlertsClient() {
           <div className="font-mono text-xs text-muted-foreground mb-2">
             {onlyUnread ? 'NOTHING UNREAD' : 'NO ALERTS YET'}
           </div>
-          <p className="font-mono text-[11px] text-muted">
+          <p className="font-mono text-[13px] text-muted">
             Alerts appear here after the daily or weekly sync evaluates your rules.
           </p>
         </div>
@@ -145,10 +145,10 @@ export default function AlertsClient() {
             >
               <div className="p-4">
                 <div className="flex items-start justify-between gap-3 flex-wrap">
-                  <div className={`font-mono text-[9px] tracking-[0.2em] ${tone}`}>
+                  <div className={`font-mono text-[11px] tracking-[0.2em] ${tone}`}>
                     {(RULE_LABELS[event.ruleType as RuleType] || event.ruleType).toUpperCase()}
                   </div>
-                  <div className="flex items-center gap-3 font-mono text-[10px] text-muted">
+                  <div className="flex items-center gap-3 font-mono text-[12px] text-muted">
                     <span>{relative(event.createdAt)}</span>
                     {!event.readAt && (
                       <button
@@ -177,7 +177,7 @@ export default function AlertsClient() {
                       .split('\n')
                       .filter(Boolean)
                       .map((line, i) => (
-                        <div key={i} className="font-mono text-[11px] text-muted-foreground leading-relaxed">
+                        <div key={i} className="font-mono text-[13px] text-muted-foreground leading-relaxed">
                           {line}
                         </div>
                       ))}
@@ -190,14 +190,14 @@ export default function AlertsClient() {
                       href={event.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-block mt-3 font-mono text-[10px] tracking-[0.15em] text-accent-red hover:underline"
+                      className="inline-block mt-3 font-mono text-[12px] tracking-[0.15em] text-accent-red hover:underline"
                     >
                       OPEN SOURCE ›
                     </a>
                   ) : (
                     <Link
                       href={event.url}
-                      className="inline-block mt-3 font-mono text-[10px] tracking-[0.15em] text-accent-red hover:underline"
+                      className="inline-block mt-3 font-mono text-[12px] tracking-[0.15em] text-accent-red hover:underline"
                     >
                       OPEN ›
                     </Link>
@@ -212,7 +212,7 @@ export default function AlertsClient() {
         <button
           onClick={() => load(nextCursor)}
           disabled={loading}
-          className="w-full px-3 py-2 font-mono text-[10px] tracking-wider text-muted-foreground border border-border hover:border-border-bright hover:text-foreground disabled:opacity-50 transition-colors"
+          className="w-full px-3 py-2 font-mono text-[12px] tracking-wider text-muted-foreground border border-border hover:border-border-bright hover:text-foreground disabled:opacity-50 transition-colors"
         >
           {loading ? 'LOADING…' : 'LOAD MORE'}
         </button>

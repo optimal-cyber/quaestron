@@ -58,8 +58,8 @@ export default function AuthMenu() {
       {open && (
         <div className="absolute right-0 mt-1 w-56 border border-border bg-surface rounded shadow-lg overflow-hidden">
           <div className="px-3 py-2 border-b border-border">
-            <div className="font-mono text-[10px] text-muted truncate">{email}</div>
-            <div className="font-mono text-[10px] mt-0.5">
+            <div className="font-mono text-[12px] text-muted truncate">{email}</div>
+            <div className="font-mono text-[12px] mt-0.5">
               <span className="text-muted">TIER </span>
               <span className={TIER_COLOR[tier] || 'text-muted'}>{tier}</span>
               {role === 'ADMIN' && <span className="text-accent-red ml-2">ADMIN</span>}
@@ -68,14 +68,14 @@ export default function AuthMenu() {
           <Link
             href="/watchlists"
             onClick={() => setOpen(false)}
-            className="block px-3 py-2 font-mono text-[11px] tracking-wider text-muted-foreground hover:bg-surface-hover hover:text-foreground transition-colors"
+            className="block px-3 py-2 font-mono text-[13px] tracking-wider text-muted-foreground hover:bg-surface-hover hover:text-foreground transition-colors"
           >
             WATCHLISTS
           </Link>
           <Link
             href="/account"
             onClick={() => setOpen(false)}
-            className="block px-3 py-2 font-mono text-[11px] tracking-wider text-muted-foreground hover:bg-surface-hover hover:text-foreground transition-colors"
+            className="block px-3 py-2 font-mono text-[13px] tracking-wider text-muted-foreground hover:bg-surface-hover hover:text-foreground transition-colors"
           >
             ACCOUNT
           </Link>
@@ -83,14 +83,14 @@ export default function AuthMenu() {
             <Link
               href="/admin"
               onClick={() => setOpen(false)}
-              className="block px-3 py-2 font-mono text-[11px] tracking-wider text-muted-foreground hover:bg-surface-hover hover:text-foreground transition-colors"
+              className="block px-3 py-2 font-mono text-[13px] tracking-wider text-muted-foreground hover:bg-surface-hover hover:text-foreground transition-colors"
             >
               ADMIN PANEL
             </Link>
           )}
           <button
             onClick={() => void signOut({ callbackUrl: '/' })}
-            className="w-full text-left px-3 py-2 font-mono text-[11px] tracking-wider text-accent-red hover:bg-accent-red/10 transition-colors"
+            className="w-full text-left px-3 py-2 font-mono text-[13px] tracking-wider text-accent-red hover:bg-accent-red/10 transition-colors"
           >
             SIGN OUT
           </button>
