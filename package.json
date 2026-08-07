@@ -25,7 +25,8 @@
     "correct:dod-pa": "tsx scripts/correct-dod-pa.ts",
     "pre-enrich": "tsx scripts/pre-enrich.ts",
     "backfill:hq": "tsx scripts/backfill-hq.ts",
-    "fix:disa-log": "tsx scripts/consolidate-disa-log.ts"
+    "fix:disa-log": "tsx scripts/consolidate-disa-log.ts",
+    "users": "tsx scripts/users.ts"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"

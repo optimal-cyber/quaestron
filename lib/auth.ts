@@ -88,6 +88,42 @@ export const authConfig: NextAuthConfig = {
     verifyRequest: '/signin/check-email',
     error: '/signin',
   },
+  events: {
+    /**
+     * Signup notification.
+     *
+     * Fires once per account, on creation, so it answers the question that
+     * actually matters during outreach: did the person I emailed on Tuesday
+     * create an account. Polling a CLI cannot tell you within the hour, and an
+     * hour is the difference between a warm reply and a cold one.
+     *
+     * Deliberately non-blocking and swallowed on failure. A notification that
+     * throws would surface to the user as a broken sign-in, which trades the
+     * thing we care about for the thing we were trying to observe.
+     */
+    async createUser({ user }) {
+      const to = process.env.SIGNUP_NOTIFY_TO
+      if (!to || !process.env.RESEND_API_KEY) return
+      try {
+        const { Resend } = await import('resend')
+        const resend = new Resend(process.env.RESEND_API_KEY)
+        await resend.emails.send({
+          from: process.env.EMAIL_FROM || 'Iron Echelon <intel@ironechelon.com>',
+          to,
+          subject: `New Quaestron signup: ${user.email ?? 'unknown'}`,
+          text: [
+            `Email:  ${user.email ?? '(none)'}`,
+            `Name:   ${user.name ?? '(none)'}`,
+            `Time:   ${new Date().toISOString()}`,
+            ``,
+            `Everyone who has signed up:  npm run users`,
+          ].join('\n'),
+        })
+      } catch (err) {
+        console.error('[auth] signup notification failed:', err)
+      }
+    },
+  },
   callbacks: {
     session({ session, user }) {
       // `user` is the freshly-read DB row under the database strategy, so tier
