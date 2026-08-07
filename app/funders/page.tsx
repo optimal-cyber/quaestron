@@ -183,7 +183,7 @@ export default function FundersPage() {
                     <span className="text-xs text-muted ml-2">{f.connectionCount}</span>
                   </div>
                   {f.headquartersCountry && (
-                    <div className="text-[10px] text-muted mt-0.5">
+                    <div className="text-[12px] text-muted mt-0.5">
                       {f.headquartersCountry.name}
                     </div>
                   )}
@@ -200,7 +200,7 @@ export default function FundersPage() {
               <button
                 key={f.id}
                 onClick={() => selectEntity(f.id)}
-                className={`shrink-0 px-3 py-1.5 rounded text-[10px] font-mono tracking-wider transition-colors ${
+                className={`shrink-0 px-3 py-1.5 rounded text-[12px] font-mono tracking-wider transition-colors ${
                   selectedEntityId === f.id
                     ? 'bg-accent-gold/15 border border-accent-gold/40 text-accent-gold'
                     : 'bg-surface border border-border text-muted-foreground'
@@ -267,7 +267,7 @@ export default function FundersPage() {
 
                     {stats.funding.topFunded.length > 0 && (
                       <div>
-                        <h4 className="font-mono text-[10px] tracking-[0.2em] text-muted mb-2 uppercase">Most-Funded Vendors</h4>
+                        <h4 className="font-mono text-[12px] tracking-[0.2em] text-muted mb-2 uppercase">Most-Funded Vendors</h4>
                         <div className="space-y-1.5">
                           {stats.funding.topFunded.map((v) => (
                             <a
@@ -290,7 +290,7 @@ export default function FundersPage() {
                             </a>
                           ))}
                         </div>
-                        <div className="flex items-center gap-4 mt-2 text-[10px] font-mono text-muted">
+                        <div className="flex items-center gap-4 mt-2 text-[12px] font-mono text-muted">
                           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-accent-blue" /> Government</span>
                           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-accent-green" /> Private</span>
                         </div>

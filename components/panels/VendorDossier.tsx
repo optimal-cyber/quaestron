@@ -19,7 +19,7 @@ function Section({ title, hint, children }: { title: string; hint?: string; chil
     <section className="border border-border rounded-lg bg-surface/40 overflow-hidden">
       <div className="px-4 py-3 border-b border-border flex items-baseline justify-between gap-3">
         <h2 className="font-mono text-xs tracking-[0.15em] text-foreground uppercase">{title}</h2>
-        {hint && <span className="text-[10px] text-muted font-mono">{hint}</span>}
+        {hint && <span className="text-[12px] text-muted font-mono">{hint}</span>}
       </div>
       <div className="p-4">{children}</div>
     </section>
@@ -30,7 +30,7 @@ function Stat({ label, value, tone = 'foreground' }: { label: string; value: Rea
   return (
     <div className="min-w-[110px]">
       <div className={`font-mono text-lg text-${tone}`}>{value}</div>
-      <div className="text-[10px] text-muted font-mono uppercase tracking-wider mt-0.5">{label}</div>
+      <div className="text-[12px] text-muted font-mono uppercase tracking-wider mt-0.5">{label}</div>
     </div>
   )
 }
@@ -54,7 +54,7 @@ export default function VendorDossier({ d }: { d: Dossier }) {
             <h1 className="font-mono text-2xl md:text-3xl tracking-[0.08em] text-foreground uppercase">
               {d.identity.name}
             </h1>
-            <div className="flex items-center gap-2 mt-2 flex-wrap text-[11px] font-mono">
+            <div className="flex items-center gap-2 mt-2 flex-wrap text-[13px] font-mono">
               <span className="px-2 py-0.5 rounded border border-border text-muted-foreground uppercase">
                 {d.identity.type.replace(/_/g, ' ')}
               </span>
@@ -106,7 +106,7 @@ export default function VendorDossier({ d }: { d: Dossier }) {
         <div className="space-y-2">
           {d.riskFlags.map((r) => (
             <div key={r.flag} className="flex items-start gap-3 px-4 py-2.5 rounded-lg border border-accent-red/30 bg-accent-red/5">
-              <span className="text-accent-red font-mono text-[10px] mt-0.5 shrink-0">⚠ RISK</span>
+              <span className="text-accent-red font-mono text-[12px] mt-0.5 shrink-0">⚠ RISK</span>
               <div>
                 <div className="text-xs font-mono text-accent-red uppercase tracking-wider">{r.label}</div>
                 <div className="text-xs text-muted-foreground mt-0.5">{r.detail}</div>
@@ -130,7 +130,7 @@ export default function VendorDossier({ d }: { d: Dossier }) {
           <Stat label="SBIR/STTR Awards" value={d.sbir.totalAwards} tone={d.sbir.totalAwards > 0 ? 'accent-gold' : 'muted'} />
         </div>
         {d.responsibility.naics.length > 0 && (
-          <div className="mt-4 text-[11px] font-mono text-muted-foreground">
+          <div className="mt-4 text-[13px] font-mono text-muted-foreground">
             <span className="text-muted">NAICS:</span> {d.responsibility.naics.slice(0, 6).map((n) => n.code).join(', ')}
           </div>
         )}
@@ -148,11 +148,11 @@ export default function VendorDossier({ d }: { d: Dossier }) {
             <div className="space-y-2 mb-4">
               {d.pastPerformance.agencyBreakdown.slice(0, 8).map((a) => (
                 <div key={a.agency} className="flex items-center gap-3">
-                  <span className="text-[11px] font-mono text-muted-foreground w-56 truncate shrink-0">{a.agency}</span>
+                  <span className="text-[13px] font-mono text-muted-foreground w-56 truncate shrink-0">{a.agency}</span>
                   <div className="flex-1 h-2 bg-surface rounded overflow-hidden">
                     <div className="h-full bg-accent-blue rounded" style={{ width: `${(a.totalObligated / maxAgency) * 100}%` }} />
                   </div>
-                  <span className="text-[11px] font-mono text-accent-blue w-16 text-right shrink-0">{fmt(a.totalObligated)}</span>
+                  <span className="text-[13px] font-mono text-accent-blue w-16 text-right shrink-0">{fmt(a.totalObligated)}</span>
                 </div>
               ))}
             </div>
@@ -160,7 +160,7 @@ export default function VendorDossier({ d }: { d: Dossier }) {
           {d.pastPerformance.topContracts.length > 0 && (
             <div className="space-y-1.5">
               {d.pastPerformance.topContracts.slice(0, 5).map((c) => (
-                <div key={c.id} className="flex items-start justify-between gap-3 text-[11px]">
+                <div key={c.id} className="flex items-start justify-between gap-3 text-[13px]">
                   <div className="min-w-0">
                     {c.agency && <span className="font-mono text-accent-blue">{c.agency}</span>}
                     {c.description && <p className="text-muted-foreground line-clamp-1">{c.description}</p>}
@@ -185,7 +185,7 @@ export default function VendorDossier({ d }: { d: Dossier }) {
           </div>
           <div className="space-y-1.5">
             {d.sbir.recent.slice(0, 5).map((a) => (
-              <div key={a.id} className="flex items-start justify-between gap-3 text-[11px]">
+              <div key={a.id} className="flex items-start justify-between gap-3 text-[13px]">
                 <div className="min-w-0">
                   <span className="font-mono text-muted">{a.program} {a.phase ? `Ph ${a.phase}` : ''} {a.year || ''} · {a.agency}</span>
                   {a.title && <p className="text-muted-foreground line-clamp-1">{a.title}</p>}
@@ -205,14 +205,14 @@ export default function VendorDossier({ d }: { d: Dossier }) {
             {d.funding.privateTotal > 0 && <Stat label="Private Capital" value={fmt(d.funding.privateTotal)} tone="accent-green" />}
           </div>
           {d.funding.fundedBy.length > 0 && (
-            <div className="text-[11px] font-mono text-muted-foreground">
+            <div className="text-[13px] font-mono text-muted-foreground">
               <span className="text-muted">Backers:</span> {d.funding.fundedBy.map((f) => f.name).join(', ')}
             </div>
           )}
           {d.funding.rounds.length > 0 && (
             <div className="mt-3 space-y-1.5">
               {d.funding.rounds.slice(0, 6).map((r) => (
-                <div key={r.id} className="flex items-center justify-between gap-3 text-[11px] font-mono">
+                <div key={r.id} className="flex items-center justify-between gap-3 text-[13px] font-mono">
                   <span className="text-muted-foreground">{r.roundName || r.roundType || 'Round'}{r.source ? ` · ${r.source}` : ''}{r.date ? ` · ${r.date.slice(0, 10)}` : ''}</span>
                   {r.amount != null && <span className="text-accent-green shrink-0">{fmt(r.amount)}</span>}
                 </div>
@@ -233,7 +233,7 @@ export default function VendorDossier({ d }: { d: Dossier }) {
       )}
 
       {/* Methodology footer */}
-      <footer className="text-[10px] text-muted font-mono leading-relaxed border-t border-border pt-4">
+      <footer className="text-[12px] text-muted font-mono leading-relaxed border-t border-border pt-4">
         Compiled from public sources: SAM.gov, USAspending.gov, FedRAMP Marketplace, DoD DCAS, SBIR.gov, and Senate LDA.
         {d.identity.vendorSyncedAt && ` Last enriched ${new Date(d.identity.vendorSyncedAt).toUTCString().replace(' GMT', ' UTC')}.`}
         {' '}This dossier supports market research (FAR Part 10) and responsibility determinations (FAR 9.104); it is decision support, not a formal determination of responsibility.

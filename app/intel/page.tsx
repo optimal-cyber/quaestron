@@ -96,7 +96,7 @@ function LiveTicker({ items }: { items: FeedItem[] }) {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
           </span>
-          <span className="font-mono text-[10px] tracking-[0.2em] text-red-400 font-bold">LIVE</span>
+          <span className="font-mono text-[12px] tracking-[0.2em] text-red-400 font-bold">LIVE</span>
         </div>
       </div>
 
@@ -119,10 +119,10 @@ function LiveTicker({ items }: { items: FeedItem[] }) {
               className="w-1 h-1 rounded-full shrink-0"
               style={{ backgroundColor: CATEGORY_COLORS[item.category] || '#64748B' }}
             />
-            <span className="text-[11px] font-mono text-muted-foreground group-hover:text-foreground transition-colors">
+            <span className="text-[13px] font-mono text-muted-foreground group-hover:text-foreground transition-colors">
               {item.title}
             </span>
-            <span className="text-[9px] font-mono text-muted">{timeAgo(item.pubDate)}</span>
+            <span className="text-[11px] font-mono text-muted">{timeAgo(item.pubDate)}</span>
             <span
               className="text-[8px] font-mono px-1 py-0.5 rounded"
               style={{
@@ -184,11 +184,11 @@ function PriorityAlerts({ items }: { items: FeedItem[] }) {
           <svg className="w-3.5 h-3.5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
           </svg>
-          <span className="text-[10px] font-mono tracking-[0.15em] text-red-400 font-bold">PRIORITY</span>
+          <span className="text-[12px] font-mono tracking-[0.15em] text-red-400 font-bold">PRIORITY</span>
         </div>
-        <span className="text-[11px] font-mono text-red-200/80 truncate">{item.title}</span>
-        <span className="text-[9px] font-mono text-red-400/60 shrink-0">{item.source}</span>
-        <span className="text-[9px] font-mono text-muted shrink-0">{timeAgo(item.pubDate)}</span>
+        <span className="text-[13px] font-mono text-red-200/80 truncate">{item.title}</span>
+        <span className="text-[11px] font-mono text-red-400/60 shrink-0">{item.source}</span>
+        <span className="text-[11px] font-mono text-muted shrink-0">{timeAgo(item.pubDate)}</span>
         {priorities.length > 1 && (
           <span className="text-[8px] font-mono text-red-400/40 shrink-0 ml-auto">
             {currentIndex + 1}/{priorities.length}
@@ -282,7 +282,7 @@ export default function IntelPage() {
                 <button
                   onClick={() => fetchFeeds(true)}
                   disabled={refreshing}
-                  className="text-[9px] font-mono text-muted hover:text-foreground transition-colors disabled:opacity-50"
+                  className="text-[11px] font-mono text-muted hover:text-foreground transition-colors disabled:opacity-50"
                   title="Refresh feeds"
                 >
                   {refreshing ? (
@@ -298,7 +298,7 @@ export default function IntelPage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75" />
                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500" />
                 </span>
-                <p className="text-[10px] text-muted font-mono">
+                <p className="text-[12px] text-muted font-mono">
                   {items.length} items &bull; {sourceCounts.size} sources &bull; auto-refresh {nextRefreshIn}m
                 </p>
               </div>
@@ -333,7 +333,7 @@ export default function IntelPage() {
                         />
                         {CATEGORY_LABELS[cat]}
                       </div>
-                      <span className="text-[10px] text-muted">{count}</span>
+                      <span className="text-[12px] text-muted">{count}</span>
                     </button>
                   )
                 })}
@@ -341,7 +341,7 @@ export default function IntelPage() {
 
               {/* Sources */}
               <div className="border-t border-border pt-4">
-                <div className="text-[10px] font-mono tracking-wider text-muted mb-3 uppercase">Sources ({sourceCounts.size})</div>
+                <div className="text-[12px] font-mono tracking-wider text-muted mb-3 uppercase">Sources ({sourceCounts.size})</div>
                 <div className="space-y-0.5">
                   {Array.from(sourceCounts.entries())
                     .sort((a, b) => b[1] - a[1])
@@ -349,7 +349,7 @@ export default function IntelPage() {
                       <button
                         key={source}
                         onClick={() => setFilter(source)}
-                        className="w-full flex items-center justify-between text-[10px] font-mono text-muted-foreground hover:text-foreground transition-colors px-1 py-0.5 rounded hover:bg-surface-hover"
+                        className="w-full flex items-center justify-between text-[12px] font-mono text-muted-foreground hover:text-foreground transition-colors px-1 py-0.5 rounded hover:bg-surface-hover"
                       >
                         <span className="truncate">{source}</span>
                         <span className="text-muted ml-2 shrink-0">{count}</span>
@@ -360,7 +360,7 @@ export default function IntelPage() {
 
               {fetchedAt && (
                 <div className="mt-6 pt-4 border-t border-border">
-                  <div className="text-[9px] font-mono text-muted">
+                  <div className="text-[11px] font-mono text-muted">
                     Last fetched: {timeAgo(fetchedAt)}
                   </div>
                 </div>
@@ -375,7 +375,7 @@ export default function IntelPage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => setCategoryFilter(null)}
-                  className={`shrink-0 px-2.5 py-1 rounded text-[10px] font-mono tracking-wider transition-colors ${
+                  className={`shrink-0 px-2.5 py-1 rounded text-[12px] font-mono tracking-wider transition-colors ${
                     !categoryFilter ? 'bg-accent-red/15 border border-accent-red/30 text-accent-red' : 'bg-surface border border-border text-muted-foreground'
                   }`}
                 >
@@ -388,7 +388,7 @@ export default function IntelPage() {
                     <button
                       key={cat}
                       onClick={() => setCategoryFilter(categoryFilter === cat ? null : cat)}
-                      className={`shrink-0 px-2.5 py-1 rounded text-[10px] font-mono tracking-wider transition-colors ${
+                      className={`shrink-0 px-2.5 py-1 rounded text-[12px] font-mono tracking-wider transition-colors ${
                         categoryFilter === cat
                           ? 'border'
                           : 'bg-surface border border-border text-muted-foreground'
@@ -416,7 +416,7 @@ export default function IntelPage() {
                   placeholder="Search intel feeds... (source, keyword, CVE)"
                   className="flex-1 max-w-lg px-3 py-2 bg-surface border border-border rounded text-sm font-mono text-foreground placeholder:text-muted focus:outline-none focus:border-accent-red/50"
                 />
-                <div className="hidden md:flex items-center gap-3 text-[10px] font-mono text-muted">
+                <div className="hidden md:flex items-center gap-3 text-[12px] font-mono text-muted">
                   <span>{filtered.length} results</span>
                   {refreshing && (
                     <span className="text-accent-green animate-pulse">syncing...</span>
@@ -427,7 +427,7 @@ export default function IntelPage() {
                 <div className="mt-2 flex items-center gap-2 flex-wrap">
                   {categoryFilter && (
                     <span
-                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono border"
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[12px] font-mono border"
                       style={{
                         color: CATEGORY_COLORS[categoryFilter],
                         borderColor: CATEGORY_COLORS[categoryFilter] + '40',
@@ -439,14 +439,14 @@ export default function IntelPage() {
                     </span>
                   )}
                   {filter && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono border border-border text-muted-foreground">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[12px] font-mono border border-border text-muted-foreground">
                       &ldquo;{filter}&rdquo;
                       <button onClick={() => setFilter('')} className="ml-1 hover:opacity-70">&times;</button>
                     </span>
                   )}
                   <button
                     onClick={() => { setCategoryFilter(null); setFilter('') }}
-                    className="text-[10px] font-mono text-muted hover:text-foreground"
+                    className="text-[12px] font-mono text-muted hover:text-foreground"
                   >
                     Clear all
                   </button>
@@ -493,14 +493,14 @@ export default function IntelPage() {
                             {item.title}
                           </div>
                           {item.description && (
-                            <div className="text-[11px] text-muted leading-relaxed mb-1.5 line-clamp-2">
+                            <div className="text-[13px] text-muted leading-relaxed mb-1.5 line-clamp-2">
                               {item.description}
                             </div>
                           )}
                           <div className="flex items-center gap-3 flex-wrap">
-                            <span className="text-[10px] font-mono text-accent-blue">{item.source}</span>
+                            <span className="text-[12px] font-mono text-accent-blue">{item.source}</span>
                             <span
-                              className="text-[9px] font-mono px-1.5 py-0.5 rounded"
+                              className="text-[11px] font-mono px-1.5 py-0.5 rounded"
                               style={{
                                 color: CATEGORY_COLORS[item.category],
                                 backgroundColor: CATEGORY_COLORS[item.category] + '15',
@@ -509,7 +509,7 @@ export default function IntelPage() {
                               {item.category.replace('_', ' ')}
                             </span>
                             {item.pubDate && (
-                              <span className="text-[10px] font-mono text-muted">{timeAgo(item.pubDate)}</span>
+                              <span className="text-[12px] font-mono text-muted">{timeAgo(item.pubDate)}</span>
                             )}
                           </div>
                         </div>

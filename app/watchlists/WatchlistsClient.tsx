@@ -100,15 +100,15 @@ export default function WatchlistsClient({ tier }: { tier: string }) {
   return (
     <div className="max-w-5xl mx-auto p-4 md:p-8 space-y-6">
       <header className="space-y-2">
-        <div className="font-mono text-[10px] tracking-[0.3em] text-muted">TARGET TRACKING</div>
+        <div className="font-mono text-[12px] tracking-[0.3em] text-muted">TARGET TRACKING</div>
         <h1 className="font-mono text-2xl md:text-3xl tracking-[0.08em] text-foreground uppercase">
           <span className="text-accent-red">&#x276E;</span> WATCHLISTS
         </h1>
-        <p className="font-mono text-[11px] text-muted-foreground max-w-2xl leading-relaxed">
+        <p className="font-mono text-[13px] text-muted-foreground max-w-2xl leading-relaxed">
           Track vendors, FedRAMP offerings, agencies, keywords, and NAICS codes. Attach
           alert rules below to get notified when something moves.
         </p>
-        <div className="font-mono text-[10px] text-muted">
+        <div className="font-mono text-[12px] text-muted">
           TIER <span className="text-accent-gold">{tier}</span>
           {limits?.maxWatchlists !== null && (
             <> · {watchlists.length}/{limits?.maxWatchlists} lists</>
@@ -122,7 +122,7 @@ export default function WatchlistsClient({ tier }: { tier: string }) {
       </header>
 
       {error && (
-        <div className="border border-accent-gold/40 bg-accent-gold/10 px-3 py-2 font-mono text-[11px] text-accent-gold">
+        <div className="border border-accent-gold/40 bg-accent-gold/10 px-3 py-2 font-mono text-[13px] text-accent-gold">
           {error}
         </div>
       )}
@@ -157,7 +157,7 @@ export default function WatchlistsClient({ tier }: { tier: string }) {
           </button>
         </form>
         {atWatchlistCap && (
-          <p className="mt-2 font-mono text-[10px] text-muted">
+          <p className="mt-2 font-mono text-[12px] text-muted">
             {tier} tier is limited to {limits?.maxWatchlists} watchlist
             {limits?.maxWatchlists === 1 ? '' : 's'}. Upgrade to Pro for unlimited lists,
             daily digests, and realtime in-app alerts.
@@ -170,7 +170,7 @@ export default function WatchlistsClient({ tier }: { tier: string }) {
       {!loading && watchlists.length === 0 && (
         <div className="border border-border rounded-lg bg-surface/40 p-8 text-center">
           <div className="font-mono text-xs text-muted-foreground mb-2">NO WATCHLISTS YET</div>
-          <p className="font-mono text-[11px] text-muted">
+          <p className="font-mono text-[13px] text-muted">
             Create one above, or hit <span className="text-accent-red">+ WATCH</span> on any{' '}
             <Link href="/vendors" className="text-accent-blue hover:underline">
               vendor page
@@ -225,7 +225,7 @@ function WatchlistCard({
           {list.name}
         </h2>
         <div className="flex items-center gap-3">
-          <span className="font-mono text-[10px] text-muted">
+          <span className="font-mono text-[12px] text-muted">
             {list.items.length} item{list.items.length === 1 ? '' : 's'} · {rules.length} rule
             {rules.length === 1 ? '' : 's'}
           </span>
@@ -235,7 +235,7 @@ function WatchlistCard({
                 void onCall(`/api/watchlists/${list.id}`, { method: 'DELETE' })
               }
             }}
-            className="font-mono text-[10px] tracking-wider text-muted hover:text-accent-red transition-colors"
+            className="font-mono text-[12px] tracking-wider text-muted hover:text-accent-red transition-colors"
           >
             DELETE
           </button>
@@ -245,9 +245,9 @@ function WatchlistCard({
       <div className="p-4 space-y-4">
         {/* Items */}
         <div>
-          <div className="font-mono text-[10px] tracking-[0.2em] text-muted mb-2">TARGETS</div>
+          <div className="font-mono text-[12px] tracking-[0.2em] text-muted mb-2">TARGETS</div>
           {list.items.length === 0 ? (
-            <p className="font-mono text-[11px] text-muted">
+            <p className="font-mono text-[13px] text-muted">
               Nothing tracked yet. Rules on an empty list are skipped.
             </p>
           ) : (
@@ -255,7 +255,7 @@ function WatchlistCard({
               {list.items.map((item) => (
                 <span
                   key={item.id}
-                  className="inline-flex items-center gap-2 px-2 py-1 rounded border border-border bg-background font-mono text-[10px]"
+                  className="inline-flex items-center gap-2 px-2 py-1 rounded border border-border bg-background font-mono text-[12px]"
                 >
                   <span className="text-muted">{TARGET_LABELS[item.targetType]}</span>
                   <span className="text-foreground">
@@ -300,7 +300,7 @@ function WatchlistCard({
               <select
                 value={targetType}
                 onChange={(e) => setTargetType(e.target.value as TargetType)}
-                className="bg-background border border-border px-2 py-1.5 font-mono text-[11px] text-foreground outline-none"
+                className="bg-background border border-border px-2 py-1.5 font-mono text-[13px] text-foreground outline-none"
               >
                 {(['FEDRAMP_CSO', 'AGENCY', 'KEYWORD', 'NAICS'] as TargetType[]).map((t) => (
                   <option key={t} value={t}>
@@ -320,18 +320,18 @@ function WatchlistCard({
                         ? 'FedRAMP package ID'
                         : 'e.g. counter-UAS'
                 }
-                className="flex-1 min-w-[180px] bg-background border border-border focus:border-accent-blue px-2 py-1.5 font-mono text-[11px] text-foreground placeholder:text-muted/60 outline-none"
+                className="flex-1 min-w-[180px] bg-background border border-border focus:border-accent-blue px-2 py-1.5 font-mono text-[13px] text-foreground placeholder:text-muted/60 outline-none"
               />
               <button
                 type="submit"
-                className="px-2 py-1.5 font-mono text-[10px] tracking-wider text-accent-red border border-accent-red/40 hover:bg-accent-red/10 transition-colors"
+                className="px-2 py-1.5 font-mono text-[12px] tracking-wider text-accent-red border border-accent-red/40 hover:bg-accent-red/10 transition-colors"
               >
                 ADD
               </button>
               <button
                 type="button"
                 onClick={() => setAdding(false)}
-                className="px-2 py-1.5 font-mono text-[10px] tracking-wider text-muted hover:text-foreground transition-colors"
+                className="px-2 py-1.5 font-mono text-[12px] tracking-wider text-muted hover:text-foreground transition-colors"
               >
                 CANCEL
               </button>
@@ -340,13 +340,13 @@ function WatchlistCard({
             <button
               onClick={() => setAdding(true)}
               disabled={atItemCap}
-              className="mt-3 px-2 py-1 font-mono text-[10px] tracking-wider text-muted-foreground border border-border hover:border-border-bright hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="mt-3 px-2 py-1 font-mono text-[12px] tracking-wider text-muted-foreground border border-border hover:border-border-bright hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               + ADD TARGET
             </button>
           )}
           {atItemCap && (
-            <p className="mt-2 font-mono text-[10px] text-muted">
+            <p className="mt-2 font-mono text-[12px] text-muted">
               Item cap reached ({limits?.maxItemsPerWatchlist}). Vendors can still be added
               from vendor pages once you free a slot.
             </p>
@@ -355,7 +355,7 @@ function WatchlistCard({
 
         {/* Rules */}
         <div className="border-t border-border pt-4">
-          <div className="font-mono text-[10px] tracking-[0.2em] text-muted mb-2">ALERT RULES</div>
+          <div className="font-mono text-[12px] tracking-[0.2em] text-muted mb-2">ALERT RULES</div>
 
           {rules.length > 0 && (
             <div className="space-y-2 mb-3">
@@ -364,7 +364,7 @@ function WatchlistCard({
                   key={rule.id}
                   className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 rounded border border-border bg-background"
                 >
-                  <div className="font-mono text-[11px]">
+                  <div className="font-mono text-[13px]">
                     <span className={rule.active ? 'text-foreground' : 'text-muted line-through'}>
                       {RULE_LABELS[rule.ruleType as RuleType] || rule.ruleType}
                     </span>
@@ -380,7 +380,7 @@ function WatchlistCard({
                           body: JSON.stringify({ active: !rule.active }),
                         })
                       }
-                      className="font-mono text-[10px] tracking-wider text-muted hover:text-foreground transition-colors"
+                      className="font-mono text-[12px] tracking-wider text-muted hover:text-foreground transition-colors"
                     >
                       {rule.active ? 'PAUSE' : 'RESUME'}
                     </button>
@@ -388,7 +388,7 @@ function WatchlistCard({
                       onClick={() =>
                         onCall(`/api/alerts/rules/${rule.id}`, { method: 'DELETE' })
                       }
-                      className="font-mono text-[10px] tracking-wider text-muted hover:text-accent-red transition-colors"
+                      className="font-mono text-[12px] tracking-wider text-muted hover:text-accent-red transition-colors"
                     >
                       DELETE
                     </button>
@@ -417,7 +417,7 @@ function WatchlistCard({
               <select
                 value={ruleType}
                 onChange={(e) => setRuleType(e.target.value as RuleType)}
-                className="bg-background border border-border px-2 py-1.5 font-mono text-[11px] text-foreground outline-none"
+                className="bg-background border border-border px-2 py-1.5 font-mono text-[13px] text-foreground outline-none"
               >
                 {availableRuleTypes.map((t) => (
                   <option key={t} value={t}>
@@ -428,7 +428,7 @@ function WatchlistCard({
               <select
                 value={frequency}
                 onChange={(e) => setFrequency(e.target.value as Frequency)}
-                className="bg-background border border-border px-2 py-1.5 font-mono text-[11px] text-foreground outline-none"
+                className="bg-background border border-border px-2 py-1.5 font-mono text-[13px] text-foreground outline-none"
               >
                 {FREQUENCIES.map((f) => {
                   const allowed = limits?.frequencies.includes(f) ?? f === 'WEEKLY'
@@ -442,16 +442,16 @@ function WatchlistCard({
               </select>
               <button
                 type="submit"
-                className="px-2 py-1.5 font-mono text-[10px] tracking-wider text-accent-red border border-accent-red/40 hover:bg-accent-red/10 transition-colors"
+                className="px-2 py-1.5 font-mono text-[12px] tracking-wider text-accent-red border border-accent-red/40 hover:bg-accent-red/10 transition-colors"
               >
                 + ADD RULE
               </button>
-              <span className="font-mono text-[10px] text-muted">
+              <span className="font-mono text-[12px] text-muted">
                 matches {RULE_TARGETS[ruleType].map((t) => TARGET_LABELS[t]).join(', ')}
               </span>
             </form>
           ) : (
-            <p className="font-mono text-[10px] text-muted">
+            <p className="font-mono text-[12px] text-muted">
               All rule types are already attached to this list.
             </p>
           )}

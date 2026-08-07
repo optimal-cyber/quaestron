@@ -130,19 +130,19 @@ export default function ComplianceClient() {
   return (
     <div className="max-w-[1400px] mx-auto p-4 md:p-6 space-y-5">
       <header className="space-y-2">
-        <div className="font-mono text-[10px] tracking-[0.3em] text-muted">
+        <div className="font-mono text-[12px] tracking-[0.3em] text-muted">
           COMPLIANCE INTELLIGENCE
         </div>
         <h1 className="font-mono text-2xl md:text-3xl tracking-[0.08em] text-foreground uppercase">
           <span className="text-accent-red">&#x276E;</span> AUTHORIZED CLOUD UNIVERSE
         </h1>
-        <p className="font-mono text-[11px] text-muted-foreground max-w-3xl leading-relaxed">
+        <p className="font-mono text-[13px] text-muted-foreground max-w-3xl leading-relaxed">
           Every FedRAMP authorization and DoD provisional authorization, joined to the
           vendor&apos;s federal contract history. Who is cleared to operate, at what impact
           level, for which agency — and whether they are actually winning work there.
         </p>
         {totals && (
-          <div className="flex flex-wrap gap-4 pt-1 font-mono text-[10px] text-muted">
+          <div className="flex flex-wrap gap-4 pt-1 font-mono text-[12px] text-muted">
             <span>
               FEDRAMP <span className="text-foreground">{totals.fedrampTotal}</span>
             </span>
@@ -168,7 +168,7 @@ export default function ComplianceClient() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search vendor or offering…"
-            className="flex-1 min-w-[200px] bg-background border border-border focus:border-accent-blue px-3 py-1.5 font-mono text-[11px] text-foreground placeholder:text-muted/60 outline-none transition-colors"
+            className="flex-1 min-w-[200px] bg-background border border-border focus:border-accent-blue px-3 py-1.5 font-mono text-[13px] text-foreground placeholder:text-muted/60 outline-none transition-colors"
           />
           <Select value={impactLevel} onChange={setImpactLevel} label="All levels">
             {(facets?.impactLevels ?? []).map((l) => (
@@ -231,7 +231,7 @@ export default function ComplianceClient() {
                 setExpiring('')
                 setSource('')
               }}
-              className="px-2 py-1.5 font-mono text-[10px] tracking-wider text-accent-red border border-accent-red/40 hover:bg-accent-red/10 transition-colors"
+              className="px-2 py-1.5 font-mono text-[12px] tracking-wider text-accent-red border border-accent-red/40 hover:bg-accent-red/10 transition-colors"
             >
               CLEAR {activeFilters}
             </button>
@@ -241,7 +241,7 @@ export default function ComplianceClient() {
 
       <div className="flex items-baseline justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-3 flex-wrap">
-          <span className="font-mono text-[10px] text-muted">
+          <span className="font-mono text-[12px] text-muted">
             {loading ? 'QUERYING…' : `${total} AUTHORIZATION${total === 1 ? '' : 'S'}`}
           </span>
           <ExportButton
@@ -258,7 +258,7 @@ export default function ComplianceClient() {
             }}
           />
         </div>
-        <div className="font-mono text-[9px] text-muted max-w-xl text-right leading-relaxed">
+        <div className="font-mono text-[11px] text-muted max-w-xl text-right leading-relaxed">
           FedRAMP has no hard expiry — the date shown is the next annual assessment due
           date, which is when an authorization lapses if unmet.
         </div>
@@ -273,7 +273,7 @@ export default function ComplianceClient() {
                 (h) => (
                   <th
                     key={h}
-                    className="px-3 py-2 font-mono text-[9px] tracking-[0.18em] text-muted uppercase whitespace-nowrap"
+                    className="px-3 py-2 font-mono text-[11px] tracking-[0.18em] text-muted uppercase whitespace-nowrap"
                   >
                     {h}
                   </th>
@@ -291,17 +291,17 @@ export default function ComplianceClient() {
                   {row.entity ? (
                     <Link
                       href={`/vendor/${row.entity.slug}`}
-                      className="font-mono text-[11px] text-accent-blue hover:underline"
+                      className="font-mono text-[13px] text-accent-blue hover:underline"
                     >
                       {row.vendor}
                     </Link>
                   ) : (
-                    <span className="font-mono text-[11px] text-muted-foreground" title="Not yet linked to a tracked vendor">
+                    <span className="font-mono text-[13px] text-muted-foreground" title="Not yet linked to a tracked vendor">
                       {row.vendor}
                     </span>
                   )}
                   {row.smallBusiness && (
-                    <span className="ml-2 font-mono text-[9px] text-accent-green">SB</span>
+                    <span className="ml-2 font-mono text-[11px] text-accent-green">SB</span>
                   )}
                   {row.entity && (
                     <span className="ml-2 inline-block align-middle">
@@ -309,7 +309,7 @@ export default function ComplianceClient() {
                     </span>
                   )}
                 </td>
-                <td className="px-3 py-2 font-mono text-[11px] max-w-[280px] truncate" title={row.offering}>
+                <td className="px-3 py-2 font-mono text-[13px] max-w-[280px] truncate" title={row.offering}>
                   {row.packageId ? (
                     <Link
                       href={`/compliance/cso/${row.packageId}`}
@@ -323,18 +323,18 @@ export default function ComplianceClient() {
                 </td>
                 <td className="px-3 py-2">
                   <span
-                    className={`px-1.5 py-0.5 rounded border font-mono text-[9px] whitespace-nowrap ${levelClass(row.impactLevel)}`}
+                    className={`px-1.5 py-0.5 rounded border font-mono text-[11px] whitespace-nowrap ${levelClass(row.impactLevel)}`}
                   >
                     {row.impactLevel || '—'}
                   </span>
                 </td>
-                <td className="px-3 py-2 font-mono text-[10px] text-muted-foreground whitespace-nowrap">
+                <td className="px-3 py-2 font-mono text-[12px] text-muted-foreground whitespace-nowrap">
                   {row.status}
                   <span className="ml-1.5 text-muted">
                     {row.source === 'dod-pa' ? 'DoD' : ''}
                   </span>
                 </td>
-                <td className="px-3 py-2 font-mono text-[10px] text-muted-foreground">
+                <td className="px-3 py-2 font-mono text-[12px] text-muted-foreground">
                   {row.sponsoringAgency ? (
                     <span title={`Sponsor: ${row.sponsoringAgency}`}>
                       {row.sponsoringAgency.length > 28
@@ -353,10 +353,10 @@ export default function ComplianceClient() {
                     </span>
                   )}
                 </td>
-                <td className="px-3 py-2 font-mono text-[11px] text-foreground whitespace-nowrap">
+                <td className="px-3 py-2 font-mono text-[13px] text-foreground whitespace-nowrap">
                   {row.entity ? money(row.entity.totalFederalObligated) : '—'}
                 </td>
-                <td className={`px-3 py-2 font-mono text-[10px] whitespace-nowrap ${daysClass(row.daysRemaining)}`}>
+                <td className={`px-3 py-2 font-mono text-[12px] whitespace-nowrap ${daysClass(row.daysRemaining)}`}>
                   {row.daysRemaining !== null
                     ? `${row.daysRemaining}d`
                     : <span className="text-muted">—</span>}
@@ -371,7 +371,7 @@ export default function ComplianceClient() {
                     {(row.entity?.riskFlags ?? []).map((f) => (
                       <span
                         key={f}
-                        className="px-1 py-0.5 rounded bg-accent-red/10 text-accent-red font-mono text-[9px] whitespace-nowrap"
+                        className="px-1 py-0.5 rounded bg-accent-red/10 text-accent-red font-mono text-[11px] whitespace-nowrap"
                         title={RISK_FLAG_LABELS[f] || f}
                       >
                         {RISK_FLAG_LABELS[f] || f}
@@ -380,7 +380,7 @@ export default function ComplianceClient() {
                     {(row.entity?.setAsides ?? []).slice(0, 2).map((s) => (
                       <span
                         key={s}
-                        className="px-1 py-0.5 rounded bg-accent-green/10 text-accent-green font-mono text-[9px] whitespace-nowrap"
+                        className="px-1 py-0.5 rounded bg-accent-green/10 text-accent-green font-mono text-[11px] whitespace-nowrap"
                       >
                         {SET_ASIDE_LABELS[s] || s}
                       </span>
@@ -391,7 +391,7 @@ export default function ComplianceClient() {
             ))}
             {!loading && rows.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-3 py-10 text-center font-mono text-[11px] text-muted">
+                <td colSpan={8} className="px-3 py-10 text-center font-mono text-[13px] text-muted">
                   No authorizations match these filters.
                 </td>
               </tr>
@@ -405,17 +405,17 @@ export default function ComplianceClient() {
           <button
             onClick={() => load(page - 1, false)}
             disabled={page <= 1 || loading}
-            className="px-3 py-1.5 font-mono text-[10px] tracking-wider text-muted-foreground border border-border hover:border-border-bright hover:text-foreground disabled:opacity-40 transition-colors"
+            className="px-3 py-1.5 font-mono text-[12px] tracking-wider text-muted-foreground border border-border hover:border-border-bright hover:text-foreground disabled:opacity-40 transition-colors"
           >
             ← PREV
           </button>
-          <span className="font-mono text-[10px] text-muted">
+          <span className="font-mono text-[12px] text-muted">
             PAGE {page} / {pageCount}
           </span>
           <button
             onClick={() => load(page + 1, false)}
             disabled={page >= pageCount || loading}
-            className="px-3 py-1.5 font-mono text-[10px] tracking-wider text-muted-foreground border border-border hover:border-border-bright hover:text-foreground disabled:opacity-40 transition-colors"
+            className="px-3 py-1.5 font-mono text-[12px] tracking-wider text-muted-foreground border border-border hover:border-border-bright hover:text-foreground disabled:opacity-40 transition-colors"
           >
             NEXT →
           </button>
@@ -440,7 +440,7 @@ function Select({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={`bg-background border px-2 py-1.5 font-mono text-[11px] outline-none transition-colors ${
+      className={`bg-background border px-2 py-1.5 font-mono text-[13px] outline-none transition-colors ${
         value ? 'border-accent-blue/50 text-foreground' : 'border-border text-muted-foreground'
       }`}
     >
@@ -552,16 +552,16 @@ function Card({
   return (
     <section className="border border-border rounded-lg bg-surface/40 overflow-hidden flex flex-col">
       <div className="px-3 py-2 border-b border-border flex items-baseline justify-between gap-2">
-        <h2 className="font-mono text-[10px] tracking-[0.15em] text-foreground uppercase">
+        <h2 className="font-mono text-[12px] tracking-[0.15em] text-foreground uppercase">
           {title}
         </h2>
-        {hint && <span className="font-mono text-[9px] text-muted">{hint}</span>}
+        {hint && <span className="font-mono text-[11px] text-muted">{hint}</span>}
       </div>
       <div className="p-2 space-y-1 flex-1">{children}</div>
       {action && (
         <button
           onClick={action.onClick}
-          className="px-3 py-1.5 border-t border-border font-mono text-[9px] tracking-wider text-accent-blue hover:bg-accent-blue/10 transition-colors text-left"
+          className="px-3 py-1.5 border-t border-border font-mono text-[11px] tracking-wider text-accent-blue hover:bg-accent-blue/10 transition-colors text-left"
         >
           {action.label} →
         </button>
@@ -595,10 +595,10 @@ function Line({
   const content = (
     <div className="flex items-baseline justify-between gap-2 px-1.5 py-1 rounded hover:bg-surface-hover/50 transition-colors">
       <div className="min-w-0 flex-1">
-        <div className="font-mono text-[11px] text-foreground truncate">{left}</div>
-        {sub && <div className="font-mono text-[9px] text-muted truncate">{sub}</div>}
+        <div className="font-mono text-[13px] text-foreground truncate">{left}</div>
+        {sub && <div className="font-mono text-[11px] text-muted truncate">{sub}</div>}
       </div>
-      <div className={`font-mono text-[10px] shrink-0 ${toneClass}`}>{right}</div>
+      <div className={`font-mono text-[12px] shrink-0 ${toneClass}`}>{right}</div>
     </div>
   )
 
@@ -607,6 +607,6 @@ function Line({
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <p className="px-1.5 py-2 font-mono text-[9px] text-muted leading-relaxed">{children}</p>
+    <p className="px-1.5 py-2 font-mono text-[11px] text-muted leading-relaxed">{children}</p>
   )
 }

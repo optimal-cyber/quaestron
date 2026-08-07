@@ -56,11 +56,11 @@ export default async function DataPage() {
       <div className="flex-1 pt-12 pb-7 bg-background overflow-y-auto">
         <div className="max-w-5xl mx-auto p-4 md:p-8 space-y-6">
           <header className="space-y-2">
-            <div className="font-mono text-[10px] tracking-[0.3em] text-muted">COVERAGE</div>
+            <div className="font-mono text-[12px] tracking-[0.3em] text-muted">COVERAGE</div>
             <h1 className="font-mono text-2xl md:text-3xl tracking-[0.08em] text-foreground uppercase">
               <span className="text-accent-red">&#x276E;</span> WHAT WE ACTUALLY HAVE
             </h1>
-            <p className="font-mono text-[11px] text-muted-foreground max-w-2xl leading-relaxed">
+            <p className="font-mono text-[13px] text-muted-foreground max-w-2xl leading-relaxed">
               Every number on this page is queried from the database on each request —
               nothing is hardcoded or rounded up. Where coverage is partial or a figure
               is unavailable, it says so. Computed at{' '}
@@ -163,7 +163,7 @@ export default async function DataPage() {
 
           <Card title="Ingest freshness" hint="last successful sync per source">
             {stats.sources.length === 0 ? (
-              <p className="font-mono text-[11px] text-muted">No sync has been recorded yet.</p>
+              <p className="font-mono text-[13px] text-muted">No sync has been recorded yet.</p>
             ) : (
               stats.sources.map((s) => (
                 <Row
@@ -180,7 +180,7 @@ export default async function DataPage() {
             )}
           </Card>
 
-          <p className="font-mono text-[10px] text-muted leading-relaxed">
+          <p className="font-mono text-[12px] text-muted leading-relaxed">
             Methodology: counts are row counts; dollar totals sum the award records above
             and are not deduplicated against modifications. Figures reflect what
             Quaestron has ingested, which is a subset of the federal record.{' '}
@@ -200,7 +200,7 @@ function Stat({ label, value, tone }: { label: string; value: string; tone: stri
   return (
     <div className="border border-border rounded-lg bg-surface/40 p-3">
       <div className={`font-mono text-xl text-${tone}`}>{value}</div>
-      <div className="font-mono text-[9px] uppercase tracking-wider text-muted mt-1">{label}</div>
+      <div className="font-mono text-[11px] uppercase tracking-wider text-muted mt-1">{label}</div>
     </div>
   )
 }
@@ -218,7 +218,7 @@ function Card({
     <section className="border border-border rounded-lg bg-surface/40 overflow-hidden">
       <div className="px-4 py-3 border-b border-border flex items-baseline justify-between gap-3">
         <h2 className="font-mono text-xs tracking-[0.15em] text-foreground uppercase">{title}</h2>
-        {hint && <span className="font-mono text-[10px] text-muted">{hint}</span>}
+        {hint && <span className="font-mono text-[12px] text-muted">{hint}</span>}
       </div>
       <div className="p-4 space-y-2">{children}</div>
     </section>
@@ -237,11 +237,11 @@ function Row({
   return (
     <div>
       <div className="flex items-baseline justify-between gap-4">
-        <span className="font-mono text-[11px] text-muted-foreground">{label}</span>
+        <span className="font-mono text-[13px] text-muted-foreground">{label}</span>
         <span className="font-mono text-[12px] text-foreground shrink-0">{value}</span>
       </div>
       {note && (
-        <p className="font-mono text-[9px] text-muted mt-0.5 leading-relaxed max-w-2xl">{note}</p>
+        <p className="font-mono text-[11px] text-muted mt-0.5 leading-relaxed max-w-2xl">{note}</p>
       )}
     </div>
   )

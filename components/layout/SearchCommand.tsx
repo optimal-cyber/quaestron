@@ -182,7 +182,7 @@ export default function SearchCommand() {
               )}
 
               {/* Footer */}
-              <div className="px-4 py-2 border-t border-border flex items-center gap-4 text-[10px] font-mono text-muted">
+              <div className="px-4 py-2 border-t border-border flex items-center gap-4 text-[12px] font-mono text-muted">
                 <span>↑↓ Navigate</span>
                 <span>↵ Select</span>
                 <span>ESC Close</span>

@@ -76,7 +76,7 @@ export default function CompliancePosture({ slug }: { slug: string }) {
       <section className="border border-border rounded-lg bg-surface/40 overflow-hidden">
         <Header />
         <div className="p-4">
-          <p className="font-mono text-[11px] text-muted leading-relaxed">
+          <p className="font-mono text-[13px] text-muted leading-relaxed">
             No FedRAMP, DoD provisional, or eMASS authorization on record for this vendor.
             That is a finding in itself: an unauthorized vendor cannot host federal
             workloads at any impact level without sponsorship.
@@ -154,14 +154,14 @@ export default function CompliancePosture({ slug }: { slug: string }) {
         </div>
 
         {data.whitespace && (
-          <div className="border border-accent-gold/40 bg-accent-gold/10 px-3 py-2 font-mono text-[10px] text-accent-gold leading-relaxed">
+          <div className="border border-accent-gold/40 bg-accent-gold/10 px-3 py-2 font-mono text-[12px] text-accent-gold leading-relaxed">
             WHITESPACE — authorized to operate, but no federal obligations on record.
             Cleared the hardest gate and winning nothing.
           </div>
         )}
 
         {!data.spendDataAvailable && (
-          <div className="border border-border bg-background px-3 py-2 font-mono text-[10px] text-muted leading-relaxed">
+          <div className="border border-border bg-background px-3 py-2 font-mono text-[12px] text-muted leading-relaxed">
             Spend figures are unavailable — vendor enrichment has not run for this entity, so
             obligations are unknown rather than zero.
           </div>
@@ -177,28 +177,28 @@ export default function CompliancePosture({ slug }: { slug: string }) {
                 className="flex flex-wrap items-center gap-2 px-2.5 py-2 rounded border border-border bg-background"
               >
                 <span
-                  className={`px-1.5 py-0.5 rounded border font-mono text-[9px] shrink-0 ${levelClass(t.level)}`}
+                  className={`px-1.5 py-0.5 rounded border font-mono text-[11px] shrink-0 ${levelClass(t.level)}`}
                 >
                   {t.level || '—'}
                 </span>
-                <span className="font-mono text-[10px] text-muted shrink-0 w-[70px]">{t.kind}</span>
-                <span className="font-mono text-[11px] text-foreground flex-1 min-w-[140px] truncate" title={t.name}>
+                <span className="font-mono text-[12px] text-muted shrink-0 w-[70px]">{t.kind}</span>
+                <span className="font-mono text-[13px] text-foreground flex-1 min-w-[140px] truncate" title={t.name}>
                   {t.name}
                 </span>
                 {t.agency && (
-                  <span className="font-mono text-[9px] text-muted-foreground truncate max-w-[180px]" title={t.agency}>
+                  <span className="font-mono text-[11px] text-muted-foreground truncate max-w-[180px]" title={t.agency}>
                     {t.agency}
                   </span>
                 )}
-                <span className="font-mono text-[9px] text-muted shrink-0">
+                <span className="font-mono text-[11px] text-muted shrink-0">
                   {t.start ? t.start.slice(0, 10) : '—'}
                 </span>
-                <span className={`font-mono text-[10px] shrink-0 w-[80px] text-right ${countdownClass(t.days)}`}>
+                <span className={`font-mono text-[12px] shrink-0 w-[80px] text-right ${countdownClass(t.days)}`}>
                   {countdownLabel(t.days)}
                 </span>
                 {t.provisional && (
                   <span
-                    className="font-mono text-[9px] text-accent-gold shrink-0"
+                    className="font-mono text-[11px] text-accent-gold shrink-0"
                     title="Matched by name — not yet confirmed against a resolved entity link"
                   >
                     ~
@@ -208,7 +208,7 @@ export default function CompliancePosture({ slug }: { slug: string }) {
             ))}
           </div>
           {timeline.some((t) => t.provisional) && (
-            <p className="mt-2 font-mono text-[9px] text-muted">
+            <p className="mt-2 font-mono text-[11px] text-muted">
               ~ matched by vendor name only; entity link not yet confirmed.
             </p>
           )}
@@ -221,7 +221,7 @@ export default function CompliancePosture({ slug }: { slug: string }) {
             <div className="space-y-1">
               {agencyLeverage.slice(0, 12).map((a) => (
                 <div key={a.agency} className="flex items-center gap-2">
-                  <span className="font-mono text-[10px] text-foreground w-[220px] truncate" title={a.agency}>
+                  <span className="font-mono text-[12px] text-foreground w-[220px] truncate" title={a.agency}>
                     {a.agency}
                   </span>
                   <div className="flex-1 h-3 bg-background rounded-sm overflow-hidden min-w-[60px]">
@@ -230,7 +230,7 @@ export default function CompliancePosture({ slug }: { slug: string }) {
                       style={{ width: `${Math.max(2, (a.totalObligated / maxObligated) * 100)}%` }}
                     />
                   </div>
-                  <span className="font-mono text-[10px] text-muted-foreground w-[64px] text-right">
+                  <span className="font-mono text-[12px] text-muted-foreground w-[64px] text-right">
                     {a.totalObligated > 0 ? money(a.totalObligated) : '—'}
                   </span>
                   <span className="flex gap-1 w-[130px] shrink-0">
@@ -252,7 +252,7 @@ export default function CompliancePosture({ slug }: { slug: string }) {
                 </div>
               ))}
             </div>
-            <p className="mt-2 font-mono text-[9px] text-muted leading-relaxed">
+            <p className="mt-2 font-mono text-[11px] text-muted leading-relaxed">
               SPONSOR = granted the authorization · LEVERAGING = reusing someone else&apos;s ·
               BUYS = actually obligating money. An agency that sponsors but doesn&apos;t buy is
               the gap worth a call.
@@ -266,7 +266,7 @@ export default function CompliancePosture({ slug }: { slug: string }) {
             {entity.setAsides.map((s) => (
               <span
                 key={s}
-                className="px-1.5 py-0.5 rounded bg-accent-green/10 text-accent-green font-mono text-[9px]"
+                className="px-1.5 py-0.5 rounded bg-accent-green/10 text-accent-green font-mono text-[11px]"
               >
                 {SET_ASIDE_LABELS[s] || s}
               </span>
@@ -274,7 +274,7 @@ export default function CompliancePosture({ slug }: { slug: string }) {
             {entity.riskFlags.map((f) => (
               <span
                 key={f}
-                className="px-1.5 py-0.5 rounded bg-accent-red/10 text-accent-red font-mono text-[9px]"
+                className="px-1.5 py-0.5 rounded bg-accent-red/10 text-accent-red font-mono text-[11px]"
               >
                 {f.replace(/_/g, ' ')}
               </span>
@@ -292,14 +292,14 @@ function Header() {
       <h2 className="font-mono text-xs tracking-[0.15em] text-foreground uppercase">
         Compliance Posture
       </h2>
-      <span className="font-mono text-[10px] text-muted">FedRAMP · DoD PA · eMASS</span>
+      <span className="font-mono text-[12px] text-muted">FedRAMP · DoD PA · eMASS</span>
     </div>
   )
 }
 
 function SubHeading({ children }: { children: React.ReactNode }) {
   return (
-    <div className="font-mono text-[10px] tracking-[0.2em] text-muted mb-2">{children}</div>
+    <div className="font-mono text-[12px] tracking-[0.2em] text-muted mb-2">{children}</div>
   )
 }
 
@@ -322,7 +322,7 @@ function Stat({
   return (
     <div className="min-w-[100px]">
       <div className={`font-mono text-base ${toneClass}`}>{value}</div>
-      <div className="text-[9px] text-muted font-mono uppercase tracking-wider mt-0.5">
+      <div className="text-[11px] text-muted font-mono uppercase tracking-wider mt-0.5">
         {label}
       </div>
     </div>

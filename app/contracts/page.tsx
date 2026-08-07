@@ -178,7 +178,7 @@ export default function ContractsPage() {
           <div className="flex items-center gap-2 md:gap-4 mb-4 overflow-x-auto">
             <button
               onClick={() => setTab('contracts')}
-              className={`font-mono text-[10px] md:text-xs tracking-wider px-2 md:px-3 py-1.5 rounded transition-colors shrink-0 ${
+              className={`font-mono text-[12px] md:text-xs tracking-wider px-2 md:px-3 py-1.5 rounded transition-colors shrink-0 ${
                 tab === 'contracts'
                   ? 'text-accent-red bg-accent-red/10 border border-accent-red/30'
                   : 'text-muted hover:text-foreground'
@@ -188,7 +188,7 @@ export default function ContractsPage() {
             </button>
             <button
               onClick={() => setTab('sbir')}
-              className={`font-mono text-[10px] md:text-xs tracking-wider px-2 md:px-3 py-1.5 rounded transition-colors shrink-0 ${
+              className={`font-mono text-[12px] md:text-xs tracking-wider px-2 md:px-3 py-1.5 rounded transition-colors shrink-0 ${
                 tab === 'sbir'
                   ? 'text-accent-gold bg-accent-gold/10 border border-accent-gold/30'
                   : 'text-muted hover:text-foreground'
@@ -198,7 +198,7 @@ export default function ContractsPage() {
             </button>
             <button
               onClick={() => setTab('investments')}
-              className={`font-mono text-[10px] md:text-xs tracking-wider px-2 md:px-3 py-1.5 rounded transition-colors shrink-0 ${
+              className={`font-mono text-[12px] md:text-xs tracking-wider px-2 md:px-3 py-1.5 rounded transition-colors shrink-0 ${
                 tab === 'investments'
                   ? 'text-accent-green bg-accent-green/10 border border-accent-green/30'
                   : 'text-muted hover:text-foreground'
@@ -273,10 +273,10 @@ export default function ContractsPage() {
                         className="w-2 h-2 rounded-full"
                         style={{ backgroundColor: PHASE_COLORS[phase] }}
                       />
-                      <span className="font-mono text-[10px] md:text-xs text-foreground tracking-wider">PHASE {phase}</span>
-                      <span className="font-mono text-[10px] md:text-xs text-muted">{data.count}</span>
+                      <span className="font-mono text-[12px] md:text-xs text-foreground tracking-wider">PHASE {phase}</span>
+                      <span className="font-mono text-[12px] md:text-xs text-muted">{data.count}</span>
                       {data.value > 0 && (
-                        <span className="font-mono text-[10px] text-accent-green">{formatCurrency(data.value)}</span>
+                        <span className="font-mono text-[12px] text-accent-green">{formatCurrency(data.value)}</span>
                       )}
                     </button>
                   )
@@ -284,7 +284,7 @@ export default function ContractsPage() {
                 {/* Program filter */}
                 <button
                   onClick={() => setSbirProgramFilter(sbirProgramFilter === 'SBIR' ? '' : 'SBIR')}
-                  className={`px-3 py-2 rounded border font-mono text-[10px] md:text-xs tracking-wider transition-colors ${
+                  className={`px-3 py-2 rounded border font-mono text-[12px] md:text-xs tracking-wider transition-colors ${
                     sbirProgramFilter === 'SBIR'
                       ? 'border-accent-blue/50 bg-accent-blue/10 text-accent-blue'
                       : 'border-border bg-surface text-muted hover:border-border-bright'
@@ -294,7 +294,7 @@ export default function ContractsPage() {
                 </button>
                 <button
                   onClick={() => setSbirProgramFilter(sbirProgramFilter === 'STTR' ? '' : 'STTR')}
-                  className={`px-3 py-2 rounded border font-mono text-[10px] md:text-xs tracking-wider transition-colors ${
+                  className={`px-3 py-2 rounded border font-mono text-[12px] md:text-xs tracking-wider transition-colors ${
                     sbirProgramFilter === 'STTR'
                       ? 'border-[#8B5CF6]/50 bg-[#8B5CF6]/10 text-[#8B5CF6]'
                       : 'border-border bg-surface text-muted hover:border-border-bright'
@@ -334,7 +334,7 @@ export default function ContractsPage() {
           />
 
           {/* Data source */}
-          <div className="mt-3 text-[9px] font-mono text-muted tracking-wider">
+          <div className="mt-3 text-[11px] font-mono text-muted tracking-wider">
             {tab === 'contracts' ? (
               <>DATA SOURCE: <span className="text-accent-blue">USASPENDING.GOV</span> — Federal Award Data</>
             ) : tab === 'sbir' ? (
@@ -371,11 +371,11 @@ export default function ContractsPage() {
               <table className="w-full">
                 <thead className="sticky top-0 bg-background border-b border-border z-10">
                   <tr>
-                    <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[10px] font-mono tracking-wider text-muted uppercase">Contractor</th>
-                    <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[10px] font-mono tracking-wider text-muted uppercase">Agency</th>
-                    <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[10px] font-mono tracking-wider text-muted uppercase hidden md:table-cell">Description</th>
-                    <th className="text-right px-3 md:px-6 py-2 md:py-3 text-[10px] font-mono tracking-wider text-muted uppercase">Value</th>
-                    <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[10px] font-mono tracking-wider text-muted uppercase hidden sm:table-cell">Date</th>
+                    <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[12px] font-mono tracking-wider text-muted uppercase">Contractor</th>
+                    <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[12px] font-mono tracking-wider text-muted uppercase">Agency</th>
+                    <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[12px] font-mono tracking-wider text-muted uppercase hidden md:table-cell">Description</th>
+                    <th className="text-right px-3 md:px-6 py-2 md:py-3 text-[12px] font-mono tracking-wider text-muted uppercase">Value</th>
+                    <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[12px] font-mono tracking-wider text-muted uppercase hidden sm:table-cell">Date</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -401,7 +401,7 @@ export default function ContractsPage() {
                         </span>
                       </td>
                       <td className="px-3 md:px-6 py-2 max-w-sm hidden md:table-cell">
-                        <span className="text-[11px] text-muted-foreground line-clamp-2">
+                        <span className="text-[13px] text-muted-foreground line-clamp-2">
                           {contract.description || '—'}
                         </span>
                       </td>
@@ -415,7 +415,7 @@ export default function ContractsPage() {
                         )}
                       </td>
                       <td className="px-3 md:px-6 py-2 hidden sm:table-cell">
-                        <span className="text-[10px] font-mono text-muted">
+                        <span className="text-[12px] font-mono text-muted">
                           {contract.awardDate ? formatDate(contract.awardDate) : '—'}
                         </span>
                       </td>
@@ -426,55 +426,55 @@ export default function ContractsPage() {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-3">
                               <div>
-                                <span className="text-[9px] font-mono text-muted tracking-wider">AWARD ID</span>
+                                <span className="text-[11px] font-mono text-muted tracking-wider">AWARD ID</span>
                                 <p className="text-xs font-mono text-foreground mt-0.5">{contract.awardId || '—'}</p>
                               </div>
                               <div>
-                                <span className="text-[9px] font-mono text-muted tracking-wider">DESCRIPTION</span>
+                                <span className="text-[11px] font-mono text-muted tracking-wider">DESCRIPTION</span>
                                 <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{contract.description || '—'}</p>
                               </div>
                               {contract.naicsCode && (
                                 <div>
-                                  <span className="text-[9px] font-mono text-muted tracking-wider">NAICS CODE</span>
+                                  <span className="text-[11px] font-mono text-muted tracking-wider">NAICS CODE</span>
                                   <p className="text-xs font-mono text-foreground mt-0.5">{contract.naicsCode}</p>
                                 </div>
                               )}
                               {contract.psc && (
                                 <div>
-                                  <span className="text-[9px] font-mono text-muted tracking-wider">PSC</span>
+                                  <span className="text-[11px] font-mono text-muted tracking-wider">PSC</span>
                                   <p className="text-xs font-mono text-foreground mt-0.5">{contract.psc}</p>
                                 </div>
                               )}
                             </div>
                             <div className="space-y-3">
                               <div>
-                                <span className="text-[9px] font-mono text-muted tracking-wider">CONTRACTOR</span>
+                                <span className="text-[11px] font-mono text-muted tracking-wider">CONTRACTOR</span>
                                 <p className="text-xs font-mono text-foreground mt-0.5">{contract.entity.name}</p>
-                                <span className="text-[9px] font-mono text-accent-blue">{contract.entity.type.replace(/_/g, ' ')}</span>
+                                <span className="text-[11px] font-mono text-accent-blue">{contract.entity.type.replace(/_/g, ' ')}</span>
                               </div>
                               <div>
-                                <span className="text-[9px] font-mono text-muted tracking-wider">AWARDING AGENCY</span>
+                                <span className="text-[11px] font-mono text-muted tracking-wider">AWARDING AGENCY</span>
                                 <p className="text-xs font-mono text-accent-blue mt-0.5">{contract.agency?.name || 'N/A'}</p>
                               </div>
                               <div className="flex gap-6">
                                 <div>
-                                  <span className="text-[9px] font-mono text-muted tracking-wider">AWARD DATE</span>
+                                  <span className="text-[11px] font-mono text-muted tracking-wider">AWARD DATE</span>
                                   <p className="text-xs font-mono text-foreground mt-0.5">{contract.awardDate ? formatDate(contract.awardDate) : '—'}</p>
                                 </div>
                                 {contract.endDate && (
                                   <div>
-                                    <span className="text-[9px] font-mono text-muted tracking-wider">END DATE</span>
+                                    <span className="text-[11px] font-mono text-muted tracking-wider">END DATE</span>
                                     <p className="text-xs font-mono text-foreground mt-0.5">{formatDate(contract.endDate)}</p>
                                   </div>
                                 )}
                                 <div>
-                                  <span className="text-[9px] font-mono text-muted tracking-wider">VALUE</span>
+                                  <span className="text-[11px] font-mono text-muted tracking-wider">VALUE</span>
                                   <p className="text-xs font-mono text-accent-green font-bold mt-0.5">{contract.value ? formatCurrency(contract.value) : '—'}</p>
                                 </div>
                               </div>
                               {contract.placeOfPerformance && (
                                 <div>
-                                  <span className="text-[9px] font-mono text-muted tracking-wider">PLACE OF PERFORMANCE</span>
+                                  <span className="text-[11px] font-mono text-muted tracking-wider">PLACE OF PERFORMANCE</span>
                                   <p className="text-xs font-mono text-foreground mt-0.5">{contract.placeOfPerformance}</p>
                                 </div>
                               )}
@@ -484,7 +484,7 @@ export default function ContractsPage() {
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   onClick={(e) => e.stopPropagation()}
-                                  className="inline-block mt-2 text-[10px] font-mono text-accent-blue border border-accent-blue/30 px-3 py-1.5 rounded hover:bg-accent-blue/10 transition-colors tracking-wider"
+                                  className="inline-block mt-2 text-[12px] font-mono text-accent-blue border border-accent-blue/30 px-3 py-1.5 rounded hover:bg-accent-blue/10 transition-colors tracking-wider"
                                 >
                                   VIEW ON USASPENDING.GOV
                                 </a>
@@ -525,7 +525,7 @@ export default function ContractsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Top winners */}
                       <div>
-                        <h3 className="font-mono text-[10px] tracking-[0.2em] text-muted mb-3 uppercase">Top SBIR/STTR Winners</h3>
+                        <h3 className="font-mono text-[12px] tracking-[0.2em] text-muted mb-3 uppercase">Top SBIR/STTR Winners</h3>
                         <div className="space-y-1.5">
                           {sbirStats.topWinners.slice(0, 8).map((w, i) => (
                             <button
@@ -533,16 +533,16 @@ export default function ContractsPage() {
                               onClick={() => selectEntity(w.entityId)}
                               className="w-full flex items-center gap-2 text-left hover:bg-surface/50 rounded px-2 py-1 transition-colors group"
                             >
-                              <span className="font-mono text-[10px] text-muted w-4">{i + 1}</span>
+                              <span className="font-mono text-[12px] text-muted w-4">{i + 1}</span>
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center justify-between">
                                   <span className="text-xs font-mono text-muted-foreground group-hover:text-foreground truncate">
                                     {w.name}
                                   </span>
                                   <div className="flex items-center gap-2 shrink-0 ml-2">
-                                    <span className="text-[10px] font-mono text-accent-gold">{w.count} awards</span>
+                                    <span className="text-[12px] font-mono text-accent-gold">{w.count} awards</span>
                                     {w.value > 0 && (
-                                      <span className="text-[10px] font-mono text-accent-green">{formatCurrency(w.value)}</span>
+                                      <span className="text-[12px] font-mono text-accent-green">{formatCurrency(w.value)}</span>
                                     )}
                                   </div>
                                 </div>
@@ -560,7 +560,7 @@ export default function ContractsPage() {
 
                       {/* Agency breakdown */}
                       <div>
-                        <h3 className="font-mono text-[10px] tracking-[0.2em] text-muted mb-3 uppercase">Awarding Agencies</h3>
+                        <h3 className="font-mono text-[12px] tracking-[0.2em] text-muted mb-3 uppercase">Awarding Agencies</h3>
                         <div className="space-y-1.5">
                           {sbirStats.byAgency.slice(0, 8).map((a) => (
                             <div key={a.name} className="flex items-center gap-2 px-2 py-1">
@@ -570,9 +570,9 @@ export default function ContractsPage() {
                                     {a.name}
                                   </span>
                                   <div className="flex items-center gap-2 shrink-0 ml-2">
-                                    <span className="text-[10px] font-mono text-accent-blue">{a.count}</span>
+                                    <span className="text-[12px] font-mono text-accent-blue">{a.count}</span>
                                     {a.value > 0 && (
-                                      <span className="text-[10px] font-mono text-accent-green">{formatCurrency(a.value)}</span>
+                                      <span className="text-[12px] font-mono text-accent-green">{formatCurrency(a.value)}</span>
                                     )}
                                   </div>
                                 </div>
@@ -592,7 +592,7 @@ export default function ContractsPage() {
                     {/* Year timeline */}
                     {sbirStats.byYear.length > 1 && (
                       <div>
-                        <h3 className="font-mono text-[10px] tracking-[0.2em] text-muted mb-3 uppercase">Awards by Year</h3>
+                        <h3 className="font-mono text-[12px] tracking-[0.2em] text-muted mb-3 uppercase">Awards by Year</h3>
                         <div className="flex items-end gap-1 h-20">
                           {sbirStats.byYear.map((y) => {
                             const maxCount = Math.max(...sbirStats.byYear.map((yy) => yy.count))
@@ -621,12 +621,12 @@ export default function ContractsPage() {
                 <table className="w-full">
                   <thead className="sticky top-0 bg-background border-b border-border z-10">
                     <tr>
-                      <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[10px] font-mono tracking-wider text-muted uppercase">Company</th>
-                      <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[10px] font-mono tracking-wider text-muted uppercase">Phase</th>
-                      <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[10px] font-mono tracking-wider text-muted uppercase hidden sm:table-cell">Agency</th>
-                      <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[10px] font-mono tracking-wider text-muted uppercase hidden md:table-cell">Description</th>
-                      <th className="text-right px-3 md:px-6 py-2 md:py-3 text-[10px] font-mono tracking-wider text-muted uppercase">Value</th>
-                      <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[10px] font-mono tracking-wider text-muted uppercase hidden sm:table-cell">Year</th>
+                      <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[12px] font-mono tracking-wider text-muted uppercase">Company</th>
+                      <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[12px] font-mono tracking-wider text-muted uppercase">Phase</th>
+                      <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[12px] font-mono tracking-wider text-muted uppercase hidden sm:table-cell">Agency</th>
+                      <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[12px] font-mono tracking-wider text-muted uppercase hidden md:table-cell">Description</th>
+                      <th className="text-right px-3 md:px-6 py-2 md:py-3 text-[12px] font-mono tracking-wider text-muted uppercase">Value</th>
+                      <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[12px] font-mono tracking-wider text-muted uppercase hidden sm:table-cell">Year</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -650,7 +650,7 @@ export default function ContractsPage() {
                           <div className="flex items-center gap-1.5">
                             {award.sbirPhase && (
                               <span
-                                className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded"
+                                className="text-[11px] font-mono font-bold px-1.5 py-0.5 rounded"
                                 style={{
                                   color: PHASE_COLORS[award.sbirPhase] || '#64748B',
                                   backgroundColor: (PHASE_COLORS[award.sbirPhase] || '#64748B') + '20',
@@ -659,18 +659,18 @@ export default function ContractsPage() {
                                 {award.sbirPhase}
                               </span>
                             )}
-                            <span className="text-[9px] font-mono text-muted">
+                            <span className="text-[11px] font-mono text-muted">
                               {award.sbirProgram}
                             </span>
                           </div>
                         </td>
                         <td className="px-3 md:px-6 py-2 hidden sm:table-cell">
-                          <span className="text-[10px] font-mono text-accent-blue truncate block max-w-[150px]">
+                          <span className="text-[12px] font-mono text-accent-blue truncate block max-w-[150px]">
                             {award.sbirBranch || award.agency?.name || '—'}
                           </span>
                         </td>
                         <td className="px-3 md:px-6 py-2 max-w-sm hidden md:table-cell">
-                          <span className="text-[11px] text-muted-foreground line-clamp-2">
+                          <span className="text-[13px] text-muted-foreground line-clamp-2">
                             {award.description || '—'}
                           </span>
                         </td>
@@ -684,7 +684,7 @@ export default function ContractsPage() {
                           )}
                         </td>
                         <td className="px-3 md:px-6 py-2 hidden sm:table-cell">
-                          <span className="text-[10px] font-mono text-muted">
+                          <span className="text-[12px] font-mono text-muted">
                             {award.sbirAwardYear || (award.awardDate ? new Date(award.awardDate).getFullYear() : '—')}
                           </span>
                         </td>
@@ -695,45 +695,45 @@ export default function ContractsPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div className="space-y-3">
                                 <div>
-                                  <span className="text-[9px] font-mono text-muted tracking-wider">DESCRIPTION</span>
+                                  <span className="text-[11px] font-mono text-muted tracking-wider">DESCRIPTION</span>
                                   <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{award.description || '—'}</p>
                                 </div>
                                 {award.sbirTopicCode && (
                                   <div>
-                                    <span className="text-[9px] font-mono text-muted tracking-wider">TOPIC CODE</span>
+                                    <span className="text-[11px] font-mono text-muted tracking-wider">TOPIC CODE</span>
                                     <p className="text-xs font-mono text-foreground mt-0.5">{award.sbirTopicCode}</p>
                                   </div>
                                 )}
                                 {award.sbirPiName && (
                                   <div>
-                                    <span className="text-[9px] font-mono text-muted tracking-wider">PRINCIPAL INVESTIGATOR</span>
+                                    <span className="text-[11px] font-mono text-muted tracking-wider">PRINCIPAL INVESTIGATOR</span>
                                     <p className="text-xs font-mono text-foreground mt-0.5">{award.sbirPiName}</p>
                                   </div>
                                 )}
                               </div>
                               <div className="space-y-3">
                                 <div>
-                                  <span className="text-[9px] font-mono text-muted tracking-wider">COMPANY</span>
+                                  <span className="text-[11px] font-mono text-muted tracking-wider">COMPANY</span>
                                   <p className="text-xs font-mono text-foreground mt-0.5">{award.entity.name}</p>
-                                  <span className="text-[9px] font-mono text-accent-blue">{award.entity.type.replace(/_/g, ' ')}</span>
+                                  <span className="text-[11px] font-mono text-accent-blue">{award.entity.type.replace(/_/g, ' ')}</span>
                                 </div>
                                 <div className="flex gap-6">
                                   <div>
-                                    <span className="text-[9px] font-mono text-muted tracking-wider">PROGRAM</span>
+                                    <span className="text-[11px] font-mono text-muted tracking-wider">PROGRAM</span>
                                     <p className="text-xs font-mono text-foreground mt-0.5">{award.sbirProgram || '—'} {award.sbirPhase ? `Phase ${award.sbirPhase}` : ''}</p>
                                   </div>
                                   <div>
-                                    <span className="text-[9px] font-mono text-muted tracking-wider">AGENCY</span>
+                                    <span className="text-[11px] font-mono text-muted tracking-wider">AGENCY</span>
                                     <p className="text-xs font-mono text-accent-blue mt-0.5">{award.sbirBranch || award.agency?.name || '—'}</p>
                                   </div>
                                 </div>
                                 <div className="flex gap-6">
                                   <div>
-                                    <span className="text-[9px] font-mono text-muted tracking-wider">AWARD DATE</span>
+                                    <span className="text-[11px] font-mono text-muted tracking-wider">AWARD DATE</span>
                                     <p className="text-xs font-mono text-foreground mt-0.5">{award.awardDate ? formatDate(award.awardDate) : '—'}</p>
                                   </div>
                                   <div>
-                                    <span className="text-[9px] font-mono text-muted tracking-wider">VALUE</span>
+                                    <span className="text-[11px] font-mono text-muted tracking-wider">VALUE</span>
                                     <p className="text-xs font-mono text-accent-green font-bold mt-0.5">{award.value ? formatCurrency(award.value) : '—'}</p>
                                   </div>
                                 </div>
@@ -754,10 +754,10 @@ export default function ContractsPage() {
             <table className="w-full">
               <thead className="sticky top-0 bg-background border-b border-border z-10">
                 <tr>
-                  <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[10px] font-mono tracking-wider text-muted uppercase">Investor</th>
-                  <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[10px] font-mono tracking-wider text-muted uppercase">Entity</th>
-                  <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[10px] font-mono tracking-wider text-muted uppercase hidden sm:table-cell">Type</th>
-                  <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[10px] font-mono tracking-wider text-muted uppercase">Confidence</th>
+                  <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[12px] font-mono tracking-wider text-muted uppercase">Investor</th>
+                  <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[12px] font-mono tracking-wider text-muted uppercase">Entity</th>
+                  <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[12px] font-mono tracking-wider text-muted uppercase hidden sm:table-cell">Type</th>
+                  <th className="text-left px-3 md:px-6 py-2 md:py-3 text-[12px] font-mono tracking-wider text-muted uppercase">Confidence</th>
                 </tr>
               </thead>
               <tbody>
@@ -783,12 +783,12 @@ export default function ContractsPage() {
                       </button>
                     </td>
                     <td className="px-3 md:px-6 py-2 hidden sm:table-cell">
-                      <span className="text-[10px] font-mono text-accent-blue">
+                      <span className="text-[12px] font-mono text-accent-blue">
                         {conn.connectionType.replace(/_/g, ' ')}
                       </span>
                     </td>
                     <td className="px-3 md:px-6 py-2">
-                      <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
+                      <span className={`text-[12px] font-mono px-1.5 py-0.5 rounded ${
                         conn.confidence === 'confirmed'
                           ? 'text-accent-green bg-accent-green/10'
                           : 'text-accent-gold bg-accent-gold/10'

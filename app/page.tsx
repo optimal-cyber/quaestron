@@ -52,26 +52,9 @@ function useTypewriter(text: string, delay: number, speed = 40) {
 }
 
 // Scrolling data feed lines
-const FEED_LINES = [
-  'SCANNING DEFENSE CONTRACTORS...',
-  'ENTITY: PALANTIR TECHNOLOGIES — TYPE: SURVEILLANCE',
-  'CONNECTION: NSO GROUP → CIRCLES → GOVERNMENT',
-  'FUNDING: BLACKROCK → ELBIT SYSTEMS — $2.1B',
-  'CONTRACT: US DOD → ANDURIL — $967M',
-  'ENTITY: CLEARVIEW AI — TYPE: FACIAL RECOGNITION',
-  'SCANNING INVESTOR NETWORKS...',
-  'CONNECTION: THOMA BRAVO → BARRACUDA NETWORKS',
-  'ENTITY: BAE SYSTEMS — TYPE: DEFENSE PRIME',
-  'CONTRACT: DHS → LEIDOS — $1.2B',
-  'FUNDING: SEQUOIA → SHIELD AI — $165M',
-  'ENTITY: CELLEBRITE — TYPE: DIGITAL FORENSICS',
-  'SCANNING REGIONAL TARGETS...',
-  'CONNECTION: BOEING → DARPA — PARTNERSHIP',
-  'ENTITY: L3HARRIS — TYPE: DEFENSE / SIGINT',
-  'FUNDING: ANDREESSEN HOROWITZ → ANDURIL — $450M',
-]
 
 export default function Home() {
+
   const router = useRouter()
   const [stats, setStats] = useState<Stats | null>(null)
   const [globeMarkers, setGlobeMarkers] = useState<GlobeMarker[]>([])
@@ -140,31 +123,7 @@ export default function Home() {
         backgroundSize: '50px 50px',
       }} />
 
-      {/* Scrolling data feed — left side (hidden on mobile) */}
-      <div className="hidden lg:block absolute left-4 top-20 bottom-20 w-72 z-[2] overflow-hidden pointer-events-none opacity-[0.12]">
-        <motion.div
-          animate={{ y: [0, -FEED_LINES.length * 28] }}
-          transition={{ duration: FEED_LINES.length * 3, repeat: Infinity, ease: 'linear' }}
-          className="font-mono text-[9px] tracking-wider text-accent-green/80"
-        >
-          {[...FEED_LINES, ...FEED_LINES].map((line, i) => (
-            <div key={i} className="py-1 whitespace-nowrap">{line}</div>
-          ))}
-        </motion.div>
-      </div>
 
-      {/* Scrolling data feed — right side (hidden on mobile) */}
-      <div className="hidden lg:block absolute right-4 top-20 bottom-20 w-72 z-[2] overflow-hidden pointer-events-none opacity-[0.12]">
-        <motion.div
-          animate={{ y: [-FEED_LINES.length * 28, 0] }}
-          transition={{ duration: FEED_LINES.length * 3.5, repeat: Infinity, ease: 'linear' }}
-          className="font-mono text-[9px] tracking-wider text-accent-blue/80 text-right"
-        >
-          {[...FEED_LINES, ...FEED_LINES].reverse().map((line, i) => (
-            <div key={i} className="py-1 whitespace-nowrap">{line}</div>
-          ))}
-        </motion.div>
-      </div>
 
       {/* Boot sequence overlay */}
       <AnimatePresence>
@@ -180,7 +139,7 @@ export default function Home() {
                 animate={{ opacity: 1 }}
                 className="mb-6"
               >
-                <div className="font-mono text-[10px] tracking-[0.5em] text-muted mb-4">INITIALIZING SECURE CONNECTION</div>
+                <div className="font-mono text-[12px] tracking-[0.5em] text-muted mb-4">INITIALIZING SECURE CONNECTION</div>
                 <div className="flex items-center justify-center gap-3 mb-2">
                   <span className="text-accent-red text-xl">&lt;</span>
                   <span className="font-mono text-2xl tracking-[0.3em] text-foreground font-bold">QUAESTRON</span>
@@ -202,7 +161,7 @@ export default function Home() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.0 }}
-                className="mt-4 font-mono text-[9px] tracking-[0.3em] text-accent-green"
+                className="mt-4 font-mono text-[11px] tracking-[0.3em] text-accent-green"
               >
                 SYSTEMS ONLINE
               </motion.div>
@@ -237,14 +196,14 @@ export default function Home() {
               <button
                 key={link.href}
                 onClick={() => router.push(link.href)}
-                className="font-mono text-[11px] tracking-[0.15em] text-muted hover:text-foreground transition-colors"
+                className="font-mono text-[13px] tracking-[0.15em] text-muted hover:text-foreground transition-colors"
               >
                 {link.label}
               </button>
             ))}
             <button
               onClick={() => router.push('/submit')}
-              className="font-mono text-[11px] tracking-[0.15em] text-accent-red border border-accent-red/30 px-3 py-1 rounded hover:bg-accent-red/10 hover:border-accent-red/50 transition-colors"
+              className="font-mono text-[13px] tracking-[0.15em] text-accent-red border border-accent-red/30 px-3 py-1 rounded hover:bg-accent-red/10 hover:border-accent-red/50 transition-colors"
             >
               SUBMIT
             </button>
@@ -252,7 +211,7 @@ export default function Home() {
               href="https://www.ironechelon.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-mono text-[11px] tracking-[0.15em] text-accent-gold border border-accent-gold/30 px-3 py-1 rounded hover:bg-accent-gold/10 hover:border-accent-gold/50 transition-colors"
+              className="font-mono text-[13px] tracking-[0.15em] text-accent-gold border border-accent-gold/30 px-3 py-1 rounded hover:bg-accent-gold/10 hover:border-accent-gold/50 transition-colors"
             >
               NEWSLETTER
             </a>
@@ -261,13 +220,13 @@ export default function Home() {
           <div className="flex md:hidden items-center gap-2">
             <button
               onClick={() => router.push('/map')}
-              className="font-mono text-[10px] tracking-[0.15em] text-muted hover:text-foreground transition-colors"
+              className="font-mono text-[12px] tracking-[0.15em] text-muted hover:text-foreground transition-colors"
             >
               ENTER
             </button>
             <button
               onClick={() => router.push('/submit')}
-              className="font-mono text-[10px] tracking-[0.1em] text-accent-red border border-accent-red/30 px-2 py-0.5 rounded"
+              className="font-mono text-[12px] tracking-[0.1em] text-accent-red border border-accent-red/30 px-2 py-0.5 rounded"
             >
               SUBMIT
             </button>
@@ -319,7 +278,7 @@ export default function Home() {
               onClick={() => router.push('/map')}
               className="group bg-black/40 backdrop-blur-sm border border-white/10 hover:border-accent-green/50 rounded-lg px-5 py-4 text-left transition-all hover:bg-black/60"
             >
-              <div className="font-mono text-[10px] tracking-[0.2em] text-accent-green mb-2 flex items-center justify-between">
+              <div className="font-mono text-[12px] tracking-[0.2em] text-accent-green mb-2 flex items-center justify-between">
                 EXPLORE ENTITIES
                 <svg className="w-3.5 h-3.5 text-muted group-hover:text-accent-green transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -333,7 +292,7 @@ export default function Home() {
               onClick={() => router.push('/network')}
               className="group bg-black/40 backdrop-blur-sm border border-white/10 hover:border-accent-gold/50 rounded-lg px-5 py-4 text-left transition-all hover:bg-black/60"
             >
-              <div className="font-mono text-[10px] tracking-[0.2em] text-accent-gold mb-2 flex items-center justify-between">
+              <div className="font-mono text-[12px] tracking-[0.2em] text-accent-gold mb-2 flex items-center justify-between">
                 MAP THE NETWORK
                 <svg className="w-3.5 h-3.5 text-muted group-hover:text-accent-gold transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -347,7 +306,7 @@ export default function Home() {
               onClick={() => router.push('/funders')}
               className="group bg-black/40 backdrop-blur-sm border border-white/10 hover:border-accent-blue/50 rounded-lg px-5 py-4 text-left transition-all hover:bg-black/60"
             >
-              <div className="font-mono text-[10px] tracking-[0.2em] text-accent-blue mb-2 flex items-center justify-between">
+              <div className="font-mono text-[12px] tracking-[0.2em] text-accent-blue mb-2 flex items-center justify-between">
                 FOLLOW THE MONEY
                 <svg className="w-3.5 h-3.5 text-muted group-hover:text-accent-blue transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -365,7 +324,7 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: line3.done ? 1 : 0 }}
               transition={{ delay: 0.6, duration: 0.8 }}
-              className="flex flex-wrap items-center justify-center gap-4 md:gap-8 mt-6 md:mt-10 font-mono text-[9px] md:text-[10px] tracking-[0.2em] text-muted"
+              className="flex flex-wrap items-center justify-center gap-4 md:gap-8 mt-6 md:mt-10 font-mono text-[11px] md:text-[12px] tracking-[0.2em] text-muted"
             >
               <span><span className="text-accent-red font-bold">{stats.totalEntities}</span> ENTITIES</span>
               <span className="text-white/10">|</span>
@@ -385,11 +344,11 @@ export default function Home() {
           transition={{ delay: 0.5 }}
           className="px-8 py-4 flex items-center justify-between border-t border-white/5"
         >
-          <div className="font-mono text-[9px] tracking-[0.2em] text-muted flex items-center gap-2">
+          <div className="font-mono text-[11px] tracking-[0.2em] text-muted flex items-center gap-2">
             <span className="inline-block w-1.5 h-1.5 rounded-full bg-accent-green animate-pulse" />
             SYSTEMS ACTIVE
           </div>
-          <div className="font-mono text-[9px] tracking-[0.2em] text-muted">
+          <div className="font-mono text-[11px] tracking-[0.2em] text-muted">
             QUAESTRON v1.0 — DATA SYNCED DAILY
           </div>
         </motion.div>

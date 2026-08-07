@@ -26,7 +26,7 @@ export default function AskAnalystButton({
     question ?? `Give me a compliance and federal-spend read on ${name || slug}.`
   )
 
-  const size = compact ? 'px-2 py-1 text-[10px]' : 'px-3 py-1.5 text-xs'
+  const size = compact ? 'px-2 py-1 text-[12px]' : 'px-3 py-1.5 text-xs'
 
   return (
     <Link

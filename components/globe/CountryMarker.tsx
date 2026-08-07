@@ -70,8 +70,8 @@ export default function CountryMarker({
           style={{ pointerEvents: 'none' }}
         >
           <div className="bg-surface/95 border border-border rounded px-2 py-1 whitespace-nowrap backdrop-blur-sm">
-            <div className="text-[10px] font-mono text-foreground">{name}</div>
-            <div className="text-[9px] font-mono text-muted">{count} entities</div>
+            <div className="text-[12px] font-mono text-foreground">{name}</div>
+            <div className="text-[11px] font-mono text-muted">{count} entities</div>
           </div>
         </Html>
       )}

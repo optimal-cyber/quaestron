@@ -302,14 +302,14 @@ export default function AdminPage() {
       {file ? (
         <div>
           <span className={`text-xs font-mono text-${accentColor}`}>{file.name}</span>
-          <p className="text-[10px] text-muted mt-1">
+          <p className="text-[12px] text-muted mt-1">
             {(file.size / 1024).toFixed(1)} KB — Click or drop to replace
           </p>
         </div>
       ) : (
         <div>
           <p className="text-sm text-muted-foreground mb-1">{label}</p>
-          <p className="text-[10px] text-muted">Drop CSV file or click to browse</p>
+          <p className="text-[12px] text-muted">Drop CSV file or click to browse</p>
         </div>
       )}
     </div>
@@ -321,7 +321,7 @@ export default function AdminPage() {
         <thead className="bg-surface border-b border-border">
           <tr>
             {preview.headers.map((h, i) => (
-              <th key={i} className="text-left px-3 py-2 text-[9px] font-mono tracking-wider text-muted uppercase whitespace-nowrap">
+              <th key={i} className="text-left px-3 py-2 text-[11px] font-mono tracking-wider text-muted uppercase whitespace-nowrap">
                 {h}
               </th>
             ))}
@@ -331,7 +331,7 @@ export default function AdminPage() {
           {preview.rows.map((row, ri) => (
             <tr key={ri} className="border-b border-border/30">
               {row.map((cell, ci) => (
-                <td key={ci} className="px-3 py-1.5 text-[10px] font-mono text-muted-foreground whitespace-nowrap max-w-[200px] truncate">
+                <td key={ci} className="px-3 py-1.5 text-[12px] font-mono text-muted-foreground whitespace-nowrap max-w-[200px] truncate">
                   {cell}
                 </td>
               ))}
@@ -351,11 +351,11 @@ export default function AdminPage() {
     <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-2">
       {preview.headers.map((header, i) => (
         <div key={i} className="flex flex-col gap-1">
-          <span className="text-[9px] font-mono text-muted tracking-wider truncate">{header}</span>
+          <span className="text-[11px] font-mono text-muted tracking-wider truncate">{header}</span>
           <select
             value={mapping[i] || 'skip'}
             onChange={(e) => setMapping({ ...mapping, [i]: e.target.value })}
-            className="px-2 py-1 bg-surface border border-border rounded text-[10px] font-mono text-foreground focus:outline-none focus:border-accent-blue/50"
+            className="px-2 py-1 bg-surface border border-border rounded text-[12px] font-mono text-foreground focus:outline-none focus:border-accent-blue/50"
           >
             <option value="skip">— SKIP —</option>
             {fields.filter((f) => f !== 'skip').map((f) => (
@@ -373,17 +373,17 @@ export default function AdminPage() {
         <span className={`text-xs font-mono font-bold ${result.success ? 'text-accent-green' : 'text-accent-red'}`}>
           {result.success ? 'IMPORT COMPLETE' : 'IMPORT FAILED'}
         </span>
-        <span className="text-[10px] font-mono text-muted">
+        <span className="text-[12px] font-mono text-muted">
           {result.imported} imported / {result.failed} failed
         </span>
       </div>
       {result.errors.length > 0 && (
         <div className="mt-2 space-y-1">
           {result.errors.slice(0, 5).map((err, i) => (
-            <p key={i} className="text-[10px] font-mono text-accent-red">{err}</p>
+            <p key={i} className="text-[12px] font-mono text-accent-red">{err}</p>
           ))}
           {result.errors.length > 5 && (
-            <p className="text-[10px] font-mono text-muted">+ {result.errors.length - 5} more errors</p>
+            <p className="text-[12px] font-mono text-muted">+ {result.errors.length - 5} more errors</p>
           )}
         </div>
       )}
@@ -402,7 +402,7 @@ export default function AdminPage() {
             <h1 className="font-mono text-lg md:text-2xl tracking-[0.15em] text-foreground">
               ADMIN PANEL
             </h1>
-            <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded text-accent-red bg-accent-red/10 border border-accent-red/30">
+            <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded text-accent-red bg-accent-red/10 border border-accent-red/30">
               RESTRICTED
             </span>
           </div>
@@ -436,28 +436,28 @@ export default function AdminPage() {
                   <div key={sync.id} className="bg-surface border border-border rounded-lg p-4 space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-mono tracking-wider text-foreground">{sync.source.toUpperCase()}</span>
-                      <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded ${syncStatusBadge(sync.status)}`}>
+                      <span className={`text-[11px] font-mono font-bold px-1.5 py-0.5 rounded ${syncStatusBadge(sync.status)}`}>
                         {sync.status.toUpperCase()}
                       </span>
                     </div>
                     <div className="space-y-1">
                       <div className="flex justify-between">
-                        <span className="text-[10px] font-mono text-muted">LAST SYNC</span>
-                        <span className="text-[10px] font-mono text-muted-foreground">
+                        <span className="text-[12px] font-mono text-muted">LAST SYNC</span>
+                        <span className="text-[12px] font-mono text-muted-foreground">
                           {sync.lastSyncAt ? formatDateTime(sync.lastSyncAt) : 'NEVER'}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-[10px] font-mono text-muted">ADDED</span>
-                        <span className="text-[10px] font-mono text-accent-green">{sync.recordsAdded}</span>
+                        <span className="text-[12px] font-mono text-muted">ADDED</span>
+                        <span className="text-[12px] font-mono text-accent-green">{sync.recordsAdded}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-[10px] font-mono text-muted">UPDATED</span>
-                        <span className="text-[10px] font-mono text-accent-blue">{sync.recordsUpdated}</span>
+                        <span className="text-[12px] font-mono text-muted">UPDATED</span>
+                        <span className="text-[12px] font-mono text-accent-blue">{sync.recordsUpdated}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-[10px] font-mono text-muted">FAILED</span>
-                        <span className={`text-[10px] font-mono ${sync.recordsFailed > 0 ? 'text-accent-red' : 'text-muted'}`}>
+                        <span className="text-[12px] font-mono text-muted">FAILED</span>
+                        <span className={`text-[12px] font-mono ${sync.recordsFailed > 0 ? 'text-accent-red' : 'text-muted'}`}>
                           {sync.recordsFailed}
                         </span>
                       </div>
@@ -465,7 +465,7 @@ export default function AdminPage() {
                     <button
                       onClick={() => triggerSync(sync.source)}
                       disabled={syncingSource === sync.source}
-                      className="w-full px-3 py-1.5 text-[10px] font-mono tracking-wider text-accent-blue border border-accent-blue/30 rounded hover:bg-accent-blue/10 hover:border-accent-blue/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      className="w-full px-3 py-1.5 text-[12px] font-mono tracking-wider text-accent-blue border border-accent-blue/30 rounded hover:bg-accent-blue/10 hover:border-accent-blue/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
                       {syncingSource === sync.source ? 'SYNCING...' : 'SYNC NOW'}
                     </button>
@@ -487,7 +487,7 @@ export default function AdminPage() {
                 {Object.entries(recordCounts).map(([table, count]) => (
                   <div key={table} className="bg-surface border border-border rounded-lg p-3 text-center">
                     <span className="font-mono text-lg text-accent-blue">{count.toLocaleString()}</span>
-                    <p className="text-[9px] font-mono text-muted tracking-wider mt-1 uppercase">{table.replace(/_/g, ' ')}</p>
+                    <p className="text-[11px] font-mono text-muted tracking-wider mt-1 uppercase">{table.replace(/_/g, ' ')}</p>
                   </div>
                 ))}
               </div>
@@ -509,11 +509,11 @@ export default function AdminPage() {
               {emassPreview && (
                 <>
                   <div>
-                    <span className="text-[10px] font-mono text-muted tracking-wider">PREVIEW (FIRST 10 ROWS)</span>
+                    <span className="text-[12px] font-mono text-muted tracking-wider">PREVIEW (FIRST 10 ROWS)</span>
                     {renderPreviewTable(emassPreview)}
                   </div>
                   <div>
-                    <span className="text-[10px] font-mono text-muted tracking-wider">COLUMN MAPPING</span>
+                    <span className="text-[12px] font-mono text-muted tracking-wider">COLUMN MAPPING</span>
                     {renderMappingControls(emassPreview, emassMapping, setEmassMapping, EMASS_FIELDS)}
                   </div>
                   <button
@@ -545,11 +545,11 @@ export default function AdminPage() {
               {disaPreview && (
                 <>
                   <div>
-                    <span className="text-[10px] font-mono text-muted tracking-wider">PREVIEW (FIRST 10 ROWS)</span>
+                    <span className="text-[12px] font-mono text-muted tracking-wider">PREVIEW (FIRST 10 ROWS)</span>
                     {renderPreviewTable(disaPreview)}
                   </div>
                   <div>
-                    <span className="text-[10px] font-mono text-muted tracking-wider">COLUMN MAPPING</span>
+                    <span className="text-[12px] font-mono text-muted tracking-wider">COLUMN MAPPING</span>
                     {renderMappingControls(disaPreview, disaMapping, setDisaMapping, DISA_FIELDS)}
                   </div>
                   <button
@@ -582,14 +582,14 @@ export default function AdminPage() {
                   {seeding ? 'SEEDING...' : 'SEED DISA PA DATA'}
                 </button>
                 {seedResult && (
-                  <span className="text-[10px] font-mono text-muted-foreground">{seedResult}</span>
+                  <span className="text-[12px] font-mono text-muted-foreground">{seedResult}</span>
                 )}
               </div>
             </div>
           </section>
 
           {/* Data Source footer */}
-          <div className="text-[9px] font-mono text-muted tracking-wider pb-4">
+          <div className="text-[11px] font-mono text-muted tracking-wider pb-4">
             ADMIN PANEL — <span className="text-accent-red">QUAESTRON</span> — AUTHORIZED PERSONNEL ONLY
           </div>
         </div>

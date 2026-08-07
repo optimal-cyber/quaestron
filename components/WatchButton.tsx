@@ -80,7 +80,7 @@ export default function WatchButton({
   }, [pending, watching, queryString, targetType, targetId, targetValue, label])
 
   const base = compact
-    ? 'px-2 py-1 text-[10px]'
+    ? 'px-2 py-1 text-[12px]'
     : 'px-3 py-1.5 text-xs'
 
   if (status === 'loading') {
@@ -113,7 +113,7 @@ export default function WatchButton({
         {pending ? '…' : watching ? '✓ WATCHING' : '+ WATCH'}
       </button>
       {error && (
-        <span className="font-mono text-[10px] text-accent-gold max-w-[240px] leading-snug">
+        <span className="font-mono text-[12px] text-accent-gold max-w-[240px] leading-snug">
           {error}
         </span>
       )}

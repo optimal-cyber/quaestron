@@ -98,7 +98,7 @@ export default function SubmitPage() {
         <div className="max-w-2xl mx-auto px-4 md:px-6 py-6 md:py-10">
           {/* Header */}
           <div className="mb-8">
-            <div className="font-mono text-[10px] tracking-[0.3em] text-accent-red mb-2">CROWDSOURCED INTELLIGENCE</div>
+            <div className="font-mono text-[12px] tracking-[0.3em] text-accent-red mb-2">CROWDSOURCED INTELLIGENCE</div>
             <h1 className="font-mono text-2xl tracking-[0.1em] text-foreground mb-2">SUBMIT INTEL</h1>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Know of a defense technology company, surveillance vendor, investor, or government contract
@@ -148,7 +148,7 @@ export default function SubmitPage() {
               />
               {/* Entity Name */}
               <div>
-                <label className="block font-mono text-[10px] tracking-[0.2em] text-muted mb-2">
+                <label className="block font-mono text-[12px] tracking-[0.2em] text-muted mb-2">
                   ENTITY NAME <span className="text-accent-red">*</span>
                 </label>
                 <input
@@ -162,7 +162,7 @@ export default function SubmitPage() {
 
               {/* Type */}
               <div>
-                <label className="block font-mono text-[10px] tracking-[0.2em] text-muted mb-2">
+                <label className="block font-mono text-[12px] tracking-[0.2em] text-muted mb-2">
                   ENTITY TYPE <span className="text-accent-red">*</span>
                 </label>
                 <select
@@ -180,7 +180,7 @@ export default function SubmitPage() {
               {/* Two columns */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-mono text-[10px] tracking-[0.2em] text-muted mb-2">WEBSITE</label>
+                  <label className="block font-mono text-[12px] tracking-[0.2em] text-muted mb-2">WEBSITE</label>
                   <input
                     type="url"
                     value={form.website}
@@ -190,7 +190,7 @@ export default function SubmitPage() {
                   />
                 </div>
                 <div>
-                  <label className="block font-mono text-[10px] tracking-[0.2em] text-muted mb-2">HEADQUARTERS COUNTRY</label>
+                  <label className="block font-mono text-[12px] tracking-[0.2em] text-muted mb-2">HEADQUARTERS COUNTRY</label>
                   <input
                     type="text"
                     value={form.headquartersCountry}
@@ -203,7 +203,7 @@ export default function SubmitPage() {
 
               {/* Description */}
               <div>
-                <label className="block font-mono text-[10px] tracking-[0.2em] text-muted mb-2">
+                <label className="block font-mono text-[12px] tracking-[0.2em] text-muted mb-2">
                   DESCRIPTION <span className="text-accent-red">*</span>
                 </label>
                 <textarea
@@ -217,7 +217,7 @@ export default function SubmitPage() {
 
               {/* Connection Info */}
               <div>
-                <label className="block font-mono text-[10px] tracking-[0.2em] text-muted mb-2">
+                <label className="block font-mono text-[12px] tracking-[0.2em] text-muted mb-2">
                   KNOWN CONNECTIONS / FUNDING
                 </label>
                 <textarea
@@ -231,7 +231,7 @@ export default function SubmitPage() {
 
               {/* Source URLs */}
               <div>
-                <label className="block font-mono text-[10px] tracking-[0.2em] text-muted mb-2">
+                <label className="block font-mono text-[12px] tracking-[0.2em] text-muted mb-2">
                   SOURCE URLS
                 </label>
                 <div className="space-y-2">
@@ -246,14 +246,14 @@ export default function SubmitPage() {
                     />
                   ))}
                 </div>
-                <p className="text-[10px] text-muted mt-1 font-mono">
+                <p className="text-[12px] text-muted mt-1 font-mono">
                   News articles, official filings, or reports that document this entity.
                 </p>
               </div>
 
               {/* Email */}
               <div>
-                <label className="block font-mono text-[10px] tracking-[0.2em] text-muted mb-2">
+                <label className="block font-mono text-[12px] tracking-[0.2em] text-muted mb-2">
                   YOUR EMAIL <span className="text-muted">(OPTIONAL)</span>
                 </label>
                 <input
@@ -263,7 +263,7 @@ export default function SubmitPage() {
                   placeholder="For follow-up if needed"
                   className="w-full bg-surface border border-border rounded px-4 py-3 font-mono text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-accent-red/50 transition-colors"
                 />
-                <p className="text-[10px] text-muted mt-1 font-mono">
+                <p className="text-[12px] text-muted mt-1 font-mono">
                   Never shared publicly. Only used if we need clarification.
                 </p>
               </div>

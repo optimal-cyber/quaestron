@@ -306,7 +306,7 @@ export default function MainView() {
           <button
             key={tab}
             onClick={() => setMobilePanel(tab)}
-            className={`flex-1 py-2.5 text-[10px] font-mono tracking-[0.15em] transition-colors ${
+            className={`flex-1 py-2.5 text-[12px] font-mono tracking-[0.15em] transition-colors ${
               mobilePanel === tab
                 ? 'text-accent-red border-b-2 border-accent-red'
                 : 'text-muted-foreground'
@@ -322,7 +322,7 @@ export default function MainView() {
         <div className={`${mobilePanel === 'list' ? 'flex' : 'hidden'} md:flex w-full md:w-80 shrink-0 border-r border-border overflow-hidden flex-col bg-surface/50`}>
           {countryFilter && (
             <div className="px-3 py-2 border-b border-border bg-accent-blue/10 flex items-center justify-between">
-              <span className="text-[10px] font-mono text-accent-blue tracking-wider">
+              <span className="text-[12px] font-mono text-accent-blue tracking-wider">
                 FILTERED: {countryFilter.toUpperCase()}
               </span>
               <button

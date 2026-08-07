@@ -85,11 +85,11 @@ export default function EntityList({
       {/* Filters */}
       <div className="p-3 border-b border-border">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[10px] font-mono text-muted tracking-wider">TYPES</span>
+          <span className="text-[12px] font-mono text-muted tracking-wider">TYPES</span>
           {typeFilters.length > 0 && (
             <button
               onClick={() => useAppStore.getState().setTypeFilters([])}
-              className="text-[10px] font-mono text-accent-red hover:text-accent-red/80"
+              className="text-[12px] font-mono text-accent-red hover:text-accent-red/80"
             >
               CLEAR
             </button>
@@ -103,7 +103,7 @@ export default function EntityList({
               <button
                 key={t.value}
                 onClick={() => toggleTypeFilter(t.value)}
-                className={`px-2 py-0.5 text-[10px] font-mono rounded transition-colors border ${
+                className={`px-2 py-0.5 text-[12px] font-mono rounded transition-colors border ${
                   isActive
                     ? 'border-current'
                     : 'border-transparent opacity-60 hover:opacity-100'
@@ -119,10 +119,10 @@ export default function EntityList({
 
       {/* Sort */}
       <div className="px-3 py-2 border-b border-border flex items-center gap-2">
-        <span className="text-[10px] font-mono text-muted tracking-wider">SORT:</span>
+        <span className="text-[12px] font-mono text-muted tracking-wider">SORT:</span>
         <button
           onClick={() => setSortBy('name')}
-          className={`text-[10px] font-mono ${
+          className={`text-[12px] font-mono ${
             sortBy === 'name' ? 'text-foreground' : 'text-muted hover:text-muted-foreground'
           }`}
         >
@@ -130,7 +130,7 @@ export default function EntityList({
         </button>
         <button
           onClick={() => setSortBy('connections')}
-          className={`text-[10px] font-mono ${
+          className={`text-[12px] font-mono ${
             sortBy === 'connections' ? 'text-foreground' : 'text-muted hover:text-muted-foreground'
           }`}
         >
@@ -138,11 +138,11 @@ export default function EntityList({
         </button>
         <button
           onClick={toggleSortDirection}
-          className="text-[10px] font-mono text-muted hover:text-muted-foreground ml-auto"
+          className="text-[12px] font-mono text-muted hover:text-muted-foreground ml-auto"
         >
           {sortDirection === 'asc' ? '↑' : '↓'}
         </button>
-        <span className="text-[10px] font-mono text-muted">{filtered.length}</span>
+        <span className="text-[12px] font-mono text-muted">{filtered.length}</span>
       </div>
 
       {/* List */}
@@ -180,7 +180,7 @@ export default function EntityList({
                     {entity.name}
                   </span>
                   {entity.connectionCount > 0 && (
-                    <span className="text-[10px] font-mono text-muted">
+                    <span className="text-[12px] font-mono text-muted">
                       {entity.connectionCount}
                     </span>
                   )}

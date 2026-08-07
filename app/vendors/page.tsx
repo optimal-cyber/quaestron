@@ -79,14 +79,14 @@ export default function VendorsPage() {
             <div className="flex items-center gap-2">
               {(['all', 'small', 'risk'] as Filter[]).map((f) => (
                 <button key={f} onClick={() => setFilter(f)}
-                  className={`font-mono text-[10px] md:text-xs tracking-wider px-3 py-1.5 rounded transition-colors ${
+                  className={`font-mono text-[12px] md:text-xs tracking-wider px-3 py-1.5 rounded transition-colors ${
                     filter === f ? 'text-accent-blue bg-accent-blue/10 border border-accent-blue/30' : 'text-muted hover:text-foreground'
                   }`}>
                   {f === 'all' ? 'ALL' : f === 'small' ? 'SMALL BUSINESS' : 'HAS RISK'}
                 </button>
               ))}
             </div>
-            <span className="text-[10px] font-mono text-muted ml-auto">{total.toLocaleString()} vendors</span>
+            <span className="text-[12px] font-mono text-muted ml-auto">{total.toLocaleString()} vendors</span>
           </div>
         </div>
 
@@ -101,14 +101,14 @@ export default function VendorsPage() {
               >
                 BUILD LIVE DOSSIER FOR “{search.toUpperCase()}” →
               </button>
-              <p className="text-[10px] text-muted mt-2 font-mono">Pulls SAM, USAspending, FedRAMP & SBIR on demand.</p>
+              <p className="text-[12px] text-muted mt-2 font-mono">Pulls SAM, USAspending, FedRAMP & SBIR on demand.</p>
             </div>
           )}
 
           {vendors.length > 0 && (
             <table className="w-full text-left">
               <thead className="sticky top-0 bg-background border-b border-border">
-                <tr className="text-[10px] font-mono text-muted uppercase tracking-wider">
+                <tr className="text-[12px] font-mono text-muted uppercase tracking-wider">
                   <th className="px-4 md:px-6 py-2">Vendor</th>
                   <th className="px-3 py-2 hidden md:table-cell">Size</th>
                   <th className="px-3 py-2 hidden lg:table-cell">Primary Agency</th>
@@ -123,28 +123,28 @@ export default function VendorsPage() {
                     className="border-b border-border/50 hover:bg-surface-hover cursor-pointer transition-colors">
                     <td className="px-4 md:px-6 py-2.5">
                       <div className="font-mono text-xs text-foreground">{v.name}</div>
-                      <div className="text-[10px] text-muted font-mono">
+                      <div className="text-[12px] text-muted font-mono">
                         {v.type.replace(/_/g, ' ')}
                         {v.country && v.country.alpha2 !== 'US' ? ` · ${v.country.name}` : ''}
                       </div>
                     </td>
                     <td className="px-3 py-2.5 hidden md:table-cell">
                       {v.businessSize === 'SMALL'
-                        ? <span className="text-[10px] font-mono text-accent-green">SMALL</span>
+                        ? <span className="text-[12px] font-mono text-accent-green">SMALL</span>
                         : v.businessSize
-                        ? <span className="text-[10px] font-mono text-muted">OTHER</span>
-                        : <span className="text-[10px] font-mono text-muted/50">—</span>}
+                        ? <span className="text-[12px] font-mono text-muted">OTHER</span>
+                        : <span className="text-[12px] font-mono text-muted/50">—</span>}
                     </td>
                     <td className="px-3 py-2.5 hidden lg:table-cell">
-                      <span className="text-[10px] font-mono text-accent-blue truncate block max-w-[200px]">{v.primaryAgency || '—'}</span>
+                      <span className="text-[12px] font-mono text-accent-blue truncate block max-w-[200px]">{v.primaryAgency || '—'}</span>
                     </td>
                     <td className="px-3 py-2.5 text-right">
-                      <span className="text-[11px] font-mono text-accent-green">{fmt(v.totalFederalObligated)}</span>
+                      <span className="text-[13px] font-mono text-accent-green">{fmt(v.totalFederalObligated)}</span>
                     </td>
                     <td className="px-3 py-2.5">
                       {v.riskFlags.length > 0
-                        ? <span className="text-[10px] font-mono text-accent-red">⚠ {v.riskFlags.length}</span>
-                        : <span className="text-[10px] font-mono text-muted/50">—</span>}
+                        ? <span className="text-[12px] font-mono text-accent-red">⚠ {v.riskFlags.length}</span>
+                        : <span className="text-[12px] font-mono text-muted/50">—</span>}
                     </td>
                   </tr>
                 ))}

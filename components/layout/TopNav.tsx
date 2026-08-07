@@ -6,15 +6,29 @@ import { usePathname } from 'next/navigation'
 import AuthMenu from './AuthMenu'
 import AlertsBadge from './AlertsBadge'
 
+/**
+ * Primary navigation, grouped by what a diligence buyer is doing rather than by
+ * which table the data came from. Eleven flat tabs made the product look like a
+ * database browser; these five are the questions someone actually arrives with.
+ *
+ * Nothing became unreachable. ATO, CONTRACTS and MAP moved under More until
+ * they are genuinely folded into their parent pages — ATO as a tab inside
+ * /compliance, CONTRACTS inside /funders, MAP as a view toggle in /network.
+ * That is page-level work; this is the navigation half of it.
+ */
 const navItems = [
-  { href: '/map', label: 'MAP' },
-  { href: '/network', label: 'NETWORK' },
-  { href: '/funders', label: 'FUNDERS' },
-  { href: '/contracts', label: 'CONTRACTS' },
   { href: '/vendors', label: 'VENDORS' },
-  { href: '/ato', label: 'ATO' },
   { href: '/compliance', label: 'COMPLIANCE' },
+  { href: '/funders', label: 'FUNDING' },
+  { href: '/network', label: 'NETWORK' },
   { href: '/analyst', label: 'ANALYST' },
+]
+
+/** Secondary surfaces, and the three awaiting a proper home in their parent. */
+const moreItems = [
+  { href: '/map', label: 'MAP' },
+  { href: '/ato', label: 'ATO' },
+  { href: '/contracts', label: 'CONTRACTS' },
   { href: '/intel', label: 'INTEL' },
   { href: '/data', label: 'DATA' },
   { href: '/about', label: 'ABOUT' },
@@ -23,6 +37,7 @@ const navItems = [
 export default function TopNav({ onSearchOpen }: { onSearchOpen?: () => void }) {
   const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [moreOpen, setMoreOpen] = useState(false)
 
   return (
     <>
@@ -51,6 +66,41 @@ export default function TopNav({ onSearchOpen }: { onSearchOpen?: () => void }) 
               </Link>
             )
           })}
+
+          {/* More */}
+          <div className="relative">
+            <button
+              onClick={() => setMoreOpen((v) => !v)}
+              onBlur={() => setTimeout(() => setMoreOpen(false), 150)}
+              className={`px-3 py-1.5 text-xs font-mono tracking-wider transition-colors rounded flex items-center gap-1.5 ${
+                moreItems.some((m) => m.href === pathname)
+                  ? 'text-accent-red bg-accent-red/10'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-surface-hover'
+              }`}
+              aria-expanded={moreOpen}
+              aria-haspopup="true"
+            >
+              MORE
+              <span className={`text-[10px] transition-transform ${moreOpen ? 'rotate-180' : ''}`}>▾</span>
+            </button>
+            {moreOpen && (
+              <div className="absolute left-0 top-full mt-1 min-w-[9rem] rounded border border-border bg-surface/95 backdrop-blur-md py-1 shadow-lg">
+                {moreItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`block px-3 py-1.5 text-xs font-mono tracking-wider transition-colors ${
+                      pathname === item.href
+                        ? 'text-accent-red bg-accent-red/10'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-surface-hover'
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex-1" />
@@ -61,7 +111,7 @@ export default function TopNav({ onSearchOpen }: { onSearchOpen?: () => void }) 
             className="flex items-center gap-2 px-2 md:px-3 py-1.5 text-xs font-mono text-muted rounded border border-border hover:border-border-bright hover:text-muted-foreground transition-colors"
           >
             <span>SEARCH</span>
-            <kbd className="hidden md:inline text-[10px] bg-background px-1 py-0.5 rounded">⌘K</kbd>
+            <kbd className="hidden md:inline text-[12px] bg-background px-1 py-0.5 rounded">⌘K</kbd>
           </button>
           <Link
             href="/submit"
@@ -100,7 +150,10 @@ export default function TopNav({ onSearchOpen }: { onSearchOpen?: () => void }) 
       {menuOpen && (
         <div className="fixed inset-0 z-40 pt-12 bg-surface/95 backdrop-blur-md md:hidden">
           <div className="flex flex-col p-4 gap-1">
-            {navItems.map((item) => {
+            {/* Mobile has room to list everything, so it does — there is no
+                dropdown here and splitting the arrays would silently drop six
+                destinations. */}
+            {[...navItems, ...moreItems].map((item) => {
               const isActive = pathname === item.href
               return (
                 <Link
