@@ -48,7 +48,7 @@ app/
   analyst/         Claude-powered defense-market analyst (streaming chat)
   data/            Public live coverage statistics
   compliance/cso/[packageId]/  Per-offering SEO landing page
-  intel/           RSS feed aggregator
+  intel/           Threat-intel front page over the aggregated RSS feed
   admin/           Operator panel (ADMIN role required)
   signin/          Auth.js sign-in
 components/
