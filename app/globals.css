@@ -18,6 +18,7 @@
   --color-muted-foreground: #94A3B8;
   --font-sans: 'Lexend', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-serif: 'Newsreader', Georgia, 'Times New Roman', serif;
 }
 
 body {
